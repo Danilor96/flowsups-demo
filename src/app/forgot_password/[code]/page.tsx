@@ -1,0 +1,71 @@
+import { FormTitle } from '&/login/FormTitle';
+import { ForgotPasswordForm } from '&/login/forgot_password/ForgotPasswordForm';
+import Image from 'next/image';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+import { getUserCode } from '@/app/libs/data';
+import { deleteActivationCode } from '@/app/libs/actions';
+import { ChangePassword } from '@/app/ui/login/forgot_password/changePassword/ChangePassword';
+
+export default async function ForgotPasswordPage({ params }: { params: { code: string } }) {
+  const session = await auth();
+  const code = params.code;
+  const userCode = await getUserCode(code);
+  const codeExpDate = userCode?.activation_code_expired;
+  const currentDate = new Date();
+
+  //check if the user is logged
+  if (session?.user) {
+    redirect('/dashboard');
+  }
+
+  //check if the user has a valid reset code
+  if (!userCode) {
+    redirect('/');
+  }
+
+  //check the code expiration date
+  if (codeExpDate && currentDate > codeExpDate) {
+    await deleteActivationCode(code);
+    redirect('/');
+  }
+
+  return (
+    <main>
+      <section className="flex flex-row h-[100vh]">
+        <div className="w-[42.5vw] flex flex-col">
+          <Image
+            className="w-[9.21875vw] h-auto ml-[1.614583vw] mt-[2.222222vh]"
+            width={219}
+            height={52}
+            src="/flowsups.png"
+            alt="Logo of flowsups app"
+          />
+          <aside className="w-[32.65625vw] h-fit shadow-crmFormShadow rounded-[0.520833vw] mt-[20.277778vh] mb-[26.111111vh] ml-[4.895833vw] mr-[4.947917vw] pt-[2.314815vh] pl-[4.114583vw] pr-[3.958333vw] pb-[2.685185vh] flex flex-col items-center">
+            <FormTitle title="Forgot your password" text="Enter a new password" />
+            <ChangePassword userEmail={userCode.code_data[0].user.email} />
+          </aside>
+        </div>
+        <div className="relative w-[57.5vw]">
+          <Image
+            src="/loginImage.png"
+            alt="Presentation image of the CRM app"
+            width={1110}
+            height={1080}
+            className="w-[57.5vw] h-[100vh]"
+          ></Image>
+          <aside className="absolute top-0 right-0 bottom-0 left-0 bg-[#009075B5]">
+            <section className="w-[46.041667vw] h-[22.222222vh] ml-[3.802083vw] mt-[67.5vh] border-t border-[#FFFFFF]">
+              <p className="w-full h-[11.111111vh] text-[3.703704vh] font-semibold leading-[5.555556vh] text-[#FFFFFF] mt-[1.944444vh]">
+                START MANAGING YOUR BUSINESS WITH FLOWSUP
+              </p>
+              <p className="w-full h-[7.222222vh] text-[2.407407vh] font-light leading-[3.611111vh] mt-[1.944444vh] text-[#FFFFFF]">
+                A unique CMR that will make you improve your sales exponentially
+              </p>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
+}

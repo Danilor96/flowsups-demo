@@ -1,0 +1,243 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Appointment system calendar styles */
+
+.fc {
+  font-size: 1.944444vh;
+}
+
+.fc-daygrid-day {
+  width: 100px;
+}
+
+.fc-daygrid-day,
+.fc-timegrid-slots tr {
+  height: 25px;
+}
+
+.fc-today-button {
+  font-size: 2.7vh !important;
+  font-weight: 500 !important;
+  color: #00a78b !important;
+  background-color: #ffffff !important;
+  border: none !important;
+}
+
+.fc-prev-button {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 2.083333vw !important;
+  height: 2.083333vw !important;
+  border-radius: 100% !important;
+  background-color: #00a78b !important;
+  border: none !important;
+}
+
+.fc-next-button {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 2.083333vw !important;
+  height: 2.083333vw !important;
+  border-radius: 100% !important;
+  background-color: #00a78b !important;
+  border: none !important;
+  margin-left: 0.625vw !important;
+}
+
+.fc-timeGridWeek-button {
+  font-size: 2vh !important;
+  font-weight: 500 !important;
+  background-color: #ffffff !important;
+  color: #00a78b !important;
+  border-color: #c9ebe6 !important;
+  box-shadow: none !important;
+}
+
+.fc-dayGridMonth-button {
+  font-size: 2vh !important;
+  font-weight: 500 !important;
+  background-color: #ffffff !important;
+  color: #00a78b !important;
+  border-color: #c9ebe6 !important;
+  box-shadow: none !important;
+}
+
+.fc-timeGridDay-button {
+  font-size: 2vh !important;
+  font-weight: 500 !important;
+  background-color: #ffffff !important;
+  color: #00a78b !important;
+  border-color: #c9ebe6 !important;
+  box-shadow: none !important;
+}
+
+.fc-button-active {
+  background-color: #c9ebe6 !important;
+}
+
+.fc-col-header-cell {
+  height: 2.592593vh !important;
+  font-size: 2vh !important;
+  color: #00a78b !important;
+  font-weight: 400 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-color: #00a78b !important;
+}
+
+.fc-timegrid-slot {
+  font-size: 2vh !important;
+  color: #00a78b !important;
+}
+
+.fc-timegrid-axis-cushion {
+  font-size: 2vh !important;
+}
+
+.fc-scrollgrid {
+  width: 100% !important;
+  height: 89.937037vh !important;
+  border-color: #00a78b !important;
+  border-radius: 0.520833vw !important;
+}
+
+.fc .fc-timegrid-slot {
+  border-color: #00a78b !important;
+}
+
+colgroup col {
+  width: 6.510417vw !important;
+}
+
+.fc-theme-standard td {
+  border-color: #00a78b !important;
+}
+
+.fc-timegrid-slot-minor {
+  border-top: none !important;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border-color: #00a78b !important;
+}
+
+.fc-timegrid-slots tr {
+  height: 3.58vh !important;
+}
+
+.fc-view-harness {
+  height: 100% !important;
+}
+
+.fc-view-harness-active {
+  height: 100% !important;
+}
+
+/* scroll bars */
+
+::-webkit-scrollbar {
+  background: transparent;
+  width: 0.3vw;
+  height: 0.3vw;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6a6a6a;
+  scrollbar-width: thin;
+  border-radius: 0.53vw;
+}
+
+@-moz-document() {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #6a6a6a transparent;
+  }
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* sms progress chart */
+
+.progress-donut {
+  position: relative;
+  display: inline-block;
+  width: 4.5vw;
+  height: 4.5vw;
+}
+
+.donut {
+  transform: rotate(0deg);
+}
+
+.donut-background {
+  stroke: #6fc0b2;
+}
+
+.donut-progress {
+  transition: stroke-dashoffset 0.35s;
+  transform-origin: 50% 50%;
+  stroke-linecap: round;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* font-size: 2vh; */
+  font-weight: bold;
+  color: #fff;
+}
+
+/* email rich text editor */
+
+.toolbar > :nth-child(1) {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-color: #00a78b;
+  background-color: white;
+}
+
+.toolbar > :nth-child(2) {
+  min-height: 29vh;
+}
+
+.toolbar > :nth-child(2) > * {
+  min-height: 28.6vh;
+}
+
+.customInputDate::-webkit-calendar-picker-indicator {
+  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);
+  cursor: pointer;
+}
+
+@media (max-width: 450px) {
+  .confirmNoti {
+    width: 95%;
+    margin-inline: auto;
+  }
+
+  .confirmNotiBtnsContainer {
+    gap: 2rem;
+  }
+
+  .confirmNotiBtn {
+    width: 4rem;
+  }
+}

@@ -1,4 +1,5 @@
 import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import {
   CreditAppData,
   PrevAddress,
@@ -899,30 +900,9 @@ export const getUserEmailAndPassword = async (
   email: string | undefined,
 ): Promise<UserDataForLogin> => {
   try {
-    const user = await prisma?.users.findUnique({
+    const user = mockDb.users.findFirst({
       where: {
         email: email,
-      },
-      select: {
-        id: true,
-        name: true,
-        last_name: true,
-        email: true,
-        created_at: true,
-        updated_at: true,
-        username: true,
-        img: true,
-        password: true,
-        user_has: {
-          select: {
-            role_id: true,
-            role: {
-              select: {
-                role: true,
-              },
-            },
-          },
-        },
       },
     });
 

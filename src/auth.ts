@@ -1,8 +1,7 @@
 import NextAuth from 'next-auth';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import prisma from '@/app/libs/prisma';
 import authConfig from '@/auth.config';
 import { JWT } from 'next-auth/jwt';
+import { mockDb } from '@/app/libs/mock-db';
 
 declare module 'next-auth/jwt' {
   interface JWT {
@@ -28,7 +27,6 @@ declare module 'next-auth/jwt' {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
   ...authConfig,
   session: { strategy: 'jwt', maxAge: 15 * 60, updateAge: 60 },
   callbacks: {
@@ -45,9 +43,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       if (token.id) {
-        const currentUser = await prisma.users.findUnique({
+        const currentUser = mockDb.users.findFirst({
           where: { id: token.id, deleted_at: null },
-          select: { session_version: true },
         });
 
         if (
@@ -59,34 +56,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       if (trigger === 'update') {
-        const dbUser = await prisma.users.findUnique({
+        const dbUser = mockDb.users.findFirst({
           where: { id: token.id, deleted_at: null },
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-            email: true,
-            created_at: true,
-            updated_at: true,
-            username: true,
-            img: true,
-            session_version: true,
-            user_has: {
-              select: {
-                role_id: true,
-                role: {
-                  select: {
-                    role: true,
-                    roles_has: {
-                      select: {
-                        permission_id: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
         });
 
         if (dbUser) {
@@ -107,34 +78,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       if (user && user.id) {
-        const dbUser = await prisma.users.findUnique({
+        const dbUser = mockDb.users.findFirst({
           where: { id: parseInt(user.id), deleted_at: null },
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-            email: true,
-            created_at: true,
-            updated_at: true,
-            username: true,
-            img: true,
-            session_version: true,
-            user_has: {
-              select: {
-                role_id: true,
-                role: {
-                  select: {
-                    role: true,
-                    roles_has: {
-                      select: {
-                        permission_id: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
         });
 
         if (dbUser) {

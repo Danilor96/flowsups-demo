@@ -172,3 +172,5 @@ next-env.d.ts
 commitlint.config.js
 
 .husky
+
+typecheckErrors.txt

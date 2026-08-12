@@ -1,26 +1,37 @@
-import { seedUsers } from './data/users';
-import { seedRoles, seedPermissions, seedRolesHasPermissions } from './data/roles';
-import { seedClients } from './data/clients';
-import { seedLeads, seedClientHasLead } from './data/leads';
-import { seedAppointments, seedAppointmentStatuses } from './data/appointments';
-import { seedVehicles, seedVehicleLookups } from './data/vehicles';
-import { seedSettingsStores } from './data/settings';
+import { seedUsers } from "./data/users";
+import {
+  seedRoles,
+  seedPermissions,
+  seedRolesHasPermissions,
+} from "./data/roles";
+import { seedClients } from "./data/clients";
+import { seedLeads, seedClientHasLead } from "./data/leads";
+import { seedAppointments, seedAppointmentStatuses } from "./data/appointments";
+import { seedVehicles, seedVehicleLookups } from "./data/vehicles";
+import { seedSettingsStores, seedTaskDueTimeLimits } from "./data/settings";
+import { seedSystemAccesses } from "./data/systemAccesses";
+import { seedConversations, seedNotes } from "./data/conversations";
 
-export { DEMO_EMAIL, DEMO_PASSWORD } from './data/users';
+export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
 
 export type MockWhere = Record<string, any>;
 
 export interface Store<T> {
-  findMany(params?: { where?: MockWhere; orderBy?: any; skip?: number; take?: number }): T[];
+  findMany(params?: {
+    where?: MockWhere;
+    orderBy?: any;
+    skip?: number;
+    take?: number;
+  }): T[];
   findUnique(params: { where: MockWhere }): T | null;
   findFirst(params?: { where?: MockWhere; orderBy?: any }): T | null;
-  create(params: { data: T }): T;
-  createMany(params: { data: T[] }): { count: number };
+  create(params: { data: any }): T;
+  createMany(params: { data: any[] }): { count: number };
   update(params: { where: MockWhere; data: Partial<T> }): T;
   updateMany(params: { where: MockWhere; data: Partial<T> }): { count: number };
   delete(params: { where: MockWhere }): T;
   deleteMany(params: { where: MockWhere }): { count: number };
-  upsert(params: { where: MockWhere; create: T; update: Partial<T> }): T;
+  upsert(params: { where: MockWhere; create: any; update: any }): T;
   count(params?: { where?: MockWhere }): number;
   all(): T[];
   reset(): void;
@@ -29,30 +40,59 @@ export interface Store<T> {
 type AnyRecord = Record<string, any>;
 
 function matchesValue(actual: any, expected: any): boolean {
-  if (expected && typeof expected === 'object' && !(expected instanceof Date) && !Array.isArray(expected)) {
-    if ('equals' in expected) return matchesValue(actual, expected.equals);
-    if ('not' in expected) return !matchesValue(actual, expected.not);
-    if ('in' in expected) {
-      return Array.isArray(expected.in) && expected.in.some((value: any) => matchesValue(actual, value));
+  if (
+    expected &&
+    typeof expected === "object" &&
+    !(expected instanceof Date) &&
+    !Array.isArray(expected)
+  ) {
+    if ("equals" in expected) return matchesValue(actual, expected.equals);
+    if ("not" in expected) return !matchesValue(actual, expected.not);
+    if ("in" in expected) {
+      return (
+        Array.isArray(expected.in) &&
+        expected.in.some((value: any) => matchesValue(actual, value))
+      );
     }
-    if ('notIn' in expected) {
-      return !(Array.isArray(expected.notIn) && expected.notIn.some((value: any) => matchesValue(actual, value)));
+    if ("notIn" in expected) {
+      return !(
+        Array.isArray(expected.notIn) &&
+        expected.notIn.some((value: any) => matchesValue(actual, value))
+      );
     }
-    if ('contains' in expected) {
-      return actual != null && String(actual).toLowerCase().includes(String(expected.contains).toLowerCase());
+    if ("contains" in expected) {
+      return (
+        actual != null &&
+        String(actual)
+          .toLowerCase()
+          .includes(String(expected.contains).toLowerCase())
+      );
     }
-    if ('startsWith' in expected) {
-      return actual != null && String(actual).toLowerCase().startsWith(String(expected.startsWith).toLowerCase());
+    if ("startsWith" in expected) {
+      return (
+        actual != null &&
+        String(actual)
+          .toLowerCase()
+          .startsWith(String(expected.startsWith).toLowerCase())
+      );
     }
-    if ('endsWith' in expected) {
-      return actual != null && String(actual).toLowerCase().endsWith(String(expected.endsWith).toLowerCase());
+    if ("endsWith" in expected) {
+      return (
+        actual != null &&
+        String(actual)
+          .toLowerCase()
+          .endsWith(String(expected.endsWith).toLowerCase())
+      );
     }
-    if ('gt' in expected) return actual != null && actual > expected.gt;
-    if ('gte' in expected) return actual != null && actual >= expected.gte;
-    if ('lt' in expected) return actual != null && actual < expected.lt;
-    if ('lte' in expected) return actual != null && actual <= expected.lte;
-    if ('has' in expected) {
-      return Array.isArray(actual) && actual.some((value: any) => value === expected.has);
+    if ("gt" in expected) return actual != null && actual > expected.gt;
+    if ("gte" in expected) return actual != null && actual >= expected.gte;
+    if ("lt" in expected) return actual != null && actual < expected.lt;
+    if ("lte" in expected) return actual != null && actual <= expected.lte;
+    if ("has" in expected) {
+      return (
+        Array.isArray(actual) &&
+        actual.some((value: any) => value === expected.has)
+      );
     }
     return false;
   }
@@ -63,28 +103,34 @@ function matchesValue(actual: any, expected: any): boolean {
   return actual === expected;
 }
 
-function matchesWhere(record: AnyRecord, where: MockWhere | undefined): boolean {
-  if (!where || typeof where !== 'object') return true;
+function matchesWhere(
+  record: AnyRecord,
+  where: MockWhere | undefined,
+): boolean {
+  if (!where || typeof where !== "object") return true;
 
   for (const key of Object.keys(where)) {
     const condition = where[key];
     if (condition === undefined) continue;
 
-    if (key === 'AND') {
+    if (key === "AND") {
       const clauses = Array.isArray(condition) ? condition : [condition];
-      if (!clauses.every((clause: MockWhere) => matchesWhere(record, clause))) return false;
+      if (!clauses.every((clause: MockWhere) => matchesWhere(record, clause)))
+        return false;
       continue;
     }
 
-    if (key === 'OR') {
+    if (key === "OR") {
       const clauses = Array.isArray(condition) ? condition : [condition];
-      if (!clauses.some((clause: MockWhere) => matchesWhere(record, clause))) return false;
+      if (!clauses.some((clause: MockWhere) => matchesWhere(record, clause)))
+        return false;
       continue;
     }
 
-    if (key === 'NOT') {
+    if (key === "NOT") {
       const clauses = Array.isArray(condition) ? condition : [condition];
-      if (clauses.some((clause: MockWhere) => matchesWhere(record, clause))) return false;
+      if (clauses.some((clause: MockWhere) => matchesWhere(record, clause)))
+        return false;
       continue;
     }
 
@@ -102,8 +148,9 @@ function sortRecords<T>(records: T[], orderBy: any): T[] {
 
   sorted.sort((a: any, b: any) => {
     for (const fieldDef of fields) {
-      const key = typeof fieldDef === 'string' ? fieldDef : Object.keys(fieldDef)[0];
-      const direction = typeof fieldDef === 'string' ? 'asc' : fieldDef[key];
+      const key =
+        typeof fieldDef === "string" ? fieldDef : Object.keys(fieldDef)[0];
+      const direction = typeof fieldDef === "string" ? "asc" : fieldDef[key];
       const left = a[key];
       const right = b[key];
 
@@ -114,7 +161,7 @@ function sortRecords<T>(records: T[], orderBy: any): T[] {
       else if (left < right) cmp = -1;
       else if (left > right) cmp = 1;
 
-      if (cmp !== 0) return direction === 'desc' ? -cmp : cmp;
+      if (cmp !== 0) return direction === "desc" ? -cmp : cmp;
     }
     return 0;
   });
@@ -123,8 +170,14 @@ function sortRecords<T>(records: T[], orderBy: any): T[] {
 }
 
 export function createStore<T>(initial: T[]): Store<T> {
-  const records: T[] = initial.map((record) => ({ ...(record as AnyRecord) })) as T[];
-  let nextId = initial.reduce((max, record) => Math.max(max, Number((record as AnyRecord).id) || 0), 0) + 1;
+  const records: T[] = initial.map((record) => ({
+    ...(record as AnyRecord),
+  })) as T[];
+  let nextId =
+    initial.reduce(
+      (max, record) => Math.max(max, Number((record as AnyRecord).id) || 0),
+      0,
+    ) + 1;
 
   const assignId = (data: T): T => {
     const record = data as AnyRecord;
@@ -136,19 +189,29 @@ export function createStore<T>(initial: T[]): Store<T> {
 
   return {
     findMany(params = {}) {
-      let result = records.filter((record) => matchesWhere(record as AnyRecord, params.where));
+      let result = records.filter((record) =>
+        matchesWhere(record as AnyRecord, params.where),
+      );
       result = sortRecords(result, params.orderBy);
       if (params.skip || params.take !== undefined) {
-        result = result.slice(params.skip || 0, (params.take ?? Infinity) + (params.skip || 0));
+        result = result.slice(
+          params.skip || 0,
+          (params.take ?? Infinity) + (params.skip || 0),
+        );
       }
       return result;
     },
     findUnique({ where }) {
-      return records.find((record) => matchesWhere(record as AnyRecord, where)) ?? null;
+      return (
+        records.find((record) => matchesWhere(record as AnyRecord, where)) ??
+        null
+      );
     },
     findFirst(params = {}) {
       const result = sortRecords(
-        records.filter((record) => matchesWhere(record as AnyRecord, params.where)),
+        records.filter((record) =>
+          matchesWhere(record as AnyRecord, params.where),
+        ),
         params.orderBy,
       );
       return result[0] ?? null;
@@ -164,12 +227,20 @@ export function createStore<T>(initial: T[]): Store<T> {
       return { count: created.length };
     },
     update({ where, data }) {
-      const index = records.findIndex((record) => matchesWhere(record as AnyRecord, where));
+      const index = records.findIndex((record) =>
+        matchesWhere(record as AnyRecord, where),
+      );
       if (index === -1) {
-        throw new Error(`Mock record to update not found: ${JSON.stringify(where)}`);
+        throw new Error(
+          `Mock record to update not found: ${JSON.stringify(where)}`,
+        );
       }
       const current = records[index] as AnyRecord;
-      const updated = { ...current, ...(data as AnyRecord), id: current.id } as T;
+      const updated = {
+        ...current,
+        ...(data as AnyRecord),
+        id: current.id,
+      } as T;
       records[index] = updated;
       return updated;
     },
@@ -178,16 +249,24 @@ export function createStore<T>(initial: T[]): Store<T> {
       records.forEach((record, index) => {
         if (matchesWhere(record as AnyRecord, where)) {
           const current = record as AnyRecord;
-          records[index] = { ...current, ...(data as AnyRecord), id: current.id } as T;
+          records[index] = {
+            ...current,
+            ...(data as AnyRecord),
+            id: current.id,
+          } as T;
           count += 1;
         }
       });
       return { count };
     },
     delete({ where }) {
-      const index = records.findIndex((record) => matchesWhere(record as AnyRecord, where));
+      const index = records.findIndex((record) =>
+        matchesWhere(record as AnyRecord, where),
+      );
       if (index === -1) {
-        throw new Error(`Mock record to delete not found: ${JSON.stringify(where)}`);
+        throw new Error(
+          `Mock record to delete not found: ${JSON.stringify(where)}`,
+        );
       }
       return records.splice(index, 1)[0];
     },
@@ -201,31 +280,49 @@ export function createStore<T>(initial: T[]): Store<T> {
       return { count: before - records.length };
     },
     upsert({ where, create, update }) {
-      const index = records.findIndex((record) => matchesWhere(record as AnyRecord, where));
+      const index = records.findIndex((record) =>
+        matchesWhere(record as AnyRecord, where),
+      );
       if (index === -1) {
         const record = assignId(create);
         records.push(record);
         return record;
       }
       const current = records[index] as AnyRecord;
-      const updated = { ...current, ...(update as AnyRecord), id: current.id } as T;
+      const updated = {
+        ...current,
+        ...(update as AnyRecord),
+        id: current.id,
+      } as T;
       records[index] = updated;
       return updated;
     },
     count(params = {}) {
-      return records.filter((record) => matchesWhere(record as AnyRecord, params.where)).length;
+      return records.filter((record) =>
+        matchesWhere(record as AnyRecord, params.where),
+      ).length;
     },
     all() {
       return records;
     },
     reset() {
-      records.splice(0, records.length, ...(initial.map((record) => ({ ...(record as AnyRecord) })) as T[]));
-      nextId = initial.reduce((max, record) => Math.max(max, Number((record as AnyRecord).id) || 0), 0) + 1;
+      records.splice(
+        0,
+        records.length,
+        ...(initial.map((record) => ({ ...(record as AnyRecord) })) as T[]),
+      );
+      nextId =
+        initial.reduce(
+          (max, record) => Math.max(max, Number((record as AnyRecord).id) || 0),
+          0,
+        ) + 1;
     },
   };
 }
 
-const buildStores = (sources: Record<string, any[]>): Record<string, Store<any>> => {
+const buildStores = (
+  sources: Record<string, any[]>,
+): Record<string, Store<any>> => {
   const stores: Record<string, Store<any>> = {};
   for (const [key, records] of Object.entries(sources)) {
     stores[key] = createStore(records);
@@ -246,6 +343,10 @@ export const mockDb = {
   vehicles: createStore(seedVehicles),
   ...buildStores(seedVehicleLookups),
   ...buildStores(seedSettingsStores),
+  task_due_time_limit: createStore(seedTaskDueTimeLimits),
+  system_accesses: createStore(seedSystemAccesses),
+  conversation: createStore(seedConversations),
+  notes: createStore(seedNotes),
 };
 
 export function resetMockDb(): void {

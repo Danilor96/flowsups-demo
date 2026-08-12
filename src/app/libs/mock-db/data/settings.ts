@@ -225,6 +225,15 @@ export const seedSmsStatuses = [
   { id: 4, status: 'read' },
 ];
 
+export const seedTaskDueTimeLimits = [
+  { id: 1, span: '3 hours' },
+  { id: 2, span: '6 hours' },
+  { id: 3, span: '12 hours' },
+  { id: 4, span: '24 hours' },
+  { id: 5, span: '48 hours' },
+  { id: 6, span: '72 hours' },
+];
+
 export const seedSettingsStores: Record<string, any[]> = {
   client_status: seedClientStatuses,
   lead_sources: seedLeadSources,
@@ -251,4 +260,5 @@ export const seedSettingsStores: Record<string, any[]> = {
   lead_status: seedLeadStatuses,
   client_detail_leads: seedClientDetailLeads,
   sms_status: seedSmsStatuses,
+  task_due_time_limit: seedTaskDueTimeLimits,
 };

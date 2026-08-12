@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -37,7 +37,7 @@ export async function PUT(request: Request, { params }: { params: { } }) {
   // proximamente se debe agregar por el bussines id (multi tenant)
   try {
     if (clientId) {
-      await prisma.conversation.update({
+      mockDb.conversation.update({
         where: {
           client_id: parseInt(clientId)
         },
@@ -46,18 +46,15 @@ export async function PUT(request: Request, { params }: { params: { } }) {
         }
       });
 
-      const noteData = await prisma.notes.create({
+      const noteData = mockDb.notes.create({
         data: {
           note: note,
           created_at: new Date().toISOString(),
           created_by_id: userSession?.id as number,
           client_id: parseInt(clientId),
         },
-        select: {
-          id: true,
-        },
       });
-      await prisma.client_has_lead.create({
+      mockDb.client_has_lead.create({
         data: {
           client_id: parseInt(clientId),
           created_by_id: userSession?.id as number,
@@ -71,7 +68,7 @@ export async function PUT(request: Request, { params }: { params: { } }) {
     }
 
     if (unregisteredCustomerId) {
-      await prisma.conversation.update({
+      mockDb.conversation.update({
         where: {
           unregistered_customer_id: parseInt(unregisteredCustomerId)
         },
@@ -81,13 +78,9 @@ export async function PUT(request: Request, { params }: { params: { } }) {
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Sending Message' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

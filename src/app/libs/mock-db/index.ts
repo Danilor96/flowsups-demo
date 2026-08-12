@@ -8,9 +8,21 @@ import { seedClients } from "./data/clients";
 import { seedLeads, seedClientHasLead } from "./data/leads";
 import { seedAppointments, seedAppointmentStatuses } from "./data/appointments";
 import { seedVehicles, seedVehicleLookups } from "./data/vehicles";
-import { seedSettingsStores, seedTaskDueTimeLimits } from "./data/settings";
+import {
+  seedClientStatuses,
+  seedLeadSources,
+  seedLeadTypes,
+  seedSettingsStores,
+  seedTaskDueTimeLimits,
+} from "./data/settings";
 import { seedSystemAccesses } from "./data/systemAccesses";
 import { seedConversations, seedNotes } from "./data/conversations";
+import {
+  seedBanks,
+  seedDeals,
+  seedPaymentDates,
+  seedAmountPerDates,
+} from "./data/deals";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
 
@@ -22,6 +34,7 @@ export interface Store<T> {
     orderBy?: any;
     skip?: number;
     take?: number;
+    cursor?: MockWhere;
   }): T[];
   findUnique(params: { where: MockWhere }): T | null;
   findFirst(params?: { where?: MockWhere; orderBy?: any }): T | null;
@@ -93,6 +106,21 @@ function matchesValue(actual: any, expected: any): boolean {
         Array.isArray(actual) &&
         actual.some((value: any) => value === expected.has)
       );
+    }
+    if ("some" in expected && Array.isArray(actual)) {
+      return actual.some((item: any) => matchesWhere(item, expected.some));
+    }
+    if ("every" in expected && Array.isArray(actual)) {
+      return actual.every((item: any) => matchesWhere(item, expected.every));
+    }
+    if ("none" in expected && Array.isArray(actual)) {
+      return !actual.some((item: any) => matchesWhere(item, expected.none));
+    }
+    if (Array.isArray(actual)) {
+      return actual.some((item: any) => matchesWhere(item, expected));
+    }
+    if (actual && typeof actual === "object") {
+      return matchesWhere(actual, expected);
     }
     return false;
   }
@@ -193,11 +221,15 @@ export function createStore<T>(initial: T[]): Store<T> {
         matchesWhere(record as AnyRecord, params.where),
       );
       result = sortRecords(result, params.orderBy);
-      if (params.skip || params.take !== undefined) {
-        result = result.slice(
-          params.skip || 0,
-          (params.take ?? Infinity) + (params.skip || 0),
+      let start = params.skip || 0;
+      if (params.cursor) {
+        const cursorIndex = result.findIndex((record) =>
+          matchesWhere(record as AnyRecord, params.cursor),
         );
+        start = cursorIndex === -1 ? result.length : cursorIndex + 1 + start;
+      }
+      if (start || params.take !== undefined) {
+        result = result.slice(start, (params.take ?? Infinity) + start);
       }
       return result;
     },
@@ -347,6 +379,13 @@ export const mockDb = {
   system_accesses: createStore(seedSystemAccesses),
   conversation: createStore(seedConversations),
   notes: createStore(seedNotes),
+  lead_types: createStore(seedLeadTypes),
+  lead_sources: createStore(seedLeadSources),
+  client_status: createStore(seedClientStatuses),
+  banks: createStore(seedBanks),
+  deal: createStore(seedDeals),
+  paymentDate: createStore(seedPaymentDates),
+  amountPerDate: createStore(seedAmountPerDates),
 };
 
 export function resetMockDb(): void {

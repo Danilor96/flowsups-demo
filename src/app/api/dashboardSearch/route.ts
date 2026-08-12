@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       .split(' ')
       .filter((term) => term.length > 0);
 
-    const clients = await prisma.clients.findMany({
+    const clients = mockDb.clients.findMany({
       where: {
         AND: searchTerms.map(term => {
           const phoneVariations = [term];
@@ -102,29 +102,6 @@ export async function POST(request: Request) {
             ],
           };
         }),
-      },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        mobile_phone: true,
-        email: true,
-        lead: {
-          where: {
-            is_active: true,
-          },
-          select: {
-            sales_rep_id: true,
-            bdc_id: true,
-            customer_status: {
-              select: {
-                id: true,
-                status: true,
-              },
-            },
-            customer_funding_list_status_id: true,
-          },
-        },
       },
     });
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { CustomersForInfiniteScroll } from './types';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const limit = 10;
 
   try {
-    const customers = await prisma.clients.findMany({
+    const customers = mockDb.clients.findMany({
       take: limit,
       skip: cursor ? 1 : 0,
       cursor: cursor ? { id: Number(cursor) } : undefined,
@@ -31,24 +31,6 @@ export async function GET(request: Request) {
             email: { contains: searchTerm, mode: 'insensitive' },
           },
         ],
-      },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        mobile_phone: true,
-        lead: {
-          where: {
-            is_active: true,
-          },
-          select: {
-            customer_status: {
-              select: {
-                status: true,
-              },
-            },
-          },
-        },
       },
     });
 

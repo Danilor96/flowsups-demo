@@ -1,6 +1,6 @@
-import prisma from '@/app/libs/prisma';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const customerId = parseInt(params.id);
@@ -27,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { statusId } = validatedData.data;
 
   try {
-    const data = await prisma.clients.update({
+    mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -36,23 +36,18 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: customerId,
         is_active: true,
         has_ended: false,
       },
-      select: {
-        id: true,
-      },
     });
 
     if (activeLead && activeLead.id) {
-      const lead = await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: activeLead.id,
-          customer_id: customerId,
-          is_active: true,
         },
         data: {
           customer_status_id: parseInt(statusId),
@@ -61,13 +56,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Customer Updated Successfully' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,7 +1,7 @@
-import prisma from '@/app/libs/prisma';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { checkPermissions } from '@/app/libs/auth-helpers';
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const permissionsCheck = await checkPermissions([67]);
@@ -56,7 +56,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { mobileSelected, homeSelected, workSelected, phoneNumber } = validatedData.data;
 
   try {
-    const data = await prisma.clients.update({
+    mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -70,13 +70,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Phone Number Successfully Established' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

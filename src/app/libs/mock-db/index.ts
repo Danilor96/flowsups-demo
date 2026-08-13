@@ -23,6 +23,8 @@ import {
   seedFooterEmailTemplates,
   seedLetterheads,
 } from "./data/letterheads";
+import { seedLostReasons } from "./data/lostReasons";
+import { seedDisableSelectValues } from "./data/disableSelects";
 import { seedConversations, seedNotes } from "./data/conversations";
 import {
   seedBanks,
@@ -374,8 +376,8 @@ export const mockDb = {
   roles: createStore(seedRoles),
   permissions: createStore(seedPermissions),
   roles_has_permissions: createStore(seedRolesHasPermissions),
-  clients: createStore(seedClients),
-  leads: createStore(seedLeads),
+  clients: createStore<Record<string, any>>(seedClients),
+  leads: createStore<Record<string, any>>(seedLeads),
   client_has_lead: createStore(seedClientHasLead),
   appointments: createStore(seedAppointments),
   appointments_status: createStore(seedAppointmentStatuses),
@@ -389,6 +391,8 @@ export const mockDb = {
   letterhead: createStore(seedLetterheads),
   header_email_template: createStore(seedHeaderEmailTemplates),
   footer_email_template: createStore(seedFooterEmailTemplates),
+  lost_reasons: createStore(seedLostReasons),
+  disable_select_values: createStore(seedDisableSelectValues),
   conversation: createStore(seedConversations),
   notes: createStore(seedNotes),
   lead_types: createStore(seedLeadTypes),

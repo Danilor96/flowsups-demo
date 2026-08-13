@@ -1,9 +1,9 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const reasons = await prisma.lost_reasons.findMany();
+    const reasons = mockDb.lost_reasons.findMany();
 
     return NextResponse.json(reasons);
   } catch (error) {

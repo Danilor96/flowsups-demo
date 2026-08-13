@@ -1,3 +1,5 @@
+# TYPECHECK ERRORS (errors found by running npm run typecheck):
+
 # IMPLEMENTATION PLAN: Demo Mode (In-Memory Mocking)
 
 > Reference source of truth: `PLAN_IMPLEMENTATION.md`
@@ -106,56 +108,56 @@ For every `route.ts` inside the assigned folder:
 
 Execution unit = one subfolder. Files per folder vary from 1 to 60+ routes.
 
-| # | Subfolder | Routes (approx) | Notes |
-|---|-----------|-----------------|-------|
-| 1 | `adminDashboard` | ~120 | Largest; includes `clients`, `tasks`, `creditApp`, `reports`-like subroutes |
-| 2 | `reports` | ~30 | Heavy aggregation/analytics queries |
-| 3 | `inventory` | ~25 | Vehicle CRUD + stock |
-| 4 | `settings` | ~20 | Voice/emails, templates, reasons, etc. |
-| 5 | `bulkActions` | 4 | status, reassign, leadTemperature, consentSms |
-| 6 | `message` | ~6 | Messaging |
-| 7 | `consentTerms` | 4 | statements + checks |
-| 8 | `auth` | 3 | nextauth, forgot-password, (session) |
-| 9 | `deal` | 2 | |
-| 10 | `creditAppCode` | 3 | |
-| 11 | `creditAppNav` | 1 | |
-| 12 | `customerData` | 1 | |
-| 13 | `customerDetail` | 1 | |
-| 14 | `customerSelect` | 1 | |
-| 15 | `dashboardSearch` | 1 | |
-| 16 | `appointmentSmsTemplate` | 2 | |
-| 17 | `banks` | 2 | |
-| 18 | `consentForm` | 1 | |
-| 19 | `conversation` | 1 | |
-| 20 | `callAnsweredBy` | 1 | |
-| 21 | `callStatus` | 2 | Twilio |
-| 22 | `callTransfer` | 1 | Twilio |
-| 23 | `conferenceTransfer` | 1 | Twilio |
-| 24 | `defaultPhoneNumber` | 1 | |
-| 25 | `deliveryStatus` | 1 | |
-| 26 | `disableSelects` | 1 | |
-| 27 | `email` | 1 | |
-| 28 | `endVisitCustomerInfoEdited` | 1 | |
-| 29 | `eventsTypes` | 1 | |
-| 30 | `fundedList` | 1 | |
-| 31 | `incident` | 1 | |
-| 32 | `incomingCallerIdentity` | 1 | |
-| 33 | `lead` | 1 | |
-| 34 | `letterhead` | 1 | |
-| 35 | `lostReasons` | 1 | |
-| 36 | `permissions` | 1 | |
-| 37 | `public` | 1 | Public/unauthenticated |
-| 38 | `rescheduleSms` | 2 | |
-| 39 | `systemAccesses` | 1 | |
-| 40 | `taskDueTimeLimit` | 1 | |
-| 41 | `transferNoAnsweredConference` | 1 | Twilio |
-| 42 | `twilioDeviceToken` | 1 | Twilio |
-| 43 | `twiml` | 1 | Twilio |
-| 44 | `user` | 1 | userImage |
-| 45 | `userPicker` | 1 | |
-| 46 | `vehiclePicker` | 1 | |
-| 47 | `vinDecode` | 1 | External API mock |
-| 48 | `waitConferenceUrl` | 1 | Twilio |
+| #   | Subfolder                      | Routes (approx) | Notes                                                                       |
+| --- | ------------------------------ | --------------- | --------------------------------------------------------------------------- |
+| 1   | `adminDashboard`               | ~120            | Largest; includes `clients`, `tasks`, `creditApp`, `reports`-like subroutes |
+| 2   | `reports`                      | ~30             | Heavy aggregation/analytics queries                                         |
+| 3   | `inventory`                    | ~25             | Vehicle CRUD + stock                                                        |
+| 4   | `settings`                     | ~20             | Voice/emails, templates, reasons, etc.                                      |
+| 5   | `bulkActions`                  | 4               | status, reassign, leadTemperature, consentSms                               |
+| 6   | `message`                      | ~6              | Messaging                                                                   |
+| 7   | `consentTerms`                 | 4               | statements + checks                                                         |
+| 8   | `auth`                         | 3               | nextauth, forgot-password, (session)                                        |
+| 9   | `deal`                         | 2               |                                                                             |
+| 10  | `creditAppCode`                | 3               |                                                                             |
+| 11  | `creditAppNav`                 | 1               |                                                                             |
+| 12  | `customerData`                 | 1               |                                                                             |
+| 13  | `customerDetail`               | 1               |                                                                             |
+| 14  | `customerSelect`               | 1               |                                                                             |
+| 15  | `dashboardSearch`              | 1               |                                                                             |
+| 16  | `appointmentSmsTemplate`       | 2               |                                                                             |
+| 17  | `banks`                        | 2               |                                                                             |
+| 18  | `consentForm`                  | 1               |                                                                             |
+| 19  | `conversation`                 | 1               |                                                                             |
+| 20  | `callAnsweredBy`               | 1               |                                                                             |
+| 21  | `callStatus`                   | 2               | Twilio                                                                      |
+| 22  | `callTransfer`                 | 1               | Twilio                                                                      |
+| 23  | `conferenceTransfer`           | 1               | Twilio                                                                      |
+| 24  | `defaultPhoneNumber`           | 1               |                                                                             |
+| 25  | `deliveryStatus`               | 1               |                                                                             |
+| 26  | `disableSelects`               | 1               |                                                                             |
+| 27  | `email`                        | 1               |                                                                             |
+| 28  | `endVisitCustomerInfoEdited`   | 1               |                                                                             |
+| 29  | `eventsTypes`                  | 1               |                                                                             |
+| 30  | `fundedList`                   | 1               |                                                                             |
+| 31  | `incident`                     | 1               |                                                                             |
+| 32  | `incomingCallerIdentity`       | 1               |                                                                             |
+| 33  | `lead`                         | 1               |                                                                             |
+| 34  | `letterhead`                   | 1               |                                                                             |
+| 35  | `lostReasons`                  | 1               |                                                                             |
+| 36  | `permissions`                  | 1               |                                                                             |
+| 37  | `public`                       | 1               | Public/unauthenticated                                                      |
+| 38  | `rescheduleSms`                | 2               |                                                                             |
+| 39  | `systemAccesses`               | 1               |                                                                             |
+| 40  | `taskDueTimeLimit`             | 1               |                                                                             |
+| 41  | `transferNoAnsweredConference` | 1               | Twilio                                                                      |
+| 42  | `twilioDeviceToken`            | 1               | Twilio                                                                      |
+| 43  | `twiml`                        | 1               | Twilio                                                                      |
+| 44  | `user`                         | 1               | userImage                                                                   |
+| 45  | `userPicker`                   | 1               |                                                                             |
+| 46  | `vehiclePicker`                | 1               |                                                                             |
+| 47  | `vinDecode`                    | 1               | External API mock                                                           |
+| 48  | `waitConferenceUrl`            | 1               | Twilio                                                                      |
 
 ## 5. Execution Workflow (Step-by-Step)
 
@@ -163,12 +165,14 @@ Execution unit = one subfolder. Files per folder vary from 1 to 60+ routes.
 expand. Suggested phase order (adjustable on request):
 
 ### Phase 0 — Foundation (no route changes)
+
 - Create `src/app/libs/mock-db/` store + seed data covering: users, permissions/roles,
   clients, leads, appointments, vehicles, settings.
 - Implement hardcoded demo auth (3.2) so login works.
 - Verify: login succeeds, dashboard renders, `npm run typecheck` passes.
 
 ### Phase 1 — Lightweight folders (1 route each)
+
 Tackle a batch of simple, low-risk folders to establish the pattern:
 `taskDueTimeLimit`, `systemAccesses`, `conversation`, `customerSelect`,
 `dashboardSearch`, `customerData`, `deal`, `eventsTypes`, `incident`, `letterhead`,
@@ -177,20 +181,24 @@ Tackle a batch of simple, low-risk folders to establish the pattern:
 `lead`, `public`, `user`, `userPicker`, `vehiclePicker`, `vinDecode`.
 
 ### Phase 2 — Twilio / call flow folders
+
 `twiml`, `callStatus`, `callTransfer`, `conferenceTransfer`, `twilioDeviceToken`,
 `waitConferenceUrl`, `transferNoAnsweredConference`, `callAnsweredBy`.
 
 ### Phase 3 — Medium folders
+
 `bulkActions`, `consentTerms`, `creditAppCode`, `creditAppNav`, `customerDetail`,
 `message`, `appointmentSmsTemplate`, `banks`, `consentForm`, `rescheduleSms`,
 `auth`.
 
 ### Phase 4 — Heavy folders (one at a time)
+
 `settings`, `inventory`, `reports`, `adminDashboard` (split `adminDashboard` into
 its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 `business`, `dashboard`, remaining).
 
 ### Per-Folder Checklist
+
 1. Confirm folder assignment with the user.
 2. Read all `route.ts` files in the folder.
 3. Replace DB logic with `mockDb` calls (per section 3.3).
@@ -228,12 +236,13 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 > approach for that file.
 >
 > Legend:
+>
 > - **V** = verbs exposed by the route.
 > - **DB** = `prisma.<model>` models touched and operations used
 >   (`fM` findMany, `fU` findUnique, `fF` findFirst, `cr` create, `up` update,
 >   `upM` updateMany, `del` delete, `delM` deleteMany, `crM` createMany,
 >   `agg` aggregate, `grp` groupBy, `count`, `upsert`).
-> - **Note** = the file-specific mock implementation. Files marked *(no DB)* never
+> - **Note** = the file-specific mock implementation. Files marked _(no DB)_ never
 >   touch Prisma — they call external APIs or helpers and only need canned responses.
 >
 > Shared approach for every file: swap `prisma.<model>.<op>` → `mockDb.<model>.<op>`
@@ -281,7 +290,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
   `leads`(fF,up), `client_has_lead`(cr), `client_status`(fU), `notes`(cr),
   `daily_visit_history`(cr), `vehicle_delivery`(cr), `vehicles`(fU,up)
   — Note: full status-change workflow. Mock: mutate `clients.status_id`, create `client_has_lead`
-  + `notes` rows in-memory, toggle vehicle delivery flags; keep the same response shape.
+  - `notes` rows in-memory, toggle vehicle delivery flags; keep the same response shape.
 - **`adminDashboard/setCustomerStatus/markAsLost/[id]/route.ts`** — V: PUT — DB:
   `clients`(fU,up), `leads`(fF,up), `client_has_lead`(cr), `notes`(cr), `vehicles`(fU)
   — same approach as above, scoped to "lost".
@@ -618,7 +627,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
   config (filters JSON).
 - **`adminDashboard/reports/customer-list/[id]/route.ts`** — V: GET,PUT,DELETE — DB:
   `customer_Report`(fU,up,del) — CRUD on one saved report.
-- **`adminDashboard/reports/customer-list/sendReportEmail/route.ts`** — V: POST — *(no DB)*
+- **`adminDashboard/reports/customer-list/sendReportEmail/route.ts`** — V: POST — _(no DB)_
   — Note: sends report by email (uses email service). Mock: return `{ success: true }`.
 - **`adminDashboard/reports/customer-list/setAsDefault/[id]/route.ts`** — V: POST — DB:
   `users`(fU,up) — set default report on user.
@@ -639,7 +648,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 
 ### 8.3 `auth`
 
-- **`auth/[...nextauth]/route.ts`** — V: GET,POST — *(no DB — re-exports `handlers`)*
+- **`auth/[...nextauth]/route.ts`** — V: GET,POST — _(no DB — re-exports `handlers`)_
   — Note: no change needed beyond the `src/auth.ts` + `src/auth.config.ts` mock auth
   (Section 3.2). Keep as-is.
 - **`auth/forgot-password/route.ts`** — V: POST — DB: `users`(fU)
@@ -682,7 +691,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 
 ### 8.8 `callTransfer` (Twilio)
 
-- **`callTransfer/[callSid]/route.ts`** — V: POST — *(no DB — uses Twilio REST + zod)*
+- **`callTransfer/[callSid]/route.ts`** — V: POST — _(no DB — uses Twilio REST + zod)_
   — Note: initiates a call transfer via the Twilio API. Mock: validate with the same zod
   schema (422 on failure) and return a canned success object without calling Twilio.
 
@@ -698,7 +707,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
   `customer_consent_logs`(cr), `terms_and_conditions_processed`(cr,delM,fM)
   — Note: the public consent submission — validates code, updates customer data, logs
   consent. Mock: mutate seed client/address, consume the code (delete), push a consent log
-  + processed-terms row; return the customer object.
+  - processed-terms row; return the customer object.
 
 ### 8.11 `consentTerms`
 
@@ -818,6 +827,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 ### 8.29 `inventory`
 
 #### Lookup tables (all `findMany` → static seed arrays)
+
 - **`inventory/acqType/route.ts`** — DB: `detail_acq_mill_type`
 - **`inventory/color/route.ts`** — DB: `vehicle_colors`
 - **`inventory/condition/route.ts`** — DB: `vehicle_conditions`
@@ -829,7 +839,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 - **`inventory/inspectionStatus/route.ts`** — DB: `inspection_status`
 - **`inventory/make/route.ts`** — DB: `vehicle_make`
 - **`inventory/model/route.ts`** — DB: `vehicle_models`
-- **`inventory/odometer/route.ts`** — V: GET — *(no DB — returns static/derived list)*
+- **`inventory/odometer/route.ts`** — V: GET — _(no DB — returns static/derived list)_
 - **`inventory/odometerType/route.ts`** — DB: `vehicle_milleage_type`
 - **`inventory/paymentMethod/route.ts`** — DB: `payment_method`
 - **`inventory/salesType/route.ts`** — DB: `sales_type_category`
@@ -842,6 +852,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 - **`inventory/type/route.ts`** — DB: `vehicle_types`
 
 #### Vehicle CRUD & sections
+
 - **`inventory/vehicle/route.ts`** — V: GET,POST — DB: `vehicles`(fM,cr), `vehicle_identification_numbers`(cr,ups),
   `vehicle_make`(ups), `vehicle_models`(ups), `vehicle_manufacture_years`(ups),
   `vehicle_trim`(ups), `vehicle_body_types`(ups), `vehicle_engine`(ups), `vehicle_image`(cr),
@@ -942,6 +953,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 ### 8.36 `reports` (heavy aggregation; all GET-oriented)
 
 #### BDC / Funding / Differed
+
 - **`reports/bdcLog/route.ts`** — V: GET — DB: `leads`(fM) — BDC activity rows (date filters).
 - **`reports/bdcLog/statistics/route.ts`** — V: GET — DB: `leads`(fM), `users`(fM)
   — Note: per-user stats computed server-side. Mock: compute counts from seed leads.
@@ -953,6 +965,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
   `deal`(up), `leads`(up) — inline edit in funding log.
 
 #### Sales Log
+
 - **`reports/salesLog/route.ts`** — V: GET — DB: `deal`(fM), `charges_back`(agg)
   — Note: sales log with computed totals (aggregate). Mock: compute totals from seed deals.
 - **`reports/salesLog/banks/route.ts`** — V: GET — DB: `deal`(fM) — deals grouped by bank.
@@ -968,6 +981,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
   `marketing_cost`(cr,fF,up), `business`(fF) — set/upsert cost per source.
 
 #### Store Report
+
 - **`reports/storeReport/activitiesReport/route.ts`** — V: GET — DB: `client_has_lead`(fM).
 - **`reports/storeReport/birthdayReport/route.ts`** — V: GET — DB: `clients`(fM)
   — Note: filter seed clients by birth month.
@@ -1057,8 +1071,8 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 - **`settings/voiceAndEmails/route.ts`** — V: GET,POST,PUT — DB: `voice_and_sms`(fF,cr,up),
   `business_phone_numbers`(fM)
   — Note: master voice & SMS config + registered numbers.
-- **`settings/voiceAndEmails/available-numbers/route.ts`** — V: GET,POST — *(no DB — Twilio
-  `availablePhoneNumbers` REST call)*
+- **`settings/voiceAndEmails/available-numbers/route.ts`** — V: GET,POST — _(no DB — Twilio
+  `availablePhoneNumbers` REST call)_
   — Note: mock returns a canned list of ~10 available numbers matching the requested area
   code; keep 404-on-empty behavior.
 - **`settings/voiceAndEmails/registered-numbers/route.ts`** — V: GET,POST — DB:
@@ -1094,7 +1108,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 
 ### 8.42 `twilioDeviceToken` (Twilio)
 
-- **`twilioDeviceToken/[email]/route.ts`** — V: GET — *(no DB — generates Twilio JWT)*
+- **`twilioDeviceToken/[email]/route.ts`** — V: GET — _(no DB — generates Twilio JWT)_
   — Note: mock generates a fake-but-valid-shaped JWT string (or a base64 placeholder) and
   returns the same JSON shape; phone UI only needs a token string.
 
@@ -1124,13 +1138,13 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 
 ### 8.47 `vinDecode` (external API)
 
-- **`vinDecode/route.ts`** — V: POST — *(no DB — calls vindecoder.eu)*
+- **`vinDecode/route.ts`** — V: POST — _(no DB — calls vindecoder.eu)_
   — Note: mock returns a canned VIN-decode JSON (year/make/model/engine/etc.) for any VIN;
   keep the 500-on-error branch.
 
 ### 8.48 `waitConferenceUrl` (Twilio)
 
-- **`waitConferenceUrl/[conferenceName]/route.ts`** — V: POST — *(no DB — returns TwiML)*
+- **`waitConferenceUrl/[conferenceName]/route.ts`** — V: POST — _(no DB — returns TwiML)_
   — Note: returns the same wait/hold TwiML the route builds today, parameterized by the
   conference name.
 
@@ -1139,6 +1153,7 @@ its own sub-steps: `clients`, `tasks`, `creditApp`, `appointments`, `users`,
 ## 9. Cross-Cutting Implementation Notes
 
 ### 9.1 Helper modules that must be mocked alongside route files
+
 These `libs` are imported by route handlers and still contain real `prisma` calls. They
 must be converted or short-circuited in the same step as the routes that use them:
 
@@ -1159,24 +1174,29 @@ must be converted or short-circuited in the same step as the routes that use the
   string-building, skip the real Twilio send.
 
 ### 9.2 Files with NO database surface (mock at the route level only)
+
 `auth/[...nextauth]`, `callTransfer`, `settings/voiceAndEmails/available-numbers`,
 `twilioDeviceToken`, `vinDecode`, `waitConferenceUrl`, `inventory/odometer`,
 `reports/storeReport/sold-customers` (DB yes), `adminDashboard/reports/customer-list/sendReportEmail`
 (DB no). These never call `prisma`; they need canned external responses (Twilio/VIN/email).
 
 ### 9.3 Files that depend on `buildDatePrismaFilter`
+
 `reports/storeReport/sold-customers`, `adminDashboard/clients/by-filters`.
 Replace `buildDatePrismaFilter` output with an in-memory date predicate in `mockDb`
 (date-range + option handling).
 
 ### 9.4 Ordering within a folder
+
 Inside a folder, convert files in this order so dependencies resolve cleanly:
+
 1. GET reference-list routes (static seeds) → build the `mockDb` arrays.
 2. GET list/detail routes → verify read shapes against seed data.
 3. Mutation routes (POST/PUT/DELETE) → verify in-memory writes.
 4. Twilio/external routes → canned responses last.
 
 ### 9.5 Explicitly preserved behaviors (must not regress)
+
 - All `revalidatePath(...)` calls.
 - `checkPermissions(...)` guards + their 401/403 responses.
 - Zod validation and its 422 `fieldErrors` responses.

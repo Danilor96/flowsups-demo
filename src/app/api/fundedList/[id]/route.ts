@@ -1,8 +1,8 @@
-import prisma from '@/app/libs/prisma';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
-import { CustomersStatuses, FundingStatuses } from '@/app/libs/customer/customersFunctions';
+import { FundingStatuses } from '@/app/libs/customer/customersFunctions';
 import { auth } from '@/auth';
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const customerId = parseInt(params.id);
@@ -47,7 +47,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const isFundingReturned = parseInt(statusId) === FundingStatuses.Returned;
   const isFundingFunded = parseInt(statusId) === FundingStatuses.Funded;
   try {
-    const data = await prisma.clients.update({
+    mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -57,22 +57,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: customerId,
         is_active: true,
       },
-      select: {
-        id: true,
-      },
     });
 
     if (activeLead && activeLead.id) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: activeLead.id,
-          customer_id: customerId,
-          is_active: true,
         },
         data: {
           customer_funding_list_status_id: parseInt(statusId),
@@ -83,7 +78,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (statusId === '3' && note) {
-      await prisma.notes.create({
+      mockDb.notes.create({
         data: {
           note: note,
           created_at: new Date().toISOString(),

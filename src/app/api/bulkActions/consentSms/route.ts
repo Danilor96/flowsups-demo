@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
@@ -60,17 +60,18 @@ export async function POST(request: Request) {
     for (let i = 0; i < customersArray.length; i++) {
       const customerId = customersArray[i];
 
-      const data = await prisma.clients.update({
+      const updated = mockDb.clients.update({
         where: {
           id: customerId,
         },
         data: {
           consent_approved: on ? true : false,
         },
-        select: {
-          consent_approved: true,
-        },
       });
+
+      const data = {
+        consent_approved: updated.consent_approved,
+      };
 
       const description = `Consent Sms changed from bulk actions. \n Consent to send Sms set to: ${
         data.consent_approved ? 'True' : 'False'
@@ -79,13 +80,9 @@ export async function POST(request: Request) {
       if (userId) await createEvent(description, userId, customerId, new Date());
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Consent Successfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

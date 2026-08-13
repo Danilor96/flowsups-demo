@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
@@ -59,21 +59,13 @@ export async function POST(request: Request) {
     for (let i = 0; i < customersArray.length; i++) {
       const customerId = customersArray[i];
 
-      const prevSalesRep = await prisma.clients.findUnique({
+      const prevClient = mockDb.clients.findUnique({
         where: {
           id: customerId,
         },
-        select: {
-          seller: {
-            select: {
-              id: true,
-              name: true,
-              last_name: true,
-              username: true,
-            },
-          },
-        },
       });
+
+      const prevSalesRep = prevClient ? { seller: prevClient.seller } : null;
 
       if (salesRepIds.length === 0) salesRepIds = [...salesReps].sort(() => Math.random() - 0.5);
 
@@ -81,24 +73,22 @@ export async function POST(request: Request) {
 
       salesRepIds = salesRepIds.filter((el) => el !== randomSalesId);
 
-      const data = await prisma.clients.update({
+      mockDb.clients.update({
         where: {
           id: customerId,
         },
         data: {
           seller_id: randomSalesId,
         },
-        select: {
-          seller: {
-            select: {
-              id: true,
-              name: true,
-              last_name: true,
-              username: true,
-            },
-          },
-        },
       });
+
+      const data = {
+        seller: mockDb.users.findUnique({
+          where: {
+            id: randomSalesId,
+          },
+        }),
+      };
 
       const prevSalesRepName = `${prevSalesRep?.seller?.name || ''} ${
         prevSalesRep?.seller?.last_name || ''
@@ -113,13 +103,9 @@ export async function POST(request: Request) {
       if (userId) await createEvent(description, userId, customerId, new Date());
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Customers Successfully Reassigned' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
@@ -52,26 +52,44 @@ export async function POST(request: Request) {
     for (let i = 0; i < customersArray.length; i++) {
       const customerId = customersArray[i];
 
-      const prevTemperature = await prisma.clients.findUnique({
+      const prevClient = mockDb.clients.findUnique({
         where: {
           id: customerId,
         },
-        select: {
-          client_lead_temperature: true,
-        },
       });
 
-      const data = await prisma.clients.update({
+      const prevTemperature = prevClient
+        ? {
+            client_lead_temperature: mockDb.lead_temperature.findUnique({
+              where: {
+                id: prevClient.lead_temperature_id,
+              },
+            }),
+          }
+        : null;
+
+      mockDb.clients.update({
         where: {
           id: customerId,
         },
         data: {
           lead_temperature_id: parseInt(temperature),
         },
-        select: {
-          client_lead_temperature: true,
+      });
+
+      const updatedClient = mockDb.clients.findUnique({
+        where: {
+          id: customerId,
         },
       });
+
+      const data = {
+        client_lead_temperature: mockDb.lead_temperature.findUnique({
+          where: {
+            id: updatedClient?.lead_temperature_id,
+          },
+        }),
+      };
 
       const description = `Lead Temperature changed from bulk actions. \n Prev lead temperature: ${
         prevTemperature?.client_lead_temperature?.temperature || 'no established'
@@ -80,13 +98,9 @@ export async function POST(request: Request) {
       if (userId) await createEvent(description, userId, customerId, new Date());
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Leads Successfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

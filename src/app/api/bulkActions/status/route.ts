@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
@@ -50,17 +50,18 @@ export async function POST(request: Request) {
   const { customersArray, status } = validatedData.data;
 
   try {
-    const prevStatus = await prisma.clients.findMany({
+    const prevStatusClients = mockDb.clients.findMany({
       where: {
         id: { in: customersArray },
       },
-      select: {
-        id: true,
-        client_status: true,
-      },
     });
 
-    const customerUpdate = prisma.clients.updateMany({
+    const prevStatus = prevStatusClients.map((el) => ({
+      id: el.id,
+      client_status: el.client_status,
+    }));
+
+    mockDb.clients.updateMany({
       where: {
         id: {
           in: customersArray,
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const leadUpdate = prisma.leads.updateMany({
+    mockDb.leads.updateMany({
       where: {
         is_active: true,
         customer_id: {
@@ -82,8 +83,6 @@ export async function POST(request: Request) {
         customer_status_id: Number(status),
       },
     });
-
-    await Promise.all([customerUpdate, leadUpdate]);
 
     for (let i = 0; i < prevStatus.length; i++) {
       const el = prevStatus[i];

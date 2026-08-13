@@ -1,18 +1,11 @@
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
-import twilio from 'twilio';
+import { randomUUID } from 'crypto';
 import { createEvent } from '@/app/libs/events/events';
 import { toZonedTime } from 'date-fns-tz';
 import { auth } from '@/auth';
 import { checkPermissions } from '@/app/libs/auth-helpers';
-
-const client = twilio(accountSid, authToken);
-
-const url = process.env.TWILIO_WEBSOCKET_URL;
 
 const timeZone = 'America/New_York';
 
@@ -50,63 +43,29 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const { mssg } = validatedData.data;
 
   try {
-    const clientData = await prisma.clients.findUnique({
-      where: {
-        id: customerId,
-      },
-      select: {
-        email: true,
-        mobile_phone: true,
-      },
-    });
-
-    const statusCallbacUrl = `${url}/smsStatus`;
-
-    const res = await client.messages.create({
+    const res = {
       body: mssg,
-      from: twilioPhoneNumber,
-      to: `${clientData?.mobile_phone}`,
-      statusCallback: statusCallbacUrl,
-    });
+      dateCreated: new Date(),
+      sid: `SM-mock-${randomUUID()}`,
+    };
 
     const sms = res.body;
     const createdAt = res.dateCreated;
 
-    const data = await prisma?.client_sms.create({
+    mockDb.client_sms.create({
       data: {
         message: sms,
         date_sent: createdAt,
         sent_by_user: true,
         message_sid: res.sid,
         manual_sent: false,
-        status: {
-          connect: {
-            id: 1,
-          },
-        },
-        client_message: {
-          connect: {
-            id: customerId,
-          },
-        },
-        user: {
-          connect: {
-            id: userId ? userId : undefined,
-          },
-        },
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
+        status_id: 1,
+        client_id: customerId,
+        sender_user_id: userId ? userId : undefined,
       },
     });
 
-    const customer = await prisma.clients.update({
+    mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -114,8 +73,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
         consent_sent: true,
       },
     });
-
-    //await prisma.$disconnect();
 
     if (userId) {
       await createEvent(
@@ -129,8 +86,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ successMessage: 'Credit App Form Sent' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

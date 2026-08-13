@@ -227,10 +227,40 @@ export const seedCreditAppOtherIncomes = [
 ];
 
 export const seedCreditAppCodes = [
-  { id: 1, customer_id: 1, code: 'CREDIT-0001' },
-  { id: 2, customer_id: 2, code: 'CREDIT-0002' },
-  { id: 3, customer_id: 3, code: 'CREDIT-0003' },
-  { id: 4, customer_id: 4, code: 'CREDIT-0004' },
-  { id: 5, customer_id: 5, code: 'CREDIT-0005' },
-  { id: 6, customer_id: 6, code: 'CREDIT-0006' },
+  {
+    id: 1,
+    customer_id: 1,
+    token: 'CREDIT-0001',
+    code_expired: new Date('2026-09-01T00:00:00.000Z'),
+  },
+  {
+    id: 2,
+    customer_id: 2,
+    token: 'CREDIT-0002',
+    code_expired: new Date('2026-09-01T00:00:00.000Z'),
+  },
+  {
+    id: 3,
+    customer_id: 3,
+    token: 'CREDIT-0003',
+    code_expired: new Date('2026-09-01T00:00:00.000Z'),
+  },
+  {
+    id: 4,
+    customer_id: 4,
+    token: 'CREDIT-0004',
+    code_expired: new Date('2026-09-01T00:00:00.000Z'),
+  },
+  {
+    id: 5,
+    customer_id: 5,
+    token: 'CREDIT-0005',
+    code_expired: new Date('2026-09-01T00:00:00.000Z'),
+  },
+  {
+    id: 6,
+    customer_id: 6,
+    token: 'CREDIT-0006',
+    code_expired: new Date('2026-09-01T00:00:00.000Z'),
+  },
 ];

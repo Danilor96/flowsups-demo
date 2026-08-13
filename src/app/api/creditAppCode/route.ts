@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { randomBytes, randomUUID } from 'crypto';
@@ -28,16 +28,12 @@ export async function POST(request: Request) {
 
     const path = process.env.NEXTAUTH_URL;
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({
       successMessage: 'Credit App Code Created',
       data: `${path}/creditApp/${code}`,
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -51,21 +47,21 @@ const generateCode = async (customerId: number) => {
   while (exists) {
     code = randomUUID?.() ?? randomBytes(32).toString('hex');
 
-    const dbCode = await prisma.credit_app_code.findUnique({
+    const dbCode = mockDb.credit_app_code.findUnique({
       where: {
         customer_id: customerId,
       },
     });
 
     if (!dbCode) {
-      const codeExists = await prisma.credit_app_code.findUnique({
+      const codeExists = mockDb.credit_app_code.findUnique({
         where: {
           token: code,
         },
       });
 
       if (!codeExists) {
-        await prisma.credit_app_code.create({
+        mockDb.credit_app_code.create({
           data: {
             code_expired: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
             customer_id: customerId,
@@ -79,7 +75,7 @@ const generateCode = async (customerId: number) => {
 
     if (dbCode) {
       if (new Date() >= dbCode.code_expired) {
-        await prisma.credit_app_code.delete({
+        mockDb.credit_app_code.delete({
           where: {
             id: dbCode.id,
           },
@@ -90,8 +86,6 @@ const generateCode = async (customerId: number) => {
       }
     }
   }
-
-  //await prisma.$disconnect();
 
   return code;
 };

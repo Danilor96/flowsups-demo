@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { LeadHistory, TaskLeadHistory } from '../type';
 import { auth } from '@/auth';
@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     const adminRoles = [Roles.Superuser, Roles.Administrator];
 
-    const leadData = await prisma.client_has_lead.findMany({
+    const leadsRaw = mockDb.client_has_lead.findMany({
       take: !getLastLead ? limit : 1,
       orderBy: {
         created_at: 'desc',
@@ -31,31 +31,33 @@ export async function GET(request: Request, { params }: { params: { id: string }
         client_id: customerId,
         created_at: !getLastLead ? (cursorDate ? { lt: cursorDate } : undefined) : undefined,
       },
-      select: {
-        id: true,
-        created_at: true,
-        lead_id: true,
-        client_leads: {
-          select: {
-            lead: true,
-          },
-        },
-        lead_created_by: {
-          select: {
-            name: true,
-            last_name: true,
-            username: true,
-          },
-        },
-        note_assigned: {
-          select: {
-            created_at: true,
-            note: true,
-          },
-        },
-        task_id: true,
-      },
     });
+
+    const leadData = leadsRaw.map((currentLead) => ({
+      id: currentLead.id,
+      created_at: currentLead.created_at,
+      lead_id: currentLead.lead_id,
+      client_leads: mockDb.client_detail_leads.findUnique({
+        where: {
+          id: currentLead.lead_id,
+        },
+      }),
+      lead_created_by: currentLead.created_by_id
+        ? mockDb.users.findUnique({
+            where: {
+              id: currentLead.created_by_id,
+            },
+          })
+        : null,
+      note_assigned: currentLead.note_id
+        ? mockDb.notes.findUnique({
+            where: {
+              id: currentLead.note_id,
+            },
+          })
+        : null,
+      task_id: currentLead.task_id,
+    }));
 
     const leadHistory: LeadHistory[] =
       leadData?.map((currentLead) => {
@@ -101,35 +103,38 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     let tasksData: any[] = [];
 
+    const projectTask = (task: any) => ({
+      id: task.id,
+      deadline: task.deadline,
+      status: task.status,
+      title: task.title,
+      description: task.description,
+      created_at: task.created_at,
+      finished_at: task.finished_at,
+      assigned: task.assigned_to
+        ? mockDb.users.findUnique({
+            where: {
+              id: task.assigned_to,
+            },
+          })
+        : null,
+      creator: task.created_by
+        ? mockDb.users.findUnique({
+            where: {
+              id: task.created_by,
+            },
+          })
+        : null,
+    });
+
     if (getLastLead && relatedTaskId) {
-      tasksData = await prisma.tasks.findMany({
+      const tasksRaw = mockDb.tasks.findMany({
         where: { id: relatedTaskId },
-        select: {
-          id: true,
-          deadline: true,
-          status: true,
-          title: true,
-          description: true,
-          created_at: true,
-          finished_at: true,
-          assigned: {
-            select: {
-              name: true,
-              last_name: true,
-              username: true,
-            },
-          },
-          creator: {
-            select: {
-              name: true,
-              last_name: true,
-              username: true,
-            },
-          },
-        },
       });
+
+      tasksData = tasksRaw.map(projectTask);
     } else if (!getLastLead) {
-      tasksData = await prisma.tasks.findMany({
+      const tasksRaw = mockDb.tasks.findMany({
         take: limit,
         orderBy: {
           created_at: 'desc',
@@ -139,30 +144,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
           created_at: cursorDate ? { lt: cursorDate } : undefined,
           assigned_to: userRoleId && adminRoles.includes(userRoleId) ? undefined : userId,
         },
-        select: {
-          id: true,
-          deadline: true,
-          status: true,
-          title: true,
-          description: true,
-          created_at: true,
-          finished_at: true,
-          assigned: {
-            select: {
-              name: true,
-              last_name: true,
-              username: true,
-            },
-          },
-          creator: {
-            select: {
-              name: true,
-              last_name: true,
-              username: true,
-            },
-          },
-        },
       });
+
+      tasksData = tasksRaw.map(projectTask);
     }
 
     const taskLeadHistory: TaskLeadHistory[] =

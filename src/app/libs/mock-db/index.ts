@@ -47,6 +47,11 @@ import {
 import { seedCustomerEmployments } from "./data/employments";
 import { seedNotifications, seedNotificationsPreferences } from "./data/notifications";
 import { seedUsersHasCustomers } from "./data/usersHasCustomers";
+import {
+  seedBusinessPhoneNumbers,
+  seedClientCalls,
+  seedConferencesNames,
+} from "./data/calls";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
 
@@ -431,6 +436,9 @@ export const mockDb: Record<string, Store<any>> = {
   notifications: createStore(seedNotifications),
   notifications_preferences: createStore(seedNotificationsPreferences),
   users_has_customers: createStore(seedUsersHasCustomers),
+  business_phone_numbers: createStore(seedBusinessPhoneNumbers),
+  client_calls: createStore(seedClientCalls),
+  conferences_names: createStore(seedConferencesNames),
 };
 
 export function resetMockDb(): void {

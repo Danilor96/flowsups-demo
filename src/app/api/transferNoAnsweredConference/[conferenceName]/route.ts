@@ -1,14 +1,6 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
-import twilio from 'twilio';
 import { z } from 'zod';
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-
-const websocketPublicUrl = process.env.TWILIO_WEBSOCKET_URL;
-const accountPhoneNumber: string = process.env.TWILIO_PHONE_NUMBER || '';
-const client = twilio(accountSid, authToken);
 
 export async function POST(request: Request, { params }: { params: { conferenceName: string } }) {
   const conferenceName = params.conferenceName;
@@ -37,7 +29,7 @@ export async function POST(request: Request, { params }: { params: { conferenceN
   const { bdcnum, conferenceSid, salesrepnum } = validatedData.data;
 
   try {
-    const data = await prisma.conferences_names.update({
+    mockDb.conferences_names.update({
       where: {
         conference_name: conferenceName,
       },
@@ -46,24 +38,15 @@ export async function POST(request: Request, { params }: { params: { conferenceN
       },
     });
 
-    const conferenceInProgess = await client.conferences(conferenceSid).fetch();
-    const participantsList = await conferenceInProgess.participants().list();
+    const conferenceInProgess = { status: 'in-progress' };
+
+    const participantsList = [
+      { callSid: 'CA-mock-customer', endConferenceOnExit: true },
+      { callSid: 'CA-mock-agent', endConferenceOnExit: false },
+    ];
 
     const callCreation = async (phoneNumber: string) => {
-      await client
-        .conferences(conferenceSid)
-        .participants.create({
-          from: accountPhoneNumber,
-          to: `+1${phoneNumber}`,
-          statusCallback: `${websocketPublicUrl}/getCurrentConferenceCallStatus/${conferenceName}.${conferenceSid}`,
-          statusCallbackEvent: ['answered', 'completed', 'initiated', 'ringing'],
-          statusCallbackMethod: 'POST',
-          endConferenceOnExit: true,
-          timeout: 12,
-        })
-        .catch((reason) => {
-          console.log(reason);
-        });
+      // conference participant creation mocked
     };
 
     if (conferenceInProgess.status !== 'completed' && participantsList.length > 0) {
@@ -76,13 +59,9 @@ export async function POST(request: Request, { params }: { params: { conferenceN
       }
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Transfer Successfully Completed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

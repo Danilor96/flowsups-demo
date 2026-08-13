@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import twilio from 'twilio';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function POST(request: Request) {
   const VoiceResponse = twilio.twiml.VoiceResponse;
@@ -15,25 +15,23 @@ export async function POST(request: Request) {
     const callDuration = formData.get('DialCallDuration')?.toString() || '0';
     const callSid = formData.get('CallSid')?.toString();
 
-    await prisma.$transaction(async (prisma) => {
-      const callStatusData = await prisma.call_statuses.findFirst({
+    const callStatusData = mockDb.call_statuses.findFirst({
+      where: {
+        status: callStatus,
+      },
+    });
+
+    if (callStatusData && callDuration && callSid) {
+      mockDb.client_calls.update({
         where: {
-          status: callStatus,
+          call_sid: callSid,
+        },
+        data: {
+          call_status_id: callStatusData.id,
+          call_duration: callDuration,
         },
       });
-
-      if (callStatusData && callDuration && callSid) {
-        const data = await prisma.client_calls.update({
-          where: {
-            call_sid: callSid,
-          },
-          data: {
-            call_status_id: callStatusData.id,
-            call_duration: callDuration,
-          },
-        });
-      }
-    });
+    }
 
     twiml.say('Thanks for using Flowsups. Good bye!');
 

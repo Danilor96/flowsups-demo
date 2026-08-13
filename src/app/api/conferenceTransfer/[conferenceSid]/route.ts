@@ -1,15 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import twilio from 'twilio';
-import prisma from '@/app/libs/prisma';
-
-const authToken: string = process.env.TWILIO_AUTH_TOKEN || '';
-const accountSid: string = process.env.TWILIO_ACCOUNT_SID || '';
-const accountPhoneNumber: string = process.env.TWILIO_PHONE_NUMBER || '';
-
-const statusCallbackUrl = process.env.TWILIO_WEBSOCKET_URL;
-
-const client = twilio(accountSid, authToken);
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function POST(request: Request, { params }: { params: { conferenceSid: string } }) {
   const conferenceSid = params.conferenceSid;
@@ -38,8 +29,12 @@ export async function POST(request: Request, { params }: { params: { conferenceS
   const { salesrepnum, bdcnum, conferenceName } = validatedData.data;
 
   try {
-    const conferenceInProgess = await client.conferences(conferenceSid).fetch();
-    const participantsList = await conferenceInProgess.participants().list();
+    const conferenceInProgess = { status: 'in-progress' };
+
+    const participantsList = [
+      { callSid: 'CA-mock-customer', endConferenceOnExit: true },
+      { callSid: 'CA-mock-agent', endConferenceOnExit: false },
+    ];
 
     const customerCall = participantsList.find(
       (participant) => participant.endConferenceOnExit === true,
@@ -49,33 +44,17 @@ export async function POST(request: Request, { params }: { params: { conferenceS
       const customerCallSid = customerCall?.callSid;
 
       if (customerCallSid && participantsList.length > 1) {
-        await client.conferences(conferenceSid).participants(customerCallSid).update({
-          hold: true,
-          endConferenceOnExit: true,
-        });
+        // conference participant hold update mocked
       }
     };
 
-    const customerPhoneNumber = await prisma?.client_calls.findUnique({
+    const foundCall = mockDb.client_calls.findUnique({
       where: {
         call_sid: conferenceSid,
       },
-      select: {
-        phone_number: true,
-      },
     });
 
-    const handleCreateCall = (number: string | null) => {
-      return {
-        from: accountPhoneNumber,
-        to: `+1${number}`,
-        statusCallback: `${statusCallbackUrl}/getCurrentConferenceCallStatus/${conferenceName}.${conferenceSid}?customerPhone=${customerPhoneNumber?.phone_number}`,
-        statusCallbackEvent: ['answered', 'completed', 'initiated', 'ringing'],
-        statusCallbackMethod: 'POST',
-        endConferenceOnExit: true,
-        timeout: 20,
-      };
-    };
+    const customerPhoneNumber = foundCall ? { phone_number: foundCall.phone_number } : null;
 
     if (
       conferenceInProgess.status !== 'completed' &&
@@ -83,15 +62,6 @@ export async function POST(request: Request, { params }: { params: { conferenceS
       (salesrepnum || bdcnum)
     ) {
       await handleCustomer();
-
-      await client
-        .conferences(conferenceSid)
-        .participants.create(handleCreateCall(salesrepnum || bdcnum))
-        .catch((reason) => {
-          console.log(reason);
-
-          return NextResponse.json({ twilioError: 'Twilio Error' }, { status: 500 });
-        });
     }
 
     return NextResponse.json({ successMessage: 'Call Successfully Transferred' });

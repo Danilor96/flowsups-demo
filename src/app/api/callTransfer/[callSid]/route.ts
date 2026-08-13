@@ -1,11 +1,5 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import twilio from 'twilio';
-
-const authToken: string = process.env.TWILIO_AUTH_TOKEN || '';
-const accountSid: string = process.env.TWILIO_ACCOUNT_SID || '';
-
-const client = twilio(accountSid, authToken);
 
 export async function POST(request: Request, { params }: { params: { callSid: string } }) {
   const currentCallSid = params.callSid;
@@ -46,10 +40,6 @@ export async function POST(request: Request, { params }: { params: { callSid: st
           </Dial>
         </Response>
             `;
-
-        client.calls(currentCallSid).update({
-          twiml,
-        });
       }
     }
 

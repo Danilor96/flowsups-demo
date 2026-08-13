@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server';
 import twilio from 'twilio';
-import prisma from '@/app/libs/prisma';
-
-// const accountPhoneNumber: string = process.env.TWILIO_PHONE_NUMBER || '';
-const authToken: string = process.env.TWILIO_AUTH_TOKEN || '';
-const accountSid: string = process.env.TWILIO_ACCOUNT_SID || '';
+import { mockDb } from '@/app/libs/mock-db';
 
 const statusCallbackUrl = process.env.TWILIO_WEBSOCKET_URL;
-
-const client = twilio(accountSid, authToken);
 
 export async function POST(request: Request) {
   const VoiceResponse = twilio.twiml.VoiceResponse;
@@ -19,7 +13,7 @@ export async function POST(request: Request) {
 
     const callTo = formData.get('To')?.toString();
 
-    const businesPhoneNumberActive = await prisma.business_phone_numbers.findFirst({
+    const businesPhoneNumberActive = mockDb.business_phone_numbers.findFirst({
       where: {
         is_publishing_number: true,
       },
@@ -29,13 +23,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ serverError: 'Phone number not found' }, { status: 404 });
     }
 
-    const currentInitializedConferencesList = await client.conferences.list({
-      status: 'in-progress',
-    });
-
-    const currentConference = currentInitializedConferencesList.find(
-      (conference) => conference.friendlyName === callTo,
-    );
+    const currentConference =
+      callTo && callTo.includes('conference') ? { friendlyName: callTo } : undefined;
 
     const dial = twiml.dial({
       callerId: businesPhoneNumberActive?.phone_number,

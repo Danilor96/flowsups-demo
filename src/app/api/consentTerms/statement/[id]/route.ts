@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { checkPermissions } from '@/app/libs/auth-helpers';
@@ -34,7 +34,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { description } = validatedData.data;
 
   try {
-    const data = await prisma.consent_terms.update({
+    mockDb.consent_terms.update({
       where: {
         id: statementId,
       },
@@ -43,13 +43,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Policy Statement Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

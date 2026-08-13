@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
@@ -6,17 +6,13 @@ import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function GET() {
   try {
-    const data = await prisma.consent_checks.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.consent_checks.findMany();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -64,7 +60,7 @@ export async function PUT(request: Request) {
     for (let i = 0; i < checks.length; i++) {
       const checkData = checks[i];
 
-      await prisma.consent_checks.upsert({
+      mockDb.consent_checks.upsert({
         where: {
           id: checkData.id,
         },
@@ -79,13 +75,9 @@ export async function PUT(request: Request) {
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Data Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -52,6 +52,7 @@ import {
   seedClientCalls,
   seedConferencesNames,
 } from "./data/calls";
+import { seedConsentTerms, seedConsentChecks } from "./data/consentTerms";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
 
@@ -439,6 +440,8 @@ export const mockDb: Record<string, Store<any>> = {
   business_phone_numbers: createStore(seedBusinessPhoneNumbers),
   client_calls: createStore(seedClientCalls),
   conferences_names: createStore(seedConferencesNames),
+  consent_terms: createStore(seedConsentTerms),
+  consent_checks: createStore(seedConsentChecks),
 };
 
 export function resetMockDb(): void {

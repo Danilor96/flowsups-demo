@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
@@ -12,19 +12,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const checkElId = parseInt(params.id);
 
   try {
-    const data = await prisma.consent_checks.delete({
+    mockDb.consent_checks.delete({
       where: {
         id: checkElId,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Term/Condition Successfully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

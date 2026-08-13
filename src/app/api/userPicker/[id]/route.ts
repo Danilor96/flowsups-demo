@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
@@ -48,24 +48,27 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { userId, userTypeIndex, appId, leadId } = validatedData.data;
 
   try {
-    const prevData = await prisma.clients.findUnique({
+    const foundClient = mockDb.clients.findUnique({
       where: {
         id: customerId,
       },
-      select: {
-        bdc_id: true,
-        seller_id: true,
-        finance_manager_id: true,
-        sales_manager_id: true,
-        first_name: true,
-        last_name: true,
-      },
     });
+
+    const prevData = foundClient
+      ? {
+          bdc_id: foundClient.bdc_id,
+          seller_id: foundClient.seller_id,
+          finance_manager_id: foundClient.finance_manager_id,
+          sales_manager_id: foundClient.sales_manager_id,
+          first_name: foundClient.first_name,
+          last_name: foundClient.last_name,
+        }
+      : null;
 
     const index = parseInt(userTypeIndex);
     const id = parseInt(userId);
 
-    const data = await prisma.clients.update({
+    const data = mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -77,7 +80,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const relatedUser = await prisma.users_has_customers.create({
+    const relatedUser = mockDb.users_has_customers.create({
       data: {
         customer_id: customerId,
         user_id: id,
@@ -85,19 +88,22 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     });
 
     if (leadId) {
-      const currentData = await prisma.leads.findUnique({
+      const foundLead = mockDb.leads.findUnique({
         where: {
           id: Number(leadId),
         },
-        select: {
-          bdc_id: true,
-          sales_manager_id: true,
-          sales_rep_id: true,
-          finance_manager_id: true,
-        },
       });
 
-      await prisma.leads.update({
+      const currentData = foundLead
+        ? {
+            bdc_id: foundLead.bdc_id,
+            sales_manager_id: foundLead.sales_manager_id,
+            sales_rep_id: foundLead.sales_rep_id,
+            finance_manager_id: foundLead.finance_manager_id,
+          }
+        : null;
+
+      mockDb.leads.update({
         where: {
           id: Number(leadId),
         },
@@ -111,7 +117,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (appId && index === 0) {
-      const appointment = await prisma.appointments.update({
+      const appointment = mockDb.appointments.update({
         where: {
           id: parseInt(appId),
         },
@@ -132,8 +138,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

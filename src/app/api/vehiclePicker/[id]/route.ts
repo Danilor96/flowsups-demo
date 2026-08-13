@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { checkPermissions } from '@/app/libs/auth-helpers';
@@ -36,7 +36,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { vehicleId, leadId } = validatedValue.data;
 
   try {
-    const data = await prisma.clients.update({
+    const data = mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -46,7 +46,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     });
 
     if (leadId) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: { id: Number(leadId) },
         data: {
           vehicle_id: parseInt(vehicleId),
@@ -54,13 +54,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Vehicle Successfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

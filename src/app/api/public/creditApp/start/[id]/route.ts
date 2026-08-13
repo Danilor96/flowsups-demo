@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { StartData } from '@/app/api/adminDashboard/creditApp/types';
@@ -65,7 +65,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    await prisma.credit_app_navigation.upsert({
+    mockDb.credit_app_navigation.upsert({
       where: {
         customer_id: customerId,
       },
@@ -78,7 +78,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const updatedData = await prisma?.credit_app.upsert({
+    const updatedData = mockDb.credit_app.upsert({
       where: {
         client_id: customerId,
       },
@@ -111,7 +111,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    await prisma?.clients.update({
+    mockDb.clients.update({
       where: {
         id: customerId,
       },

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { io } from 'socket.io-client';
 
 interface EventType {
@@ -76,18 +76,17 @@ export async function createNotification({
         | undefined;
 
       if (selectedEventTypeKey) {
-        const eventTypeData = await prisma.events_types.findFirst({
+        const eventTypeData = mockDb.events_types.findFirst({
           where: {
             type: selectedEventTypeKey,
           },
-          select: { id: true },
         });
         finalEventTypeId = eventTypeData?.id;
       }
     }
 
     if (finalEventTypeId && assignedToId) {
-      const notiPreference = await prisma.notifications_preferences.findFirst({
+      const notiPreference = mockDb.notifications_preferences.findFirst({
         where: { event_type_id: finalEventTypeId },
       });
 
@@ -109,7 +108,7 @@ export async function createNotification({
     const now = new Date();
 
     if (notificationsForManagers) {
-      const managerUsers = await prisma.users.findMany({
+      const managerUsers = mockDb.users.findMany({
         where: {
           user_has: {
             some: {
@@ -120,7 +119,6 @@ export async function createNotification({
           },
           deleted_at: null,
         },
-        select: { id: true },
       });
 
       for (const user of managerUsers) {
@@ -142,7 +140,7 @@ export async function createNotification({
       }
 
       if (notificationsToCreate.length > 0) {
-        await prisma.notifications.createMany({
+        mockDb.notifications.createMany({
           data: notificationsToCreate,
         });
       }
@@ -156,7 +154,7 @@ export async function createNotification({
     }
 
     if (assignedToId && !managerUsersIds.includes(assignedToId)) {
-      await prisma.notifications.create({
+      mockDb.notifications.create({
         data: {
           message: message,
           user_id: assignedToId,

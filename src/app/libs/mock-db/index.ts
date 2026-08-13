@@ -35,6 +35,17 @@ import {
   seedPaymentDates,
   seedAmountPerDates,
 } from "./data/deals";
+import {
+  seedCreditAppNavigations,
+  seedCreditApps,
+  seedCreditAppAddresses,
+  seedCreditAppPrevAddresses,
+  seedCreditAppReferences,
+  seedCreditAppOtherIncomes,
+  seedCreditAppCodes,
+} from "./data/creditApps";
+import { seedCustomerEmployments } from "./data/employments";
+import { seedNotifications, seedNotificationsPreferences } from "./data/notifications";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
 
@@ -408,6 +419,16 @@ export const mockDb: Record<string, Store<any>> = {
   deal: createStore(seedDeals),
   paymentDate: createStore(seedPaymentDates),
   amountPerDate: createStore(seedAmountPerDates),
+  credit_app_navigation: createStore(seedCreditAppNavigations),
+  credit_app: createStore(seedCreditApps),
+  credit_app_address: createStore(seedCreditAppAddresses),
+  credit_app_address_prev: createStore(seedCreditAppPrevAddresses),
+  credit_app_reference: createStore(seedCreditAppReferences),
+  credit_app_other_income: createStore(seedCreditAppOtherIncomes),
+  credit_app_code: createStore(seedCreditAppCodes),
+  customer_employment: createStore(seedCustomerEmployments),
+  notifications: createStore(seedNotifications),
+  notifications_preferences: createStore(seedNotificationsPreferences),
 };
 
 export function resetMockDb(): void {

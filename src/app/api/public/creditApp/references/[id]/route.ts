@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createNotification } from '@/app/libs/notifications/notifications';
@@ -69,7 +69,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
       if (!el.address || !el.name || !el.phoneNumber || !el.relationship) break;
 
-      const updatedData = await prisma.credit_app_reference.upsert({
+      const updatedData = mockDb.credit_app_reference.upsert({
         where: { id: el.id ? parseInt(el.id) : 0 },
         update: {
           address: el.address,
@@ -89,7 +89,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
 
     if (incomeAmount && incomeAmount !== '0' && incomeSource && incomeSource !== '0') {
-      await prisma.credit_app_other_income.upsert({
+      mockDb.credit_app_other_income.upsert({
         where: { id: otherIncomeId ? parseInt(otherIncomeId) : 0 },
         update: {
           customer_id: customerId,
@@ -104,16 +104,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
       });
     }
 
-    const customerData = await prisma.clients.findFirst({
+    const customerData = mockDb.clients.findFirst({
       where: {
         id: customerId,
-      },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        seller_id: true,
-        credit_app_forms_completed: true,
       },
     });
 
@@ -129,7 +122,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       eventTypeId: 9,
     });
 
-    await prisma.clients.update({
+        mockDb.clients.update({
       where: {
         id: customerData?.id,
       },
@@ -141,18 +134,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: customerId,
         is_active: true,
       },
-      select: {
-        id: true,
-      },
     });
 
     if (activeLead && activeLead.id) {
-      const lead = await prisma.leads.update({
+      const lead = mockDb.leads.update({
         where: {
           id: activeLead.id,
           customer_id: customerId,
@@ -169,7 +159,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     await createEvent(description, undefined, customerId);
 
-    await prisma.credit_app_code.delete({
+    mockDb.credit_app_code.delete({
       where: {
         customer_id: customerId,
       },
@@ -199,7 +189,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 const deletePreviousReferenceData = async (formId: (number | null | undefined)[]) => {
   try {
     if (formId && formId.length > 0) {
-      const previousForms = await prisma.credit_app_reference.findMany();
+      const previousForms = mockDb.credit_app_reference.findMany();
 
       if (formId.length < previousForms.length) {
         const formsToDelete = previousForms.filter((form) => !formId.includes(form.id));
@@ -207,7 +197,7 @@ const deletePreviousReferenceData = async (formId: (number | null | undefined)[]
         if (formsToDelete.length > 0) {
           const formsIds = formsToDelete.map((form) => form.id);
 
-          await prisma.credit_app_reference.deleteMany({
+          mockDb.credit_app_reference.deleteMany({
             where: {
               id: {
                 in: formsIds,

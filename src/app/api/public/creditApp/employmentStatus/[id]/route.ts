@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { Customer_employment, Customer_employment_address } from '@prisma/client';
@@ -100,13 +100,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
       .map((el) => (el.id ? parseInt(el.id) : undefined))
       .filter((id) => id !== undefined && id !== null);
 
-    await prisma.customer_employment.deleteMany({
+    mockDb.customer_employment.deleteMany({
       where: {
         AND: [{ client_id: customerId }, { id: { notIn: newEmploymentIds } }],
       },
     });
 
-    await prisma.credit_app_navigation.upsert({
+    mockDb.credit_app_navigation.upsert({
       where: {
         customer_id: customerId,
       },
@@ -130,16 +130,18 @@ export async function POST(request: Request, { params }: { params: { id: string 
     for (let i = 0; i < employmentStatusData.length; i++) {
       const el = employmentStatusData[i];
 
-      const prevData = await prisma.customer_employment.findUnique({
+      const employmentId = el.id ? Number(el.id) : 0;
+
+      const prevData = mockDb.customer_employment.findUnique({
         where: {
-          id: Number(el.id),
+          id: employmentId,
         },
       });
 
       if (i === 0) {
-        const updatedData = await prisma.customer_employment.upsert({
+        const updatedData = mockDb.customer_employment.upsert({
           where: {
-            id: Number(el.id),
+            id: employmentId,
           },
           update: {
             client_id: customerId,
@@ -152,17 +154,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
             year: el.year ? el.year : null,
             hourlyWage: el.hourlyWage ? el.hourlyWage : null,
             yearToDate: el.yearToDate ? el.yearToDate : null,
-            customer_employment_address: {
-              update: {
-                where: {
-                  id: el.addressId ? parseInt(el.addressId) : 0,
-                },
-                data: {
-                  current_address: el.address ? el.address : null,
-                  current_phone_number: el.phoneNumber ? el.phoneNumber : null,
-                },
+            customer_employment_address: [
+              {
+                id: el.addressId ? parseInt(el.addressId) : undefined,
+                current_address: el.address ? el.address : null,
+                current_phone_number: el.phoneNumber ? el.phoneNumber : null,
               },
-            },
+            ],
             has_bank_account: el.hasBankAccount ? true : false,
           },
           create: {
@@ -176,16 +174,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
             year: el.year,
             hourlyWage: el.hourlyWage ? el.hourlyWage : null,
             yearToDate: el.yearToDate ? el.yearToDate : null,
-            customer_employment_address: {
-              create: {
+            customer_employment_address: [
+              {
                 current_address: el.address,
                 current_phone_number: el.phoneNumber,
               },
-            },
+            ],
             has_bank_account: el.hasBankAccount ? true : false,
-          },
-          include: {
-            customer_employment_address: true,
           },
         });
 
@@ -203,9 +198,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
           'year',
         ];
       } else {
-        const updatedData = await prisma.customer_employment.upsert({
+        const updatedData = mockDb.customer_employment.upsert({
           where: {
-            id: Number(el.id),
+            id: employmentId,
           },
           update: {
             client_id: customerId,
@@ -218,17 +213,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
             year: el.year ? el.year : null,
             hourlyWage: el.hourlyWage ? el.hourlyWage : null,
             yearToDate: el.yearToDate ? el.yearToDate : null,
-            customer_employment_address: {
-              update: {
-                where: {
-                  id: Number(el.addressId),
-                },
-                data: {
-                  previous_address: el.address ? el.address : null,
-                  previous_phone_number: el.phoneNumber ? el.phoneNumber : null,
-                },
+            customer_employment_address: [
+              {
+                id: el.addressId ? parseInt(el.addressId) : undefined,
+                previous_address: el.address ? el.address : null,
+                previous_phone_number: el.phoneNumber ? el.phoneNumber : null,
               },
-            },
+            ],
           },
           create: {
             client_id: customerId,
@@ -241,15 +232,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
             year: el.year ? el.year : null,
             hourlyWage: el.hourlyWage ? el.hourlyWage : null,
             yearToDate: el.yearToDate ? el.yearToDate : null,
-            customer_employment_address: {
-              create: {
+            customer_employment_address: [
+              {
                 previous_address: el.address ? el.address : null,
                 previous_phone_number: el.phoneNumber ? el.phoneNumber : null,
               },
-            },
-          },
-          include: {
-            customer_employment_address: true,
+            ],
           },
         });
 

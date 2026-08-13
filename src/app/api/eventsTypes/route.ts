@@ -1,17 +1,11 @@
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const data = await prisma.events_types.findMany({
-      select: {
-        id: true,
-        type: true,
-        category_id: true,
-      },
-    });
+    const data = mockDb.events_types.findMany();
 
     return NextResponse.json(data);
   } catch (error) {

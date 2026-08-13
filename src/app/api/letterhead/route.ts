@@ -1,33 +1,17 @@
-import prisma from '@/app/libs/prisma';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { storage } from '@/firebase/firebase.config';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { mockDb } from '@/app/libs/mock-db';
+
+const mockUploadUrl = (name: string) =>
+  `https://firebasestorage.googleapis.com/v0/b/flowsups-iles.appspot.com/o/images%2F${encodeURIComponent(name)}?alt=media`;
 
 export async function GET() {
   try {
-    const data = await prisma.letterhead.findFirst({
-      include: {
-        header: {
-          select: {
-            header: true,
-          },
-        },
-        footer: {
-          select: {
-            footer: true,
-          },
-        },
-      },
-    });
-
-    //await prisma.$disconnect();
+    const data = mockDb.letterhead.findFirst();
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -64,78 +48,68 @@ export async function POST(request: Request) {
   try {
     let letterheadId: number | null = null;
 
-    await prisma.$transaction(async (prisma) => {
-      if (headerInput) {
-        const fileRef = ref(storage, `images/${headerInput.name}`);
-        const doUpload = await uploadBytes(fileRef, headerInput);
+    if (headerInput) {
+      const path = mockUploadUrl(headerInput.name);
 
-        const path = await getDownloadURL(doUpload.ref);
+      const header = mockDb.header_email_template.create({
+        data: {
+          header: path,
+          name: headerInput.name,
+        },
+      });
 
-        const header = await prisma.header_email_template.create({
-          data: {
-            header: path,
-            name: headerInput.name,
-          },
-        });
+      const letterhead = mockDb.letterhead.create({
+        data: {
+          header_id: header.id,
+        },
+      });
 
-        const letterhead = await prisma.letterhead.create({
-          data: {
-            header_id: header.id,
-          },
-        });
+      letterheadId = letterhead.id;
+    }
 
-        letterheadId = letterhead.id;
-      }
+    if (footerInput && letterheadId) {
+      const path = mockUploadUrl(footerInput.name);
 
-      if (footerInput && letterheadId) {
-        const fileRef = ref(storage, `images/${footerInput.name}`);
-        const doUpload = await uploadBytes(fileRef, footerInput);
+      const footer = mockDb.footer_email_template.create({
+        data: {
+          footer: path,
+          name: footerInput.name,
+        },
+      });
 
-        const path = await getDownloadURL(doUpload.ref);
-
-        const footer = await prisma.footer_email_template.create({
-          data: {
+      mockDb.letterhead.update({
+        where: {
+          id: letterheadId,
+        },
+        data: {
+          footer_id: footer.id,
+          footer: {
+            id: footer.id,
             footer: path,
             name: footerInput.name,
           },
-        });
+        },
+      });
+    } else if (footerInput && !letterheadId) {
+      const path = mockUploadUrl(footerInput.name);
 
-        await prisma.letterhead.update({
-          where: {
-            id: letterheadId,
-          },
-          data: {
-            footer_id: footer.id,
-          },
-        });
-      } else if (footerInput && !letterheadId) {
-        const fileRef = ref(storage, `images/${footerInput.name}`);
-        const doUpload = await uploadBytes(fileRef, footerInput);
+      const footer = mockDb.footer_email_template.create({
+        data: {
+          footer: path,
+          name: footerInput.name,
+        },
+      });
 
-        const path = await getDownloadURL(doUpload.ref);
-
-        const footer = await prisma.footer_email_template.create({
-          data: {
-            footer: path,
-            name: footerInput.name,
-          },
-        });
-
-        await prisma.letterhead.create({
-          data: {
-            footer_id: footer.id,
-          },
-        });
-      }
-    });
-
-    //await prisma.$disconnect();
+      mockDb.letterhead.create({
+        data: {
+          footer_id: footer.id,
+        },
+      });
+    }
 
     return NextResponse.json({ successMessage: 'Letterhead Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

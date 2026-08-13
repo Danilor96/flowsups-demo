@@ -16,6 +16,13 @@ import {
   seedTaskDueTimeLimits,
 } from "./data/settings";
 import { seedSystemAccesses } from "./data/systemAccesses";
+import { seedEventTypes } from "./data/eventTypes";
+import { seedIncidents } from "./data/incidents";
+import {
+  seedHeaderEmailTemplates,
+  seedFooterEmailTemplates,
+  seedLetterheads,
+} from "./data/letterheads";
 import { seedConversations, seedNotes } from "./data/conversations";
 import {
   seedBanks,
@@ -377,6 +384,11 @@ export const mockDb = {
   ...buildStores(seedSettingsStores),
   task_due_time_limit: createStore(seedTaskDueTimeLimits),
   system_accesses: createStore(seedSystemAccesses),
+  events_types: createStore(seedEventTypes),
+  incidents: createStore(seedIncidents),
+  letterhead: createStore(seedLetterheads),
+  header_email_template: createStore(seedHeaderEmailTemplates),
+  footer_email_template: createStore(seedFooterEmailTemplates),
   conversation: createStore(seedConversations),
   notes: createStore(seedNotes),
   lead_types: createStore(seedLeadTypes),

@@ -1,4 +1,4 @@
-import prisma from '../prisma';
+import { mockDb } from '../mock-db';
 
 export async function extractAndValidateAddressInfo(address: string) {
   let street,
@@ -19,7 +19,7 @@ export async function extractAndValidateAddressInfo(address: string) {
 
   if (addressArray.length >= 4 && addressArray[3].trim().length >= 5) zip = true;
 
-  const states = await prisma.states.findMany();
+  const states = mockDb.states.findMany();
 
   const statesExists = states.find((el) => {
     const state = el.state.toLowerCase().trim();
@@ -71,7 +71,7 @@ export async function returnAddressInfoForDatabase(address: string) {
 
   addressValues.zip = addressArray[3];
 
-  const states = await prisma.states.findMany();
+  const states = mockDb.states.findMany();
 
   const stateSelected = states.find((el) => {
     const state = el.state.toLowerCase().trim();
@@ -83,7 +83,7 @@ export async function returnAddressInfoForDatabase(address: string) {
 
   addressValues.stateId = stateSelected?.id || 0;
 
-  const counties = await prisma.county.findMany();
+  const counties = mockDb.county.findMany();
 
   const countySelected = counties.find((el) => {
     const county = el.county.toLowerCase().trim();
@@ -95,7 +95,7 @@ export async function returnAddressInfoForDatabase(address: string) {
   });
 
   if (!countySelected && addressArray[4]) {
-    await prisma.county.create({
+    mockDb.county.create({
       data: {
         county: addressArray[4],
       },

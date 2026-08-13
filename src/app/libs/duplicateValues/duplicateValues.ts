@@ -1,4 +1,5 @@
 import prisma from '../prisma';
+import { mockDb } from '../mock-db';
 
 export async function checkDuplicateCustomerValues(
   mobilePhone: string,
@@ -6,15 +7,11 @@ export async function checkDuplicateCustomerValues(
   customerId: number,
 ) {
   try {
-    const data = await prisma.clients.findMany({
+    const data = mockDb.clients.findMany({
       where: {
         id: {
           not: customerId,
         },
-      },
-      select: {
-        mobile_phone: true,
-        email: true,
       },
     });
 

@@ -5,7 +5,7 @@ import {
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { filterNumber, splitIncomingName } from '@/app/libs/customer/customersFunctions';
 import { checkDuplicateCustomerValues } from '@/app/libs/duplicateValues/duplicateValues';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -143,7 +143,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const addressInfoForData = await returnAddressInfoForDatabase(address);
 
     if (assignedManager) {
-      await prisma.users.update({
+      mockDb.users.update({
         where: {
           id: parseInt(assignedManager),
           deleted_at: null,
@@ -158,29 +158,28 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    const data = await prisma.clients.update({
+    const currentClient = mockDb.clients.findUnique({
+      where: {
+        id: customerId,
+      },
+    });
+
+    const clientAddress = {
+      ...(currentClient?.client_address || {}),
+      city: addressInfoForData.city,
+      street: addressInfoForData.street,
+      county_id: addressInfoForData.countyId,
+      state_id: addressInfoForData.stateId,
+      zip: addressInfoForData.zip,
+    };
+
+    mockDb.clients.update({
       where: {
         id: customerId,
       },
       data: {
-        client_address: {
-          upsert: {
-            create: {
-              city: addressInfoForData.city,
-              street: addressInfoForData.street,
-              county_id: addressInfoForData.countyId,
-              state_id: addressInfoForData.stateId,
-              zip: addressInfoForData.zip,
-            },
-            update: {
-              city: addressInfoForData.city,
-              street: addressInfoForData.street,
-              county_id: addressInfoForData.countyId,
-              state_id: addressInfoForData.stateId,
-              zip: addressInfoForData.zip,
-            },
-          },
-        },
+        client_address: clientAddress,
+        client_address_id: clientAddress.id ?? undefined,
         current_address: `${address}, ${addressInfoForData.stateId}`,
         mobile_phone: filterNumber(cell),
         home_phone: filterNumber(home || ''),
@@ -195,8 +194,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ successMessage: 'Data Updated Successfully' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

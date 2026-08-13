@@ -27,6 +27,7 @@ import { seedLostReasons } from "./data/lostReasons";
 import { seedDisableSelectValues } from "./data/disableSelects";
 import { seedEmailTemplates } from "./data/emailTemplates";
 import { seedEvents } from "./data/events";
+import { seedCounties } from "./data/counties";
 import { seedConversations, seedNotes } from "./data/conversations";
 import {
   seedBanks,
@@ -373,8 +374,8 @@ const buildStores = (
   return stores;
 };
 
-export const mockDb = {
-  users: createStore(seedUsers),
+export const mockDb: Record<string, Store<any>> = {
+  users: createStore<Record<string, any>>(seedUsers),
   roles: createStore(seedRoles),
   permissions: createStore(seedPermissions),
   roles_has_permissions: createStore(seedRolesHasPermissions),
@@ -397,6 +398,7 @@ export const mockDb = {
   disable_select_values: createStore(seedDisableSelectValues),
   email_template: createStore(seedEmailTemplates),
   events: createStore(seedEvents),
+  county: createStore(seedCounties),
   conversation: createStore(seedConversations),
   notes: createStore(seedNotes),
   lead_types: createStore(seedLeadTypes),

@@ -25,6 +25,8 @@ import {
 } from "./data/letterheads";
 import { seedLostReasons } from "./data/lostReasons";
 import { seedDisableSelectValues } from "./data/disableSelects";
+import { seedEmailTemplates } from "./data/emailTemplates";
+import { seedEvents } from "./data/events";
 import { seedConversations, seedNotes } from "./data/conversations";
 import {
   seedBanks,
@@ -393,6 +395,8 @@ export const mockDb = {
   footer_email_template: createStore(seedFooterEmailTemplates),
   lost_reasons: createStore(seedLostReasons),
   disable_select_values: createStore(seedDisableSelectValues),
+  email_template: createStore(seedEmailTemplates),
+  events: createStore(seedEvents),
   conversation: createStore(seedConversations),
   notes: createStore(seedNotes),
   lead_types: createStore(seedLeadTypes),

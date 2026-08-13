@@ -1,5 +1,6 @@
 import prisma from '@/app/libs/prisma';
 import { mockDb } from '@/app/libs/mock-db';
+import { TemplateVariablesValues } from '@/app/libs/definitions';
 import {
   CreditAppData,
   PrevAddress,
@@ -765,117 +766,13 @@ export async function getCustomerSmsTemplateVariablesValues(customerId: string) 
   const customerIdNumber = parseInt(customerId);
 
   try {
-    const data = await prisma.clients.findUnique({
+    const data = mockDb.clients.findUnique({
       where: {
         id: customerIdNumber,
       },
-      select: {
-        first_name: true,
-        last_name: true,
-        email: true,
-        home_phone: true,
-        middle_initials: true,
-        mobile_phone: true,
-        salutation: true,
-        suffix: true,
-        work_phone: true,
-        client_address: {
-          select: {
-            city: true,
-            state: {
-              select: {
-                state: true,
-              },
-            },
-            street: true,
-            zip: true,
-          },
-        },
-        lead_source: {
-          select: {
-            source: true,
-          },
-        },
-        seller: {
-          select: {
-            name: true,
-            last_name: true,
-            mobile_phone: true,
-            email: true,
-          },
-        },
-        bdc: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-            mobile_phone: true,
-            email: true,
-          },
-        },
-        finance_manager: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-            mobile_phone: true,
-            email: true,
-          },
-        },
-        interested_vehicle: {
-          select: {
-            stock_no: true,
-            vehicle_brands: {
-              select: {
-                brand: true,
-              },
-            },
-            vehicle_models: {
-              select: {
-                model: true,
-              },
-            },
-            title_license: {
-              select: {
-                asking_price: true,
-                buy_now_price: true,
-                floor_price: true,
-                whole_price: true,
-              },
-            },
-            exterior_vehicle_colors: {
-              select: {
-                color: true,
-              },
-            },
-            vehicle_mileages: {
-              select: {
-                mileage: true,
-              },
-            },
-            vehicle_trim: {
-              select: {
-                trim: true,
-              },
-            },
-            vehicle_identification_numbers: {
-              select: {
-                vin: true,
-              },
-            },
-            vehicle_manufacture_years: {
-              select: {
-                year: true,
-              },
-            },
-          },
-        },
-      },
     });
 
-    //await prisma.$disconnect();
-
-    return data;
+    return data as TemplateVariablesValues;
   } catch (error) {
     console.log(error);
 

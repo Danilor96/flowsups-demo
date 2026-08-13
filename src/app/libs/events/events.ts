@@ -1,4 +1,4 @@
-import prisma from '../prisma';
+import { mockDb } from '../mock-db';
 
 export async function createEvent(
   description: string,
@@ -7,7 +7,7 @@ export async function createEvent(
   createdAt?: Date,
 ) {
   try {
-    const event = await prisma.events.create({
+    mockDb.events.create({
       data: {
         description,
         updated_at: createdAt ? createdAt.toISOString() : new Date().toISOString(),
@@ -16,7 +16,7 @@ export async function createEvent(
       },
     });
 
-    const customerActivity = await prisma.clients.update({
+    mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -24,8 +24,6 @@ export async function createEvent(
         last_activity: new Date(),
       },
     });
-
-    //await prisma.$disconnect();
   } catch (error) {
     console.log(error);
   }

@@ -1,14 +1,10 @@
-import prisma from '@/app/libs/prisma';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { Resend } from 'resend';
 import { getCustomerSmsTemplateVariablesValues } from '@/app/libs/data';
 import { dataObject, replaceVariables } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
 import { createEvent } from '@/app/libs/events/events';
 import { checkPermissions } from '@/app/libs/auth-helpers';
-
-const apiKey = process.env.RESEND_API_KEY;
-const resend = new Resend(apiKey);
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function POST(request: Request) {
   const permissionsCheck = await checkPermissions(59);
@@ -55,17 +51,11 @@ export async function POST(request: Request) {
   const { emailBody, recipients, senderId, subject, footerImage, headerImage } = validatedData.data;
 
   try {
-    const customers = await prisma.clients.findMany({
+    const customers = mockDb.clients.findMany({
       where: {
         id: {
           in: recipients,
         },
-      },
-      select: {
-        id: true,
-        mobile_phone: true,
-        email: true,
-        seller_id: true,
       },
     });
 
@@ -87,7 +77,7 @@ export async function POST(request: Request) {
 
         const dataEmail = await sendEmail(body, subject, email, headerImage, footerImage);
 
-        await prisma.client_has_lead.create({
+        mockDb.client_has_lead.create({
           data: {
             created_at: new Date(),
             assigned_to_id: customer?.seller_id ? customer.seller_id : undefined,
@@ -104,13 +94,9 @@ export async function POST(request: Request) {
       }
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Emails Successfully Sent' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -129,12 +115,5 @@ async function sendEmail(
 
   const html = `${header}${body}${footer}`;
 
-  const { data, error } = await resend.emails.send({
-    from: 'Flowsups <team@mail.flowsups.com>',
-    to: [to],
-    subject: subject,
-    html: html,
-  });
-
-  return { data, error };
+  return { data: { id: `mock_email_to_${to}` }, error: null };
 }

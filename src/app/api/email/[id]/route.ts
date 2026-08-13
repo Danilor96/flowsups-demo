@@ -4,19 +4,15 @@ import {
 } from '@/app/libs/services/salesPointsService';
 import { NextResponse } from 'next/server';
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import { Resend } from 'resend';
 import { Permissions } from '@/app/libs/definitions/permissions/permissions';
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { getCustomerSmsTemplateVariablesValues } from '@/app/libs/data';
 import { dataObject, replaceVariables } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { createEvent } from '@/app/libs/events/events';
 import { LeadHistoryCategoriesEnum } from '@/app/ui/dashboard/clientSystem/clientDetail/leadHistory/categoriesIdMap';
 import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
-
-const apiKey = process.env.RESEND_API_KEY;
-const resend = new Resend(apiKey);
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const permissionsCheck = await checkPermissions(Permissions.CustomerSendEmail);
@@ -83,14 +79,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     const html = `${header}${body}${footer}`;
 
-    await resend.emails.send({
-      from: 'Flowsups <team@mail.flowsups.com>',
-      to: [recipient],
-      subject: subject,
-      html: html,
+    await Promise.resolve({
+      data: { id: `mock_email_to_${recipient}` },
+      error: null,
     });
 
-    await prisma.client_has_lead.create({
+    mockDb.client_has_lead.create({
       data: {
         created_at: new Date(),
         assigned_to_id: assignedTo ? assignedTo : undefined,
@@ -101,7 +95,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    await prisma.leads.updateMany({
+    mockDb.leads.updateMany({
       where: {
         customer_id: customerId,
         is_active: true,

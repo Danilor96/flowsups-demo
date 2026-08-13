@@ -1,5 +1,80 @@
 # TYPECHECK ERRORS (errors found by running npm run typecheck):
 
+src/app/api/adminDashboard/appointments/[id]/route.ts:223:36 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+223 const dataObj = dataObject(customerVariablesValues, startDate, endDate);
+
+```
+
+src/app/api/adminDashboard/appointments/route.ts:361:36 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+361 const dataObj = dataObject(customerVariablesValues, initialDateInZone, finalDateInZone);
+```
+
+src/app/api/adminDashboard/confirmAppointmentSms/[id]/route.ts:114:32 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+114 const dataObj = dataObject(customerVariablesValues, startDate, endDate);
+
+```
+
+src/app/api/adminDashboard/consentMssg/[id]/route.ts:77:32 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+77 const dataObj = dataObject(customerVariablesValues, undefined, undefined, consentLink);
+```
+
+src/app/api/adminDashboard/lead/schedule/[id]/route.ts:215:36 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+215 const dataObj = dataObject(customerVariablesValues, startDateInZone, endDateInZone);
+
+```
+
+src/app/api/adminDashboard/rescheduleDailyActivityAppointment/accept/[id]/route.ts:103:13 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+103 customerVariablesValues,
+```
+
+src/app/api/email/[id]/route.ts:74:32 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+74 const dataObj = dataObject(customerVariablesValues);
+
+```
+
+src/app/api/email/massive/route.ts:69:34 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+69 const dataObj = dataObject(customerVariablesValues);
+```
+
+src/app/api/message/massive/route.ts:139:34 - error TS2345: Argument of type 'Record<string, any> | null | undefined' is not assignable to parameter of type 'TemplateVariablesValues'.
+Type 'Record<string, any>' is missing the following properties from type '{ first_name: string; last_name: string; salutation: string | null; middle_initials: string | null; suffix: string | null; home_phone: string | null; work_phone: string | null; mobile_phone: string | null; ... 6 more ...; interested_vehicle: { ...; } | null; }': first_name, last_name, salutation, middle_initials, and 11 more.
+
+139 const dataObj = dataObject(customerVariablesValues);
+
+````
+
+Found 9 errors in 9 files.
+
+Errors Files
+1 src/app/api/adminDashboard/appointments/[id]/route.ts:223
+1 src/app/api/adminDashboard/appointments/route.ts:361
+1 src/app/api/adminDashboard/confirmAppointmentSms/[id]/route.ts:114
+1 src/app/api/adminDashboard/consentMssg/[id]/route.ts:77
+1 src/app/api/adminDashboard/lead/schedule/[id]/route.ts:215
+1 src/app/api/adminDashboard/rescheduleDailyActivityAppointment/accept/[id]/route.ts:103
+1 src/app/api/email/[id]/route.ts:74
+1 src/app/api/email/massive/route.ts:69
+1 src/app/api/message/massive/route.ts:139
+[ELIFECYCLE] Command failed with exit code 2.
+
+---
+
 # IMPLEMENTATION PLAN: Demo Mode (In-Memory Mocking)
 
 > Reference source of truth: `PLAN_IMPLEMENTATION.md`
@@ -1203,3 +1278,4 @@ Inside a folder, convert files in this order so dependencies resolve cleanly:
 - `force-dynamic` exports and any custom headers.
 - The `console.log(error)` + `{ serverError: 'Server Error' }` 500 pattern (keep, so the UI
   error handling never changes).
+````

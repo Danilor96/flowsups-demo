@@ -7,7 +7,16 @@ import {
 import { seedClients } from "./data/clients";
 import { seedLeads, seedClientHasLead } from "./data/leads";
 import { seedAppointments, seedAppointmentStatuses } from "./data/appointments";
-import { seedVehicles, seedVehicleLookups } from "./data/vehicles";
+import {
+  seedVehicles,
+  seedVehicleLookups,
+  seedInspectionStatusData,
+  seedEmissionStatusData,
+  seedGeneralInfo,
+  seedVehicleDetailsPurchaseInfo,
+  seedVehicleDetailsTitleLicense,
+  seedVehicleDetailsKeyInfo,
+} from "./data/vehicles";
 import {
   seedClientStatuses,
   seedLeadSources,
@@ -445,6 +454,12 @@ export const mockDb: Record<string, Store<any>> = {
   appointments_status: createStore(seedAppointmentStatuses),
   vehicles: createStore(seedVehicles),
   ...buildStores(seedVehicleLookups),
+  inspection_status_data: createStore(seedInspectionStatusData),
+  emission_status_data: createStore(seedEmissionStatusData),
+  general_info: createStore(seedGeneralInfo),
+  vehicle_details_purchase_info: createStore(seedVehicleDetailsPurchaseInfo),
+  vehicle_details_title_license: createStore(seedVehicleDetailsTitleLicense),
+  vehicle_details_key_info: createStore(seedVehicleDetailsKeyInfo),
   ...buildStores(seedSettingsStores),
   task_due_time_limit: createStore(seedTaskDueTimeLimits),
   system_accesses: createStore(seedSystemAccesses),

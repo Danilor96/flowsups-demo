@@ -1,6 +1,6 @@
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const vehicleId = parseInt(params.id);
@@ -65,14 +65,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    const vehicle = await prisma.vehicles.findUnique({
+    const vehicle = mockDb.vehicles.findUnique({
       where: {
         id: vehicleId,
       },
     });
 
     if (vehicle?.key_info_id) {
-      const data = await prisma.vehicle_details_key_info.update({
+      const data = mockDb.vehicle_details_key_info.update({
         where: {
           id: vehicle.key_info_id,
         },
@@ -93,7 +93,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
     } else {
-      const newData = await prisma.vehicle_details_key_info.create({
+      const newData = mockDb.vehicle_details_key_info.create({
         data: {
           decal_no: decalNo,
           ignition_code: ignitionCode,
@@ -111,7 +111,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      const vehicleDataReference = await prisma.vehicles.update({
+      const vehicleDataReference = mockDb.vehicles.update({
         where: {
           id: vehicle?.id,
         },
@@ -121,13 +121,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Data Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

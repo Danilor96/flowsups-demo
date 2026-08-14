@@ -1,12 +1,12 @@
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const vehicleId = parseInt(params.id);
 
   try {
-    const data = await prisma?.vehicles.findUnique({
+    const data = mockDb.vehicles.findUnique({
       where: {
         id: vehicleId,
       },
@@ -41,8 +41,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma?.$disconnect();
-
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.log(error);
@@ -61,13 +59,11 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const vehicleId = parseInt(params.id);
 
   try {
-    const data = await prisma.vehicles.delete({
+    const data = mockDb.vehicles.delete({
       where: {
         id: vehicleId,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Item Successfully Deleted' }, { status: 200 });
   } catch (error) {

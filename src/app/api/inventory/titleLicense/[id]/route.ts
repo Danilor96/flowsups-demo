@@ -1,6 +1,6 @@
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const vehicleId = parseInt(params.id);
@@ -125,14 +125,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    const vehicle = await prisma.vehicles.findUnique({
+    const vehicle = mockDb.vehicles.findUnique({
       where: {
         id: vehicleId,
       },
     });
 
     if (vehicle?.title_license_id) {
-      const data = await prisma.vehicle_details_title_license.update({
+      const data = mockDb.vehicle_details_title_license.update({
         where: {
           id: vehicle.title_license_id,
         },
@@ -166,7 +166,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
     } else {
-      const newData = await prisma.vehicle_details_title_license.create({
+      const newData = mockDb.vehicle_details_title_license.create({
         data: {
           title_owner: titleOwner,
           ros_title: rosTitle,
@@ -197,7 +197,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      const newDataReference = await prisma.vehicles.update({
+      const newDataReference = mockDb.vehicles.update({
         where: {
           id: vehicle?.id,
         },
@@ -206,8 +206,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
     }
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Data Successfully Updated' });
   } catch (error) {

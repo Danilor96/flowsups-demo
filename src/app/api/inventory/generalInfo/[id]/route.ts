@@ -1,6 +1,6 @@
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const vehicleId = parseInt(params.id);
@@ -129,14 +129,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    const vehicle = await prisma.vehicles.findUnique({
+    const vehicle = mockDb.vehicles.findUnique({
       where: {
         id: vehicleId,
       },
     });
 
     if (vehicle?.vehicle_general_info_id) {
-      const data1 = await prisma.general_info.update({
+      const data1 = mockDb.general_info.update({
         where: {
           id: vehicle.vehicle_general_info_id,
         },
@@ -153,7 +153,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       let inspId: any = false;
 
       if (inspectionStatus && inspectionDate && inspectionId && inspectionBy) {
-        const inspection = await prisma.inspection_status_data.create({
+        const inspection = mockDb.inspection_status_data.create({
           data: {
             status_id: parseInt(inspectionStatus),
             date: new Date(inspectionDate),
@@ -168,7 +168,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       let emissId: any = false;
 
       if (emissionStatus && emissionDate) {
-        const emission = await prisma.emission_status_data.create({
+        const emission = mockDb.emission_status_data.create({
           data: {
             status_id: parseInt(emissionStatus),
             date: new Date(emissionDate),
@@ -178,7 +178,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         emissId = emission.id;
       }
 
-      const newData = await prisma.general_info.create({
+      const newData = mockDb.general_info.create({
         data: {
           stock_no: stockNo,
           date_in_stock: new Date(dateInStock),
@@ -191,7 +191,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      const purchaseInfo = await prisma.vehicle_details_purchase_info.create({
+      const purchaseInfo = mockDb.vehicle_details_purchase_info.create({
         data: {
           purchase_date: new Date(purchaseDate),
           purchase_detail: purchaseDetail,
@@ -203,7 +203,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           how_did_you_pay: howDidYouPay,
         },
       });
-      const vehicleNewDataIds = await prisma.vehicles.update({
+      const vehicleNewDataIds = mockDb.vehicles.update({
         where: {
           id: vehicle?.id,
         },
@@ -221,7 +221,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       inspectionStatus &&
       inspectionId
     ) {
-      const data2 = await prisma.inspection_status_data.update({
+      const data2 = mockDb.inspection_status_data.update({
         where: {
           id: parseInt(inspectionReferenceId),
         },
@@ -243,7 +243,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       vehicle?.vehicle_general_info_id &&
       vehicle?.vehicle_general_info_id
     ) {
-      const insp = await prisma.inspection_status_data.create({
+      const insp = mockDb.inspection_status_data.create({
         data: {
           status_id: parseInt(inspectionStatus),
           id_of_status: inspectionId,
@@ -252,7 +252,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      const genInfo = await prisma.general_info.update({
+      const genInfo = mockDb.general_info.update({
         where: {
           id: vehicle.vehicle_general_info_id,
         },
@@ -263,7 +263,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (emissionId && emissionDate && emissionStatus) {
-      const data3 = await prisma.emission_status_data.update({
+      const data3 = mockDb.emission_status_data.update({
         where: {
           id: parseInt(emissionId),
         },
@@ -275,14 +275,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (!emissionId && emissionDate && emissionStatus && vehicle?.vehicle_general_info_id) {
-      const emis = await prisma.emission_status_data.create({
+      const emis = mockDb.emission_status_data.create({
         data: {
           date: new Date(emissionDate),
           status_id: parseInt(emissionStatus),
         },
       });
 
-      const genInfo = await prisma.general_info.update({
+      const genInfo = mockDb.general_info.update({
         where: {
           id: vehicle.vehicle_general_info_id,
         },
@@ -293,7 +293,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (vehicle?.vehicle_purchase_info_id) {
-      const data4 = await prisma.vehicle_details_purchase_info.update({
+      const data4 = mockDb.vehicle_details_purchase_info.update({
         where: {
           id: vehicle.vehicle_purchase_info_id,
         },
@@ -310,13 +310,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Data Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

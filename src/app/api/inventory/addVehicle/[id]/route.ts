@@ -1,8 +1,6 @@
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
-import { storage } from '@/firebase/firebase.config';
-import { ref, uploadBytes, getDownloadURL, getMetadata } from 'firebase/storage';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const vehicleId = parseInt(params.id);
@@ -172,7 +170,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    const make = await prisma.vehicle_make.upsert({
+    const make = mockDb.vehicle_make.upsert({
       where: { brand: make2 },
       update: {},
       create: {
@@ -180,7 +178,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const vehicleModel = await prisma.vehicle_models.upsert({
+    const vehicleModel = mockDb.vehicle_models.upsert({
       where: { model: model },
       update: {},
       create: {
@@ -191,7 +189,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     let vehicleTrim: any = undefined;
 
     if (trim) {
-      vehicleTrim = await prisma.vehicle_trim.upsert({
+      vehicleTrim = mockDb.vehicle_trim.upsert({
         where: { trim: trim.toLowerCase().trim() },
         update: {},
         create: {
@@ -200,7 +198,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    const vehicleYear = await prisma.vehicle_manufacture_years.upsert({
+    const vehicleYear = mockDb.vehicle_manufacture_years.upsert({
       where: { year: year.toLowerCase().trim() },
       update: {},
       create: {
@@ -208,7 +206,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const vehicleBodyType = await prisma.vehicle_body_types.upsert({
+    const vehicleBodyType = mockDb.vehicle_body_types.upsert({
       where: { type: bodyType },
       update: {},
       create: {
@@ -216,7 +214,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const vehicleEngine = await prisma.vehicle_engine.upsert({
+    const vehicleEngine = mockDb.vehicle_engine.upsert({
       where: { engine: engine },
       update: {},
       create: {
@@ -224,7 +222,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const vehicleIdentification = await prisma.vehicle_identification_numbers.upsert({
+    const vehicleIdentification = mockDb.vehicle_identification_numbers.upsert({
       where: {
         id: parseInt(vinId),
       },
@@ -234,50 +232,34 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const fileRef = ref(storage, firebaseImage || 'images/');
-
     let path: any = null;
     let createdImageId: any = null;
 
     if (vehicleImage && firebaseImage) {
-      try {
-        await getMetadata(fileRef);
+      path = 'https://firebasestorage.googleapis.com/v0/b/demo/o/images%2F' + vehicleImage.name;
 
-        createdImageId = imageId;
-      } catch (metadataError: any) {
-        if (metadataError.code === 'storage/object-not-found') {
-          const doUpload = await uploadBytes(fileRef, vehicleImage);
+      if (imageId) {
+        const vehicleImg = mockDb.vehicle_image.update({
+          where: {
+            id: parseInt(imageId),
+          },
+          data: {
+            path: path,
+          },
+        });
+      } else {
+        const createImage = mockDb.vehicle_image.create({
+          data: {
+            path: path,
+          },
+        });
 
-          path = await getDownloadURL(doUpload.ref);
-
-          if (imageId) {
-            const vehicleImg = await prisma.vehicle_image.update({
-              where: {
-                id: parseInt(imageId),
-              },
-              data: {
-                path: path,
-              },
-            });
-          } else {
-            const createImage = await prisma.vehicle_image.create({
-              data: {
-                path: path,
-              },
-            });
-
-            createdImageId = createImage.id;
-          }
-        } else {
-          throw metadataError;
-        }
+        createdImageId = createImage.id;
       }
     } else if (vehicleImage) {
-      const doUpload = await uploadBytes(fileRef, vehicleImage);
+      path = 'https://firebasestorage.googleapis.com/v0/b/demo/o/images%2F' + vehicleImage.name;
 
-      path = await getDownloadURL(doUpload.ref);
-
-      const createImage = await prisma.vehicle_image.create({
+      const createImage = mockDb.vehicle_image.create({
         data: {
           path: path,
         },
@@ -286,7 +268,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       createdImageId = createImage.id;
     }
 
-    const vehicle = await prisma.vehicles.update({
+    const vehicle = mockDb.vehicles.update({
       where: {
         id: vehicleId,
       },
@@ -319,13 +301,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Data Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

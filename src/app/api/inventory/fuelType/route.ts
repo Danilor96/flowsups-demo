@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+﻿import { NextResponse } from 'next/server';
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function GET() {
   try {
-    const data = await prisma.vehicle_fuel_tank_types.findMany();
+    const data = mockDb.vehicle_fuel_tank_types.findMany();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {

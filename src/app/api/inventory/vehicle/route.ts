@@ -1,8 +1,6 @@
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
 import { NextResponse } from 'next/server';
-import { storage } from '@/firebase/firebase.config';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -400,7 +398,7 @@ export async function POST(request: Request) {
     let inspId: any = false;
 
     if (inspectionStatus && inspectionDate && inspectionId && inspectionBy) {
-      const inspection = await prisma.inspection_status_data.create({
+      const inspection = mockDb.inspection_status_data.create({
         data: {
           status_id: parseInt(inspectionStatus),
           date: new Date(inspectionDate),
@@ -415,7 +413,7 @@ export async function POST(request: Request) {
     let emissId: any = false;
 
     if (emissionStatus && emissionDate) {
-      const emission = await prisma.emission_status_data.create({
+      const emission = mockDb.emission_status_data.create({
         data: {
           status_id: parseInt(emissionStatus),
           date: new Date(emissionDate),
@@ -425,7 +423,7 @@ export async function POST(request: Request) {
       emissId = emission.id;
     }
 
-    const generalInfo = await prisma.general_info.create({
+    const generalInfo = mockDb.general_info.create({
       data: {
         stock_no: stockNo,
         date_in_stock: new Date(dateInStock),
@@ -438,7 +436,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const purchaseInfo = await prisma.vehicle_details_purchase_info.create({
+    const purchaseInfo = mockDb.vehicle_details_purchase_info.create({
       data: {
         purchase_date: new Date(purchaseDate),
         purchase_detail: purchaseDetail,
@@ -451,7 +449,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const titleLicense = await prisma.vehicle_details_title_license.create({
+    const titleLicense = mockDb.vehicle_details_title_license.create({
       data: {
         title_owner: titleOwner,
         ros_title: rosTitle,
@@ -499,7 +497,7 @@ export async function POST(request: Request) {
       perDiem ||
       memo
     ) {
-      keyInfo = await prisma.vehicle_details_key_info.create({
+      keyInfo = mockDb.vehicle_details_key_info.create({
         data: {
           decal_no: decalNo,
           ignition_code: ignitionCode,
@@ -518,7 +516,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const make = await prisma.vehicle_make.upsert({
+    const make = mockDb.vehicle_make.upsert({
       where: { brand: make2.toLowerCase().trim() },
       update: {},
       create: {
@@ -526,7 +524,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const vehicleModel = await prisma.vehicle_models.upsert({
+    const vehicleModel = mockDb.vehicle_models.upsert({
       where: { model: model.toLowerCase().trim() },
       update: {},
       create: {
@@ -537,7 +535,7 @@ export async function POST(request: Request) {
     let vehicleTrim: any = undefined;
 
     if (trim) {
-      vehicleTrim = await prisma.vehicle_trim.upsert({
+      vehicleTrim = mockDb.vehicle_trim.upsert({
         where: { trim: trim.toLowerCase().trim() },
         update: {},
         create: {
@@ -546,7 +544,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const vehicleYear = await prisma.vehicle_manufacture_years.upsert({
+    const vehicleYear = mockDb.vehicle_manufacture_years.upsert({
       where: { year: year.toLowerCase().trim() },
       update: {},
       create: {
@@ -554,7 +552,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const vehicleBodyType = await prisma.vehicle_body_types.upsert({
+    const vehicleBodyType = mockDb.vehicle_body_types.upsert({
       where: { type: bodyType.toLowerCase().trim() },
       update: {},
       create: {
@@ -562,7 +560,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const vehicleEngine = await prisma.vehicle_engine.upsert({
+    const vehicleEngine = mockDb.vehicle_engine.upsert({
       where: { engine: engine.toLowerCase().trim() },
       update: {},
       create: {
@@ -573,25 +571,22 @@ export async function POST(request: Request) {
     let vehicleImg: any = null;
 
     if (vehicleImage) {
-      const fileRef = ref(storage, `images/${vehicleImage.name}`);
-      const doUpload = await uploadBytes(fileRef, vehicleImage);
+      const path = 'https://firebasestorage.googleapis.com/v0/b/demo/o/images%2F' + vehicleImage.name;
 
-      const path = await getDownloadURL(doUpload.ref);
-
-      vehicleImg = await prisma.vehicle_image.create({
+      vehicleImg = mockDb.vehicle_image.create({
         data: {
           path: path,
         },
       });
     }
 
-    const vehicleIdentification = await prisma.vehicle_identification_numbers.create({
+    const vehicleIdentification = mockDb.vehicle_identification_numbers.create({
       data: {
         vin: vin,
       },
     });
 
-    const vehicle = await prisma.vehicles.create({
+    const vehicle = mockDb.vehicles.create({
       data: {
         stock_no: stockNo,
         cylinder: cylinder,
@@ -628,13 +623,9 @@ export async function POST(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Vehicle Successfully Registered' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -645,7 +636,7 @@ export async function GET(request: Request) {
   const excludeSold = searchParams.get('excludeSold') === 'true';
 
   try {
-    const data = await prisma.vehicles.findMany({
+    const data = mockDb.vehicles.findMany({
       where: excludeSold
         ? {
             OR: [{ vehicle_status_id: { not: 3 } }, { vehicle_status_id: null }],
@@ -685,8 +676,6 @@ export async function GET(request: Request) {
         vehicle_type: true,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {

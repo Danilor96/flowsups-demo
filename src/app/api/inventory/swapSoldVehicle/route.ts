@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { createEvent } from '@/app/libs/events/events';
@@ -20,13 +20,13 @@ export async function POST(request: Request) {
 
     let oldVehicle = null;
     if (oldVehicleId) {
-      oldVehicle = await prisma.vehicles.findUnique({
+      oldVehicle = mockDb.vehicles.findUnique({
         where: { id: parseInt(oldVehicleId) },
         select: { vehicle_status_id: true, stock_no: true },
       });
     }
 
-    const client = await prisma.clients.findUnique({
+    const client = mockDb.clients.findUnique({
       where: { id: parseInt(customerId) },
       include: {
         lead: {
@@ -41,49 +41,47 @@ export async function POST(request: Request) {
       return NextResponse.json({ serverError: 'No active lead found for client' }, { status: 400 });
     }
 
-    await prisma.$transaction(async (tx) => {
-      if (oldVehicleId) {
-        await tx.vehicles.update({
-          where: { id: parseInt(oldVehicleId) },
-          data: {
-            vehicle_status_id: 1, // In Stock
-          },
-        });
-      }
-
-      await tx.vehicles.update({
-        where: { id: parseInt(newVehicleId) },
+    if (oldVehicleId) {
+      mockDb.vehicles.update({
+        where: { id: parseInt(oldVehicleId) },
         data: {
-          vehicle_status_id: 3, // Sold
+          vehicle_status_id: 1, // In Stock
         },
       });
+    }
 
-      await tx.clients.update({
-        where: { id: parseInt(customerId) },
-        data: {
-          intereseted_vehicle_id: parseInt(newVehicleId),
-        },
-      });
+    mockDb.vehicles.update({
+      where: { id: parseInt(newVehicleId) },
+      data: {
+        vehicle_status_id: 3, // Sold
+      },
+    });
 
-      await tx.leads.update({
-        where: { id: activeLead.id },
-        data: {
-          vehicle_id: parseInt(newVehicleId),
-        },
-      });
+    mockDb.clients.update({
+      where: { id: parseInt(customerId) },
+      data: {
+        intereseted_vehicle_id: parseInt(newVehicleId),
+      },
+    });
 
-      const eventDescription = oldVehicle
-        ? `Swapped Sold Vehicle: Released Stock #${oldVehicle?.stock_no} (ID: ${oldVehicleId}) and marked ID: ${newVehicleId} as Sold.`
-        : `Assigned Sold Vehicle: Marked ID: ${newVehicleId} as Sold.`;
+    mockDb.leads.update({
+      where: { id: activeLead.id },
+      data: {
+        vehicle_id: parseInt(newVehicleId),
+      },
+    });
 
-      await tx.events.create({
-        data: {
-          description: eventDescription,
-          updated_by: parseInt(userId),
-          client_id: parseInt(customerId),
-          updated_at: new Date().toISOString(),
-        },
-      });
+    const eventDescription = oldVehicle
+      ? `Swapped Sold Vehicle: Released Stock #${oldVehicle?.stock_no} (ID: ${oldVehicleId}) and marked ID: ${newVehicleId} as Sold.`
+      : `Assigned Sold Vehicle: Marked ID: ${newVehicleId} as Sold.`;
+
+    mockDb.events.create({
+      data: {
+        description: eventDescription,
+        updated_by: parseInt(userId),
+        client_id: parseInt(customerId),
+        updated_at: new Date().toISOString(),
+      },
     });
 
     return NextResponse.json(

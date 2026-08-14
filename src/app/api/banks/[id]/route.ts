@@ -1,11 +1,11 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const leadSourceId = parseInt(params.id);
 
   try {
-    const data = await prisma.banks.delete({
+    const data = mockDb.banks.delete({
       where: {
         id: leadSourceId,
       },

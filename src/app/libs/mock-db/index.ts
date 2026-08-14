@@ -64,6 +64,7 @@ import {
   seedClientBulkSms,
 } from "./data/smsTemplates";
 import { seedTasks } from "./data/tasks";
+import { seedAppointmentSms } from "./data/appointmentSms";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
 
@@ -462,6 +463,7 @@ export const mockDb: Record<string, Store<any>> = {
   sms_template_variables_tagged: createStore(seedSmsTemplateVariablesTagged),
   awaiting_unknow_client: createStore(seedAwaitingUnknowClients),
   client_Bulk_sms: createStore(seedClientBulkSms),
+  appointmentSms: createStore(seedAppointmentSms),
 };
 
 export function resetMockDb(): void {

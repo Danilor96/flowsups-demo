@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -27,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { sms } = validatedData.data;
 
   try {
-    const data = await prisma.appointmentSms.update({
+    const data = mockDb.appointmentSms.update({
       where: {
         id: smsId,
       },

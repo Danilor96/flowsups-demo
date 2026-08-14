@@ -52,7 +52,14 @@ import {
   seedClientCalls,
   seedConferencesNames,
 } from "./data/calls";
-import { seedConsentTerms, seedConsentChecks } from "./data/consentTerms";
+import {
+  seedConsentTerms,
+  seedConsentChecks,
+  seedConsentCodes,
+  seedClientAddresses,
+  seedTermsAndConditionsProcessed,
+  seedCustomerConsentLogs,
+} from "./data/consentTerms";
 import { seedClientSms } from "./data/sms";
 import {
   seedSmsTemplates,
@@ -65,6 +72,7 @@ import {
 } from "./data/smsTemplates";
 import { seedTasks } from "./data/tasks";
 import { seedAppointmentSms } from "./data/appointmentSms";
+import { seedRescheduleSms } from "./data/rescheduleSms";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
 
@@ -77,9 +85,10 @@ export interface Store<T> {
     skip?: number;
     take?: number;
     cursor?: MockWhere;
+    select?: any;
   }): T[];
-  findUnique(params: { where: MockWhere }): T | null;
-  findFirst(params?: { where?: MockWhere; orderBy?: any }): T | null;
+  findUnique(params: { where: MockWhere; select?: any }): T | null;
+  findFirst(params?: { where?: MockWhere; orderBy?: any; select?: any }): T | null;
   create(params: { data: any }): T;
   createMany(params: { data: any[] }): { count: number };
   update(params: { where: MockWhere; data: Partial<T> }): T;
@@ -454,6 +463,10 @@ export const mockDb: Record<string, Store<any>> = {
   conferences_names: createStore(seedConferencesNames),
   consent_terms: createStore(seedConsentTerms),
   consent_checks: createStore(seedConsentChecks),
+  consent_code: createStore(seedConsentCodes),
+  client_address: createStore(seedClientAddresses),
+  terms_and_conditions_processed: createStore(seedTermsAndConditionsProcessed),
+  customer_consent_logs: createStore(seedCustomerConsentLogs),
   client_sms: createStore(seedClientSms),
   tasks: createStore(seedTasks),
   sms_template: createStore(seedSmsTemplates),
@@ -464,6 +477,7 @@ export const mockDb: Record<string, Store<any>> = {
   awaiting_unknow_client: createStore(seedAwaitingUnknowClients),
   client_Bulk_sms: createStore(seedClientBulkSms),
   appointmentSms: createStore(seedAppointmentSms),
+  rescheduleSms: createStore(seedRescheduleSms),
 };
 
 export function resetMockDb(): void {

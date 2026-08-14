@@ -1,8 +1,7 @@
 import { filterNumber } from '@/app/libs/customer/customersFunctions';
 import { createEvent } from '@/app/libs/events/events';
+import { mockDb } from '@/app/libs/mock-db';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
-import { sendConsentSms } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -111,7 +110,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    const validateCode = await prisma.consent_code.findUnique({
+    const validateCode = mockDb.consent_code.findUnique({
       where: {
         id: consentId,
       },
@@ -127,7 +126,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const consentSms = checks.find((el) => el.id === 3);
 
-    const customer = await prisma.clients.update({
+    const customer = mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -146,7 +145,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: customerId,
         is_active: true,
@@ -157,7 +156,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     });
 
     if (activeLead) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: activeLead.id,
           customer_id: customerId,
@@ -169,7 +168,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    const prevTermsProcessed = await prisma.terms_and_conditions_processed.findMany({
+    const prevTermsProcessed = mockDb.terms_and_conditions_processed.findMany({
       where: {
         customer_id: customerId,
       },
@@ -177,13 +176,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const customerContactPhone = customer.mobile_phone || customer.home_phone || '';
 
-    const policyStatement = await prisma.consent_terms.findFirst({
+    const policyStatement = mockDb.consent_terms.findFirst({
       select: {
         consent_statement: true,
       },
     });
 
-    const consentLog = await prisma.customer_consent_logs.create({
+    const consentLog = mockDb.customer_consent_logs.create({
       data: {
         phoneNumber: customerContactPhone,
         policyStatement: policyStatement?.consent_statement || '',
@@ -207,7 +206,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
 
       if (!prevDescriptionExists) {
-        await prisma.terms_and_conditions_processed.create({
+        mockDb.terms_and_conditions_processed.create({
           data: {
             description: el.description,
             accepted: el.checked,
@@ -220,7 +219,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (customer.client_address_id) {
-      await prisma.client_address.update({
+      mockDb.client_address.update({
         where: {
           id: customer.client_address_id,
         },
@@ -232,7 +231,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
     } else {
-      const newClientAddress = await prisma.client_address.create({
+      const newClientAddress = mockDb.client_address.create({
         data: {
           city: city,
           street: street,
@@ -240,7 +239,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           state_id: parseInt(state),
         },
       });
-      await prisma.clients.update({
+      mockDb.clients.update({
         where: {
           id: customerId,
         },
@@ -251,9 +250,31 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     try {
-      await sendConsentSms({ to: customerContactPhone, consentLogId: consentLog.id });
+      const verificationMessage = mockDb.client_sms.create({
+        data: {
+          message:
+            'Security Verification: We received a request using this phone number. To confirm you submitted this form and agree to our consent policy, please reply YES.',
+          sent_by_user: true,
+          manual_sent: false,
+          message_sid: 'SM' + consentId + Date.now(),
+          client_phone_number: customerContactPhone,
+          is_consent_message: true,
+          status_id: 1,
+          client_message_id: customerId,
+          date_sent: new Date(),
+        },
+      });
 
-      await prisma.consent_code.delete({
+      mockDb.customer_consent_logs.update({
+        where: {
+          id: consentLog.id,
+        },
+        data: {
+          sentSmsVerificationRecordId: verificationMessage.id,
+        },
+      });
+
+      mockDb.consent_code.delete({
         where: {
           customer_id: customerId,
         },
@@ -275,14 +296,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
       await createEvent(description, undefined, customerId);
     } catch (error) {
-      await prisma.terms_and_conditions_processed.deleteMany({
+      mockDb.terms_and_conditions_processed.deleteMany({
         where: {
           customer_id: customerId,
           customerConsentLogsId: consentLog.id,
         },
       });
 
-      await prisma.customer_consent_logs.delete({
+      mockDb.customer_consent_logs.delete({
         where: {
           id: consentLog.id,
         },

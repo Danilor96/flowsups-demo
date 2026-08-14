@@ -1,9 +1,9 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const data = await prisma.rescheduleSms.findFirst();
+    const data = mockDb.rescheduleSms.findFirst();
 
     //await prisma.$disconnect();
 

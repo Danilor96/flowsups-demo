@@ -1,16 +1,12 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCustomerSmsTemplateVariablesValues } from '@/app/libs/data';
 import {
   dataObject,
   replaceVariables,
-  saveSmsForBulkActions,
-  sendSms,
-  sendSmsForBulkActions,
 } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
 import { createEvent } from '@/app/libs/events/events';
-import { uploadImageForSms } from '@/app/libs/uploadImages.services';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function POST(request: Request) {
@@ -79,9 +75,11 @@ export async function POST(request: Request) {
 
   try {
     const file = formData.get('file') as File | null;
-    const smsMediaUrl = file ? await uploadImageForSms(senderId, file) : null;
+    const smsMediaUrl = file
+      ? `https://mock.storage/flowsups/${senderId}/${encodeURIComponent(file.name)}`
+      : null;
 
-    const customers = await prisma.clients.findMany({
+    const customers = mockDb.clients.findMany({
       where: {
         id: {
           in: recipients,
@@ -104,19 +102,9 @@ export async function POST(request: Request) {
           },
         ],
       },
-      select: {
-        id: true,
-        mobile_phone: true,
-        home_phone: true,
-        work_phone: true,
-        mobile_default: true,
-        home_default: true,
-        work_default: true,
-        seller_id: true,
-      },
     });
 
-    const clientBulkSmsCreated = await prisma.client_Bulk_sms.create({
+    const clientBulkSmsCreated = mockDb.client_Bulk_sms.create({
       data: {
         total_recipients: customers.length,
         sent_by_user_id: parseInt(senderId),
@@ -147,46 +135,71 @@ export async function POST(request: Request) {
           ? customer.home_phone
           : customer.work_phone;
 
-        // await sendSms(sms, defaultPhoneNumber || customer.mobile_phone, senderId, file);
-        const smsResponse = await sendSmsForBulkActions({
-          sms,
-          to: defaultPhoneNumber || customer.mobile_phone || '',
-          smsMediaUrl,
+        const to = defaultPhoneNumber || customer.mobile_phone || '';
+
+        if (!to) {
+          failedSends.push(to);
+          continue;
+        }
+
+        const smsInstance = {
+          body: sms,
+          sid: `SMmock${Date.now()}${i}`,
+        };
+
+        const sender = mockDb.users.findUnique({
+          where: {
+            id: parseInt(senderId),
+          },
         });
 
-        if (!smsResponse) {
-          failedSends.push(defaultPhoneNumber || customer.mobile_phone);
-        }
-        if (smsResponse) {
-          await saveSmsForBulkActions({
-            smsInstance: smsResponse,
-            to: defaultPhoneNumber || customer.mobile_phone || '',
-            senderId,
-            smsMediaUrl,
-            file,
-          });
+        mockDb.client_sms.create({
+          data: {
+            message: smsInstance.body,
+            message_sid: smsInstance.sid,
+            sent_by_user: true,
+            manual_sent: false,
+            sent: true,
+            delivered: true,
+            failed: false,
+            sender_user_id: parseInt(senderId),
+            fileAttachment: file ? [{ name: file.name, url: smsMediaUrl || '' }] : undefined,
+            client_phone_number: to,
+            status_id: 1,
+            client_id: customer.id,
+            date_sent: new Date(),
+            is_consent_message: false,
+            read_by: [],
+            has_customer_reply: false,
+            is_reply_to_user: false,
+            user: sender
+              ? [{ id: sender.id, name: sender.name, last_name: sender.last_name }]
+              : [],
+            client_message: null,
+            unregistered_customer: [],
+          },
+        });
 
-          await prisma.client_has_lead.create({
-            data: {
-              created_at: new Date(),
-              assigned_to_id: customer?.seller_id ? customer.seller_id : undefined,
-              client_id: customer.id,
-              status_id: 2,
-              created_by_id: parseInt(senderId),
-              lead_id: 2,
-            },
-          });
+        mockDb.client_has_lead.create({
+          data: {
+            created_at: new Date(),
+            assigned_to_id: customer?.seller_id ? customer.seller_id : undefined,
+            client_id: customer.id,
+            status_id: 2,
+            created_by_id: parseInt(senderId),
+            lead_id: 2,
+          },
+        });
 
-          const description = 'Sms sent';
+        const description = 'Sms sent';
 
-          await createEvent(description, parseInt(senderId), customer.id, new Date());
+        await createEvent(description, parseInt(senderId), customer.id, new Date());
 
-          successfulSends.push(defaultPhoneNumber || customer.mobile_phone);
-        }
+        successfulSends.push(to);
       }
     }
 
-    await prisma.client_Bulk_sms.update({
+    mockDb.client_Bulk_sms.update({
       where: {
         id: clientBulkSmsCreated.id,
       },
@@ -197,13 +210,9 @@ export async function POST(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Messages Successfully Sent' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

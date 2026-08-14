@@ -1,12 +1,6 @@
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-// const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
-const smsRecipient = process.env.SMS_RECIPIENT || '';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
-import twilio from 'twilio';
 import { z } from 'zod';
-import { uploadImageForSms } from '@/app/libs/uploadImages.services';
 import { auth } from '@/auth';
 import {
   ActivityType,
@@ -18,13 +12,64 @@ import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
 
 const url = process.env.TWILIO_WEBSOCKET_URL;
 
-const client = twilio(accountSid, authToken);
+const buildUserPick = (user: any) => ({
+  name: user.name,
+  last_name: user.last_name,
+  id: user.id,
+});
+
+const buildClientMessage = (client: any) => {
+  if (!client) return null;
+
+  const seller = client.seller || {};
+  const bdc = client.bdc || {};
+
+  return {
+    id: client.id,
+    email: client.email,
+    last_name: client.last_name,
+    mobile_phone: client.mobile_phone,
+    first_name: client.first_name,
+    lead_temperature_id: client.lead_temperature_id,
+    seller_id: client.seller_id,
+    bdc_id: client.bdc_id,
+    lead: (client.lead || [])
+      .filter((lead: any) => lead.is_active)
+      .map((lead: any, index: number) => ({
+        id: client.id + index,
+        customer_status: lead.customer_status || null,
+      })),
+    seller: seller.id
+      ? {
+          id: seller.id,
+          name: seller.name,
+          last_name: seller.last_name,
+          username: seller.username,
+        }
+      : null,
+    bdc: bdc.id
+      ? {
+          id: bdc.id,
+          name: bdc.name,
+          last_name: bdc.last_name,
+          username: bdc.username,
+        }
+      : null,
+    conversation: null,
+  };
+};
+
+const buildUnknownCustomer = (unknown: any) => ({
+  id: unknown.id,
+  mobile_phone_number: unknown.mobile_phone_number,
+  conversation: null,
+});
 
 export async function GET(request: Request, { params }: { params: { mobilePhone: string } }) {
   const mobilePhone = params.mobilePhone;
 
   try {
-    const data = await prisma?.client_sms.findMany({
+    const data = mockDb.client_sms.findMany({
       where: {
         OR: [
           {
@@ -41,36 +86,10 @@ export async function GET(request: Request, { params }: { params: { mobilePhone:
           },
         ],
       },
-      include: {
-        user: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
-        client_message: {
-          select: {
-            first_name: true,
-            last_name: true,
-            email: true,
-            mobile_phone: true,
-            id: true,
-          },
-        },
-        unregistered_customer: {
-          select: {
-            mobile_phone_number: true,
-            id: true,
-          },
-        },
-      },
       orderBy: {
         date_sent: 'asc',
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json(data);
   } catch (error) {
@@ -158,9 +177,8 @@ export async function POST(request: Request, { params }: { params: { mobilePhone
 
   const { clientNumber, message, senderId, unregisteredCustomer, clientId } = validatedData.data;
 
-  // proximamente se debe agregar por el bussines id (multi tenant)
   try {
-    const businesPhoneNumberActive = await prisma?.business_phone_numbers.findFirst({
+    const businesPhoneNumberActive = mockDb.business_phone_numbers.findFirst({
       where: {
         is_publishing_number: true,
       },
@@ -173,24 +191,20 @@ export async function POST(request: Request, { params }: { params: { mobilePhone
     const files = formData.getAll('file') as File[] | null;
 
     const smsMediaUrl = files
-      ? await Promise.all(files.map((file) => uploadImageForSms(senderId, file)))
+      ? files.map((file) => `https://mock.storage/flowsups/${senderId}/${encodeURIComponent(file.name)}`)
       : [];
 
     const statusCallbacUrl = `${url}/smsStatus`;
 
-    const res = await client.messages.create({
+    const res = {
       body: message ? message : '',
-      from: businesPhoneNumberActive?.phone_number,
-      to: `+1${clientNumber}`,
-      // to: smsRecipient,
-      mediaUrl: smsMediaUrl,
-      statusCallback: statusCallbacUrl,
-    });
+      sid: `SMmock${Date.now()}`,
+    };
 
     const sms = res.body;
 
     if (!unregisteredCustomer && clientId) {
-      const lastMessage = await prisma.client_sms.findFirst({
+      const lastMessage = mockDb.client_sms.findFirst({
         where: {
           client_id: parseInt(clientId),
         },
@@ -199,43 +213,50 @@ export async function POST(request: Request, { params }: { params: { mobilePhone
         },
       });
 
-      const createdSms = await prisma?.client_sms.create({
+      const client = mockDb.clients.findUnique({
+        where: {
+          id: parseInt(clientId),
+        },
+      });
+
+      const sender = mockDb.users.findUnique({
+        where: {
+          id: parseInt(senderId),
+        },
+      });
+
+      mockDb.client_sms.create({
         data: {
           message: sms,
           message_sid: res.sid,
           sent_by_user: true,
           manual_sent: true,
-          sender_user: {
-            connect: {
-              id: parseInt(senderId),
-          }},
+          sent: true,
+          delivered: false,
+          failed: false,
+          sender_user_id: parseInt(senderId),
           fileAttachment: files?.map((file, i) => ({
             name: file.name,
             url: smsMediaUrl ? smsMediaUrl[i] : '',
           })),
           client_phone_number: clientNumber,
-          status: {
-            connect: {
-              id:
-                lastMessage?.status_id === SMS_STATUS_ID.REPLIED
-                  ? SMS_STATUS_ID.REPLIED
-                  : SMS_STATUS_ID.READ,
-            },
-          },
-          client_message: {
-            connect: {
-              id: parseInt(clientId),
-            },
-          },
-          user: {
-            connect: {
-              id: parseInt(senderId),
-            },
-          },
+          status_id:
+            lastMessage?.status_id === SMS_STATUS_ID.REPLIED
+              ? SMS_STATUS_ID.REPLIED
+              : SMS_STATUS_ID.READ,
+          client_id: parseInt(clientId),
+          date_sent: new Date(),
+          is_consent_message: false,
+          read_by: [],
+          has_customer_reply: false,
+          is_reply_to_user: false,
+          user: sender ? [buildUserPick(sender)] : [],
+          client_message: buildClientMessage(client),
+          unregistered_customer: [],
         },
       });
-      
-      await prisma.leads.updateMany({
+
+      mockDb.leads.updateMany({
         where: {
           customer_id: parseInt(clientId),
           is_active: true,
@@ -247,9 +268,8 @@ export async function POST(request: Request, { params }: { params: { mobilePhone
           customer_status_id: CustomersStatuses.Contact_Attempt
         },
       });
-
     } else {
-      const lastMessage = await prisma.client_sms.findFirst({
+      const lastMessage = mockDb.client_sms.findFirst({
         where: {
           unregistered_customer: {
             some: {
@@ -261,63 +281,76 @@ export async function POST(request: Request, { params }: { params: { mobilePhone
           date_sent: 'desc',
         },
       });
-      const createdSms = await prisma?.client_sms.create({
+
+      const sender = mockDb.users.findUnique({
+        where: {
+          id: parseInt(senderId),
+        },
+      });
+
+      const unknownCustomer = mockDb.awaiting_unknow_client.findFirst({
+        where: {
+          mobile_phone_number: mobilePhone,
+        },
+      });
+
+      mockDb.client_sms.create({
         data: {
           message: sms,
           message_sid: res.sid,
           sent_by_user: true,
           manual_sent: true,
-          sender_user: {
-            connect: {
-              id: parseInt(senderId),
-            }
-          },
-          status: {
-            connect: {
-              id:
-                lastMessage?.status_id === SMS_STATUS_ID.REPLIED
-                  ? SMS_STATUS_ID.REPLIED
-                  : SMS_STATUS_ID.READ,
-            },
-          },
-          unregistered_customer: {
-            connect: {
-              mobile_phone_number: mobilePhone,
-            },
-          },
-          user: {
-            connect: {
-              id: parseInt(senderId),
-            },
-          },
+          sent: true,
+          delivered: false,
+          failed: false,
+          sender_user_id: parseInt(senderId),
+          status_id:
+            lastMessage?.status_id === SMS_STATUS_ID.REPLIED
+              ? SMS_STATUS_ID.REPLIED
+              : SMS_STATUS_ID.READ,
+          client_id: null,
+          client_phone_number: mobilePhone,
+          date_sent: new Date(),
+          is_consent_message: false,
+          read_by: [],
+          has_customer_reply: false,
+          is_reply_to_user: false,
+          user: sender ? [buildUserPick(sender)] : [],
+          client_message: null,
+          unregistered_customer: unknownCustomer ? [buildUnknownCustomer(unknownCustomer)] : [],
         },
       });
-      const unknowCustomer = await prisma.awaiting_unknow_client.update({
-        where: {
-          mobile_phone_number: mobilePhone,
-        },
-        data: {
-          last_activity: new Date(),
-        },
-      });
+
+      if (unknownCustomer) {
+        mockDb.awaiting_unknow_client.update({
+          where: {
+            mobile_phone_number: mobilePhone,
+          },
+          data: {
+            last_activity: new Date(),
+          },
+        });
+      } else {
+        mockDb.awaiting_unknow_client.create({
+          data: {
+            mobile_phone_number: mobilePhone,
+            last_activity: new Date(),
+            created_at: new Date(),
+          },
+        });
+      }
     }
 
-    // logic for assigning points to sellers
     if (userSession?.id) {
-      // event is sent to the socket server to run the seller activity counter in the background without adding latency to the current response.
       sellerActivityEventEmitterAsync({
         userId: userSession.id,
         activityType: ActivityType.SMS_SENT,
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Sending Message' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,25 +1,16 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 
 export async function GET() {
   try {
-    const data = await prisma.sms_template_variables.findMany({
-      include: {
-        category: true,
-        variable_tag: true,
-      },
-    });
-
-    //await prisma.$disconnect();
+    const data = mockDb.sms_template_variables.findMany();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

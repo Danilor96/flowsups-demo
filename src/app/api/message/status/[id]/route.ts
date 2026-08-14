@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
@@ -8,7 +8,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const userId = parseInt(user);
 
   try {
-    const data = await prisma.client_sms.updateMany({
+    const matches = mockDb.client_sms.findMany({
       where: {
         OR: [
           {
@@ -42,21 +42,23 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           },
         ],
       },
-      data: {
-        status_id: 1,
-        read_by: {
-          push: userId,
-        },
-      },
     });
 
-    //await prisma.$disconnect();
+    matches.forEach((sms) => {
+      mockDb.client_sms.update({
+        where: {
+          id: sms.id,
+        },
+        data: {
+          status_id: 1,
+          read_by: Array.from(new Set([...(sms.read_by || []), userId])),
+        },
+      });
+    });
 
     return NextResponse.json({ successMessage: 'Message Status Successfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,14 +1,14 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
- const permissionsCheck = await checkPermissions(52);
-   
-     if (permissionsCheck) {
-       return permissionsCheck;
-     }
+  const permissionsCheck = await checkPermissions(52);
+
+  if (permissionsCheck) {
+    return permissionsCheck;
+  }
 
   const templateId = parseInt(params.id);
 
@@ -34,12 +34,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { favorite } = validatedData.data;
 
   try {
-    const currentData = await prisma.sms_template.findUnique({
+    const currentData = mockDb.sms_template.findUnique({
       where: {
         id: templateId,
-      },
-      select: {
-        favorite: true,
       },
     });
 
@@ -51,7 +48,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return true;
     };
 
-    const data = await prisma.sms_template.update({
+    mockDb.sms_template.update({
       where: {
         id: templateId,
       },
@@ -60,13 +57,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Templates Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

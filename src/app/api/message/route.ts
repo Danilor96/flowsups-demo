@@ -1,5 +1,5 @@
 import { AllSms, SMS_STATUS_ID } from '@/app/libs/definitions';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { Roles } from '@/app/libs/definitions/users/users';
@@ -22,64 +22,7 @@ export async function GET() {
 
     const isAdmin = !!userRoleId && adminRoles.includes(userRoleId);
 
-    const data = await prisma.client_sms.findMany({
-      include: {
-        user: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
-        client_message: {
-          select: {
-            first_name: true,
-            last_name: true,
-            lead_temperature_id: true,
-            id: true,
-            email: true,
-            mobile_phone: true,
-            lead: {
-              where: {
-                is_active: true,
-              },
-              select: {
-                id: true,
-                customer_status: true,
-              },
-            },
-            // client_status: {
-            //   select: {
-            //     status: true,
-            //   },
-            // },
-            seller: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-                username: true,
-              },
-            },
-            bdc: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-                username: true,
-              },
-            },
-            conversation: true,
-          },
-        },
-        unregistered_customer: {
-          select: {
-            id: true,
-            mobile_phone_number: true,
-            conversation: true,
-          },
-        },
-      },
+    const data = mockDb.client_sms.findMany({
       orderBy: {
         date_sent: 'desc',
       },
@@ -101,8 +44,6 @@ export async function GET() {
       },
     });
 
-    //await prisma.$disconnect();
-
     const messages: AllSms = [];
     let lastId: number = 0;
 
@@ -114,7 +55,9 @@ export async function GET() {
       const unregisteredCustomerMessageExists = messages.find((unreCustomerMssg) => {
         if (
           unreCustomerMssg.unregistered_customer.every((mssData) =>
-            messageData.unregistered_customer.some((smsData) => smsData.id === mssData.id),
+            messageData.unregistered_customer.some(
+              (smsData: { id: number }) => smsData.id === mssData.id,
+            ),
           ) &&
           customerMessageExists
         ) {
@@ -179,8 +122,6 @@ export async function GET() {
     return NextResponse.json(messages);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

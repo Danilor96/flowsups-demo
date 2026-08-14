@@ -54,6 +54,15 @@ import {
 } from "./data/calls";
 import { seedConsentTerms, seedConsentChecks } from "./data/consentTerms";
 import { seedClientSms } from "./data/sms";
+import {
+  seedSmsTemplates,
+  seedSmsTemplateCategories,
+  seedSmsTemplateVariables,
+  seedSmsTemplateVariablesCategories,
+  seedSmsTemplateVariablesTagged,
+  seedAwaitingUnknowClients,
+  seedClientBulkSms,
+} from "./data/smsTemplates";
 import { seedTasks } from "./data/tasks";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
@@ -446,6 +455,13 @@ export const mockDb: Record<string, Store<any>> = {
   consent_checks: createStore(seedConsentChecks),
   client_sms: createStore(seedClientSms),
   tasks: createStore(seedTasks),
+  sms_template: createStore(seedSmsTemplates),
+  sms_template_category: createStore(seedSmsTemplateCategories),
+  sms_template_variables: createStore(seedSmsTemplateVariables),
+  sms_template_variables_category: createStore(seedSmsTemplateVariablesCategories),
+  sms_template_variables_tagged: createStore(seedSmsTemplateVariablesTagged),
+  awaiting_unknow_client: createStore(seedAwaitingUnknowClients),
+  client_Bulk_sms: createStore(seedClientBulkSms),
 };
 
 export function resetMockDb(): void {

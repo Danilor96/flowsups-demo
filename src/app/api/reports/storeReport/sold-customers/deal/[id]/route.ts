@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const dealId = parseInt(params.id);
 
   try {
-    const data = await prisma.deal.findUnique({
+    const data = mockDb.deal.findUnique({
       where: {
         id: dealId,
       },
@@ -23,8 +23,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
         },
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ deal: data });
   } catch (error) {

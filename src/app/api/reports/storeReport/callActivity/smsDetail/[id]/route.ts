@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { SmsDetail } from '../types';
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const smsStatusWhereClause = smsStatus && smsStatus !== 'clientReplied' ? { [smsStatus]: true } : {};
     const clientRepliedWhere = smsStatus === 'clientReplied' ? { has_customer_reply: true } : {};
 
-    const data = await prisma.client_sms.findMany({
+    const data = mockDb.client_sms.findMany({
       where: {
         sent_by_user: true,
         date_sent: dateWhereClause,
@@ -64,8 +64,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         failed: true,
       },
     });
-
-    //await prisma.$disconnect();
 
     const smsMap = new Map<number, SmsDetail>();
 
@@ -145,8 +143,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return NextResponse.json(dataToReturn);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

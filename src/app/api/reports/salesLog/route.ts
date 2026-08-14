@@ -1,10 +1,7 @@
 import { FundingStatuses } from '@/app/libs/customer/customersFunctions';
 import { buildDateRangeFilter, getPreviousMonthDateRange } from '@/app/libs/monthAndYearDateFilter';
-import prisma from '@/app/libs/prisma';
-import { Prisma } from '@prisma/client';
+import { mockDb, Decimal } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
-
-const Decimal = Prisma.Decimal;
 
 export const dynamic = 'force-dynamic';
 
@@ -81,9 +78,8 @@ export async function GET(request: NextRequest) {
     //const previousMonthDateWhereFilter = buildDateRangeFilter(previousMonthRange.startDate, previousMonthRange.endDate);
     const startOfMonthDateFilter = searchMonthDateFilterPrisma.gte;
 
-    const dealsCurrentData = await prisma.deal.findMany({
+    const dealsCurrentData = mockDb.deal.findMany({
       where: {
-        // created_at: searchMonthDateFilterPrisma,
         lead: {
           sold_created_at: searchMonthDateFilterPrisma,
           OR: [
@@ -170,9 +166,8 @@ export async function GET(request: NextRequest) {
 
     //const dealsValidReturned
 
-    const dealsReturnedThisMonth = await prisma.deal.findMany({
+    const dealsReturnedThisMonth = mockDb.deal.findMany({
       where: {
-        // created_at: searchMonthDateFilterPrisma,
         lead: {
           customer_funding_list_status_id: FundingStatuses.Returned,
           customer_funding_returned_at: searchMonthDateFilterPrisma,
@@ -182,7 +177,7 @@ export async function GET(request: NextRequest) {
       include: include,
     });
 
-    const previousDealsReturnedThisMonth = await prisma.deal.findMany({
+    const previousDealsReturnedThisMonth = mockDb.deal.findMany({
       where: {
         // created_at: {
         //   lt: startOfMonthDateFilter, // meses anteriores al current month search
@@ -198,7 +193,7 @@ export async function GET(request: NextRequest) {
       include: include,
     });
 
-    const sumTotalCharges = await prisma.charges_back.aggregate({
+    const sumTotalCharges = mockDb.charges_back.aggregate({
       _sum: {
         amount: true,
       },
@@ -258,8 +253,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

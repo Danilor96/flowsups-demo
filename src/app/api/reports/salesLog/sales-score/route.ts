@@ -1,6 +1,6 @@
 import { FundingStatuses } from '@/app/libs/customer/customersFunctions';
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const searchMonthDateFilterPrisma = buildDateRangeFilter(startDate, endDate);
     const startOfMonthDateFilter = searchMonthDateFilterPrisma.gte;
 
-    const dealsData = await prisma.deal.findMany({
+    const dealsData = mockDb.deal.findMany({
       select: {
         id: true,
         bank: true,
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const otherDeals = await prisma.other_sales_log.groupBy({
+    const otherDeals = mockDb.other_sales_log.groupBy({
       by: ['assigned_seller_id'],
       where: {
         date: searchMonthDateFilterPrisma,
@@ -64,23 +64,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // const previousDealsReturnedThisMonth = await prisma.deal.groupBy({
-    //   by: ['seller_id'],
-    //   where: {
-    //     created_at: {
-    //       lt: startOfMonthDateFilter, // meses anteriores al current month search
-    //     },
-    //     lead: {
-    //       customer_funding_list_status_id: FundingStatuses.Returned,
-    //       customer_funding_returned_at: searchMonthDateFilterPrisma,
-    //     },
-    //   },
-    //   _count: {
-    //     _all: true,
-    //   },
-    // });
-
-    const previousDealsReturnedThisMonth = await prisma.deal.findMany({
+    const previousDealsReturnedThisMonth = mockDb.deal.findMany({
       where: {
         created_at: {
           lt: startOfMonthDateFilter, // meses anteriores al current month search
@@ -123,7 +107,7 @@ export async function GET(request: NextRequest) {
         const isSplitSold = deal.lead?.isSplitSold;
 
         if (isSplitSold) {
-          deal.lead?.sellersInSplitDeal.forEach(seller => {
+          deal.lead?.sellersInSplitDeal.forEach((seller: any) => {
             if (acc.has(seller.id.toString())) {
               const userMap = acc.get(seller.id.toString());
               if (userMap) {
@@ -170,7 +154,7 @@ export async function GET(request: NextRequest) {
         const isSplitSold = deal.lead?.isSplitSold;
 
         if (isSplitSold) {
-          deal.lead?.sellersInSplitDeal.forEach(seller => {
+          deal.lead?.sellersInSplitDeal.forEach((seller: any) => {
             if (acc.has(seller.id.toString())) {
               const userMap = acc.get(seller.id.toString());
               if (userMap) {
@@ -207,7 +191,7 @@ export async function GET(request: NextRequest) {
       new Map<string, { id: number; fullName: string; totalStore: number }>(),
     );
 
-    const users = await prisma.users.findMany({
+    const users = mockDb.users.findMany({
       select: {
         id: true,
         name: true,
@@ -226,8 +210,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ dealsBySales: dealsArray }, { status: 200 });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,6 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
-import { Prisma } from '@prisma/client';
+import { mockDb, Decimal } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 
 const TASK_STATUS = {
@@ -23,7 +22,7 @@ export async function GET(request: NextRequest) {
     const dateFilterObject = option ? { option, value, from, to } : null;
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const userData = await prisma.users.findMany({
+    const userData = mockDb.users.findMany({
       select: {
         id: true,
         name: true,
@@ -44,7 +43,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const smsAuto = await prisma.users.findMany({
+    const smsAuto = mockDb.users.findMany({
       select: {
         id: true,
         _count: {
@@ -61,7 +60,7 @@ export async function GET(request: NextRequest) {
     })
     const smsAutoMap = new Map(smsAuto.map(el => [el.id, el._count.sms_sender ?? 0]));
 
-    const leadsByUsers = await prisma.users_has_customers.groupBy({
+    const leadsByUsers = mockDb.users_has_customers.groupBy({
       by: ['user_id'],
       where: {
         created_at: dateWhereClause,
@@ -72,22 +71,7 @@ export async function GET(request: NextRequest) {
     });
     const leadsByUsersMap = new Map(leadsByUsers.map(el => [el.user_id, el._count._all]));
 
-    // const smsCount = await prisma.client_sms.groupBy({
-    //   by: ['sent_by'],
-    //   where: {
-    //     date_sent: dateWhereClause,
-    //     sent_by_user: true,
-    //     user: {
-    //       id:
-    //     }
-    //   },
-    //   _count: {
-    //     _all: true,
-    //   },
-    // });
-    // const smsCountMap = new Map(smsCount.map(el => [el.sent_by, el._count._all]));
-
-    const pendingTasksBySeller = await prisma.tasks.groupBy({
+    const pendingTasksBySeller = mockDb.tasks.groupBy({
       by: ['assigned_seller_id'],
       where: {
         status: TASK_STATUS.PENDING,
@@ -98,7 +82,7 @@ export async function GET(request: NextRequest) {
         _all: true, // Contamos todas las tareas en el grupo
       },
     });
-    const pendingTasksByAssignedTo = await prisma.tasks.groupBy({
+    const pendingTasksByAssignedTo = mockDb.tasks.groupBy({
       by: ['assigned_to'],
       where: {
         status: TASK_STATUS.PENDING,
@@ -116,7 +100,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const lateTasksBySeller = await prisma.tasks.groupBy({
+    const lateTasksBySeller = mockDb.tasks.groupBy({
       by: ['assigned_seller_id'],
       where: {
         status: TASK_STATUS.LATE,
@@ -127,7 +111,7 @@ export async function GET(request: NextRequest) {
         _all: true,
       },
     });
-    const lateTasksByAssignedTo = await prisma.tasks.groupBy({
+    const lateTasksByAssignedTo = mockDb.tasks.groupBy({
       by: ['assigned_to'],
       where: {
         status: TASK_STATUS.LATE,
@@ -149,7 +133,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const completedTasksBySeller = await prisma.tasks.groupBy({
+    const completedTasksBySeller = mockDb.tasks.groupBy({
       by: ['assigned_seller_id'],
       where: {
         status: TASK_STATUS.COMPLETED,
@@ -161,7 +145,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const completedTasksByAssignedTo = await prisma.tasks.groupBy({
+    const completedTasksByAssignedTo = mockDb.tasks.groupBy({
       by: ['assigned_to'],
       where: {
         status: TASK_STATUS.COMPLETED,
@@ -183,7 +167,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const inboundCalls = await prisma.client_calls.groupBy({
+    const inboundCalls = mockDb.client_calls.groupBy({
       by: ['user_id'],
       where: {
         call_direction_id: 1,
@@ -198,7 +182,7 @@ export async function GET(request: NextRequest) {
       inboundCalls.map(el => [el.user_id && el.user_id.length > 0 ? el.user_id[0] : 0, el._count._all]),
     );
 
-    const outboundCalls = await prisma.client_calls.groupBy({
+    const outboundCalls = mockDb.client_calls.groupBy({
       by: ['user_id'],
       where: {
         call_direction_id: 2,
@@ -213,7 +197,7 @@ export async function GET(request: NextRequest) {
       outboundCalls.map(el => [el.user_id && el.user_id.length > 0 ? el.user_id[0] : 0, el._count._all]),
     );
 
-    const madeAppointments = await prisma.appointments.groupBy({
+    const madeAppointments = mockDb.appointments.groupBy({
       by: ['created_by'],
       where: {
         created_at: dateWhereClause,
@@ -225,7 +209,7 @@ export async function GET(request: NextRequest) {
 
     const madeAppointmentsMap = new Map(madeAppointments.map(el => [el.created_by, el._count._all]));
 
-    const cancelledAppointmentsByUserAssigned = await prisma.appointments.groupBy({
+    const cancelledAppointmentsByUserAssigned = mockDb.appointments.groupBy({
       by: ['user_id'],
       where: {
         status_id: 3,
@@ -240,7 +224,7 @@ export async function GET(request: NextRequest) {
       cancelledAppointmentsByUserAssigned.map(el => [el.user_id, el._count._all]),
     );
 
-    const rescheduledAppointmentsByUserAssigned = await prisma.appointments.groupBy({
+    const rescheduledAppointmentsByUserAssigned = mockDb.appointments.groupBy({
       by: ['user_id'],
       where: {
         status_id: 4,
@@ -254,7 +238,7 @@ export async function GET(request: NextRequest) {
       rescheduledAppointmentsByUserAssigned.map(el => [el.user_id, el._count._all]),
     );
 
-    const completedAppointmentsByUserAssigned = await prisma.appointments.groupBy({
+    const completedAppointmentsByUserAssigned = mockDb.appointments.groupBy({
       by: ['user_id'],
       where: {
         status_id: 2,
@@ -269,7 +253,7 @@ export async function GET(request: NextRequest) {
       completedAppointmentsByUserAssigned.map(el => [el.user_id, el._count._all]),
     );
 
-    const confirmedAppointmentsByUserAssigned = await prisma.appointments.groupBy({
+    const confirmedAppointmentsByUserAssigned = mockDb.appointments.groupBy({
       by: ['user_id'],
       where: {
         status_id: 6,
@@ -284,7 +268,7 @@ export async function GET(request: NextRequest) {
       confirmedAppointmentsByUserAssigned.map(el => [el.user_id, el._count._all]),
     );
 
-    const activityEmailCount = await prisma.sales_activity_log.groupBy({
+    const activityEmailCount = mockDb.sales_activity_log.groupBy({
       by: ['user_id'], // Agrupamos por vendedor y tipo de actividad
       _count: {
         _all: true,
@@ -298,7 +282,7 @@ export async function GET(request: NextRequest) {
       activityEmailCount.map(el => [el.user_id, el._count._all]),
     );
 
-    const activitySoldCount = await prisma.sales_activity_log.groupBy({
+    const activitySoldCount = mockDb.sales_activity_log.groupBy({
       by: ['user_id'], // Agrupamos por vendedor y tipo de actividad
       _count: {
         _all: true,
@@ -312,7 +296,7 @@ export async function GET(request: NextRequest) {
       activitySoldCount.map(el => [el.user_id, el._count._all]),
     );
 
-    const deals = await prisma.deal.findMany({
+    const deals = mockDb.deal.findMany({
       where: {
         created_at: dateWhereClause,
       },
@@ -321,8 +305,8 @@ export async function GET(request: NextRequest) {
 
     // 3. Unimos los resultados
     const result = userData.map(user => {
-      let frontend = Prisma.Decimal(0);
-      let backend = Prisma.Decimal(0);
+      let frontend = Decimal(0);
+      let backend = Decimal(0);
       deals.forEach(deal => {
         if (deal.seller_id === user.id) {
           if (deal.frontend) {
@@ -363,13 +347,10 @@ export async function GET(request: NextRequest) {
     });
 
     console.log('Data: ', result);
-    //await prisma.$disconnect();
 
     return NextResponse.json(result);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 
@@ -94,7 +94,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     //   }
     // }
 
-    const deal = await prisma.deal.update({
+    const deal = mockDb.deal.update({
       where: {
         id: dealId,
       },
@@ -105,7 +105,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     });
 
     if (customerId && status) {
-      const customer = await prisma.clients.update({
+      const customer = mockDb.clients.update({
         where: {
           id: parseInt(customerId),
         },
@@ -114,7 +114,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: parseInt(leadId),
         },
@@ -124,13 +124,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Data Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

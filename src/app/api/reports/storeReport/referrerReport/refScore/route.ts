@@ -1,5 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { RefScoreSummary } from '../type';
 import { revalidatePath } from 'next/cache';
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   try {
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         customer_referrer: {
           buyer: {},

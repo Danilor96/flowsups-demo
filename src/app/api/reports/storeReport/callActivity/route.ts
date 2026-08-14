@@ -1,5 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
   try {
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const users = await prisma.users.findMany({
+    const users = mockDb.users.findMany({
       select: {
         id: true,
         name: true,
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const callsData = await prisma.client_calls.findMany({
+    const callsData = mockDb.client_calls.findMany({
       where: {
         call_date: dateWhereClause,
       },
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const messageData = await prisma.client_sms.findMany({
+    const messageData = mockDb.client_sms.findMany({
       where: {
         date_sent: dateWhereClause,
         sent_by_user: true,
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const leadsByUsers = await prisma.users_has_customers.findMany({
+    const leadsByUsers = mockDb.users_has_customers.findMany({
       where: {
         created_at: dateWhereClause,
       },
@@ -81,8 +81,6 @@ export async function GET(request: NextRequest) {
         },
       },
     });
-
-    //await prisma.$disconnect();
 
     const salesRepMap = new Map<number, CallActivitySummary>();
 
@@ -107,7 +105,7 @@ export async function GET(request: NextRequest) {
     });
 
     callsData.forEach((call) => {
-      call.user_id.forEach((userId) => {
+      call.user_id.forEach((userId: any) => {
         const data = salesRepMap.get(userId);
 
         if (data) {
@@ -121,7 +119,7 @@ export async function GET(request: NextRequest) {
     });
 
     messageData.forEach((mssg) => {
-      mssg.user.forEach((user) => {
+      mssg.user.forEach((user: any) => {
         const data = salesRepMap.get(user.id);
 
         if (data) {
@@ -149,8 +147,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(dataToReturn);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
 import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         bdc_id: userId,
         customer_status_id: {

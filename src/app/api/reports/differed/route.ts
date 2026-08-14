@@ -1,10 +1,7 @@
 import { FundingStatuses } from '@/app/libs/customer/customersFunctions';
 import { buildDateRangeFilter, getPreviousMonthDateRange } from '@/app/libs/monthAndYearDateFilter';
-import prisma from '@/app/libs/prisma';
-import { Prisma } from '@prisma/client';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
-
-const Decimal = Prisma.Decimal;
 
 export const dynamic = 'force-dynamic';
 
@@ -82,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     const onlyPending = searchParams.get('onlyPending') === 'true';
 
-    const where: Prisma.DealWhereInput = {
+    const where: any = {
       lead: {
         sold_created_at: searchMonthDateFilterPrisma,
         OR: [
@@ -90,9 +87,6 @@ export async function GET(request: NextRequest) {
           { customer_funding_list_status_id: { not: FundingStatuses.Returned } },
           { customer_funding_returned_at: null },
           // CASO 2: Se retornó, pero NO en este mes (ej. en un mes futuro)
-          // {
-          //   customer_funding_returned_at: { gt: searchMonthDateFilterPrisma.lte },
-          // },
         ],
       },
     };
@@ -107,7 +101,7 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    const dealsCurrentData = await prisma.deal.findMany({
+    const dealsCurrentData = mockDb.deal.findMany({
       where,
       include: {
         customer: {
@@ -189,8 +183,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

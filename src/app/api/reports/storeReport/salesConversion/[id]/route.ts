@@ -1,5 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse, NextRequest } from 'next/server';
 import { SalesConversionCustomersDetail } from '../types';
 
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         created_at: dateWhereClause,
         customer_status_id: Number(customerStatusId),

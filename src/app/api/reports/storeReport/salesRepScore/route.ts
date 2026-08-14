@@ -1,7 +1,6 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb, Decimal } from '@/app/libs/mock-db';
 import { ActivityType } from '@/app/libs/services/salesPointsService';
-import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -18,8 +17,8 @@ export async function GET(request: NextRequest) {
   try {
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const businessConfig = await prisma.salesGoalsConfig.findFirst();
-    const activityCounts = await prisma.sales_activity_log.groupBy({
+    const businessConfig = mockDb.salesGoalsConfig.findFirst();
+    const activityCounts = mockDb.sales_activity_log.groupBy({
       by: ['user_id', 'activity_type'], // Agrupamos por vendedor y tipo de actividad
       _count: {
         id: true,
@@ -29,7 +28,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const users = await prisma.users.findMany({
+    const users = mockDb.users.findMany({
       select: {
         id: true,
         name: true,
@@ -66,7 +65,7 @@ export async function GET(request: NextRequest) {
       
     });
 
-    const userHasClients = await prisma.clients.findMany({
+    const userHasClients = mockDb.clients.findMany({
       select: {
         id: true,
         seller_id: true,
@@ -77,7 +76,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const deals = await prisma.deal.findMany({
+    const deals = mockDb.deal.findMany({
       where: {
         created_at: dateWhereClause,
       },
@@ -110,8 +109,8 @@ export async function GET(request: NextRequest) {
     for (const item of activityCounts) {
       const { user_id, activity_type, _count } = item;
      
-      let frontend = Prisma.Decimal(0);
-      let backend = Prisma.Decimal(0);
+      let frontend = Decimal(0);
+      let backend = Decimal(0);
       deals.forEach(deal => {
         if (deal.seller_id === user_id) {
           if (deal.frontend) {
@@ -136,10 +135,8 @@ export async function GET(request: NextRequest) {
           total: frontend.add(backend).toNumber(),          
         };
       }
-      report[user_id].activities[activity_type] = _count.id;
+      (report[user_id].activities as any)[activity_type] = _count.id;
     }
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({
       activityCounts: Object.values(report),
@@ -147,8 +144,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,8 +1,7 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import { buildPrismaWhereClause } from '@/app/api/adminDashboard/clients/by-filters/convertToPrismaFilters';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +20,7 @@ export async function GET(req: NextRequest) {
     const whereClause = {} //buildPrismaWhereClause(filters);
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const data = await prisma?.clients.findMany({
+    const data = mockDb.clients.findMany({
       select: {
         id: true,
         name_lastname: true,
@@ -286,13 +285,9 @@ export async function GET(req: NextRequest) {
       },
     }); 
 
-    //await prisma?.$disconnect();
-
     return NextResponse.json(data);
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

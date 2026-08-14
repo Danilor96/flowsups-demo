@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 // deberia ser por business id,  (multi-tenant)
 export async function GET() {
   try {
-    const data = await prisma.client_Bulk_sms.findMany({
+    const data = mockDb.client_Bulk_sms.findMany({
       include: {
         bulk_sms_creator: {
             select: {
@@ -20,13 +20,10 @@ export async function GET() {
         created_at: 'desc',
       },
     });
-    //await prisma.$disconnect();
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

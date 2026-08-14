@@ -1,5 +1,5 @@
 import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { BdcLogSummary } from './types';
 import { revalidatePath } from 'next/cache';
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         customer_status_id: {
           in: [CustomersStatuses.Sold, CustomersStatuses.Funded],
@@ -60,8 +60,6 @@ export async function GET(request: NextRequest) {
         },
       },
     });
-
-    // await prisma.$disconnect();
 
     const bdcSummary: BdcLogSummary[] = leads.map((lead) => {
       const customer = lead.clients;
@@ -124,8 +122,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(bdcSummary);
   } catch (error) {
     console.log(error);
-
-    // await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

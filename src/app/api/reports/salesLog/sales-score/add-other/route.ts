@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextRequest } from 'next/server';
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate');
 
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
-    const data = await prisma.other_sales_log.findMany({
+    const data = mockDb.other_sales_log.findMany({
       where: {
         created_at: prismaDateFilter,
       },
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     validatedData.data;
 
   try {
-    const vehicle = await prisma.other_vehicle.create({
+    const vehicle = mockDb.other_vehicle.create({
       data: {
         make: vehicle_make,
         model: vehicle_model,
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
     }
 
-    const data = await prisma.other_sales_log.create({
+    const data = mockDb.other_sales_log.create({
       data: {
         customerFirstName: customer_firstname,
         customerLastName: customer_lastname,
@@ -126,13 +126,9 @@ export async function POST(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Sales Log (Other) Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

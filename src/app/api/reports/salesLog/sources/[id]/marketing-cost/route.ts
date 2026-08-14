@@ -1,8 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb, Decimal } from '@/app/libs/mock-db';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
-import { Decimal } from '@prisma/client/runtime/library';
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const { searchParams } = request.nextUrl;
@@ -21,7 +20,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const amount = marketingCostAmount ? marketingCostAmount.toString() : '0';
 
     // todo: multi tenant business id
-    const businessId = await prisma.business.findFirst({ select: { id: true } });
+    const businessId = mockDb.business.findFirst({ select: { id: true } });
     if (!businessId) {
       return NextResponse.json({ serverError: 'Business not found' }, { status: 404 });
     }
@@ -29,7 +28,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
     // crear o actualizar un marketing cost para el mes actual y la fuente seleccionada
-    const existingMarketingCost = await prisma.marketing_cost.findFirst({
+    const existingMarketingCost = mockDb.marketing_cost.findFirst({
       where: {
         source_id: sourceId,
         created_at: prismaDateFilter,
@@ -42,7 +41,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     })
     const normalizedAmount = amount.replaceAll(',', '.');
     if (existingMarketingCost) {
-      await prisma.marketing_cost.update({
+      mockDb.marketing_cost.update({
         where: {
           id: existingMarketingCost.id,
         },
@@ -53,7 +52,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       console.log('updated: ')
     } else {
       console.log('created: ')
-      await prisma.marketing_cost.create({
+      mockDb.marketing_cost.create({
         data: {
           amount: Decimal(normalizedAmount),
           source_id: sourceId,

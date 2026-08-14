@@ -1,5 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse, NextRequest } from 'next/server';
 import { SalesConversionSummary, SalesConversionSummaryColsTotal } from './types';
 import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const users = await prisma.users.findMany({
+    const users = mockDb.users.findMany({
       select: {
         id: true,
         name: true,
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         created_at: dateWhereClause,
       },

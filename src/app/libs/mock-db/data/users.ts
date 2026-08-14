@@ -1,6 +1,8 @@
 export const DEMO_EMAIL = 'demo@flowsups.com';
 export const DEMO_PASSWORD = 'demo1234';
 
+import { Decimal } from '../decimal';
+
 export const allPermissionIds = Array.from({ length: 55 }, (_, index) => index + 1);
 
 const adminPermissionIds = [
@@ -307,5 +309,59 @@ export const seedUsers = [
         },
       },
     ],
+  },
+];
+
+seedUsers.forEach((user: any) => {
+  user._count = { sms_sender: 3 };
+  user.pay_plan = { of_cash_down: '0.5' };
+  user.monthly_goals = [];
+  user.client_seller = [];
+  user.client_sales_manager = [];
+  if ([1, 2, 3, 6, 7].includes(user.id)) {
+    user.comissionInfo = {
+      bonus: [
+        {
+          id: user.id,
+          amount: Decimal(500),
+          description: 'Monthly bonus',
+          comission_info_id: user.id,
+        },
+      ],
+      salary: [
+        {
+          id: user.id,
+          amount: Decimal(1500),
+          description: 'Base salary',
+          comission_info_id: user.id,
+        },
+      ],
+      spiff: [
+        {
+          id: user.id,
+          amount: Decimal(200),
+          description: 'Spiff',
+          comission_info_id: user.id,
+        },
+      ],
+    };
+  }
+});
+
+(seedUsers[1] as any).client_seller = [
+  { id: 6, client_status_id: 10, first_name: 'Luis', last_name: 'Alvarez' },
+  { id: 7, client_status_id: 1, first_name: 'Maria', last_name: 'Gonzalez' },
+];
+(seedUsers[2] as any).client_seller = [
+  { id: 10, client_status_id: 11, first_name: 'David', last_name: 'Wilson' },
+];
+(seedUsers[1] as any).monthly_goals = [
+  {
+    id: 1,
+    sales_goal: Decimal(10),
+    date_month: new Date('2026-08-01T00:00:00.000Z'),
+    created_at: new Date('2026-08-01T00:00:00.000Z'),
+    business_id: 1,
+    user_id: 2,
   },
 ];

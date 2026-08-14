@@ -1,5 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { ActivityReport, leadTitle } from './types';
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   try {
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const leads = await prisma.client_has_lead.findMany({
+    const leads = mockDb.client_has_lead.findMany({
       where: {
         created_at: dateWhereClause,
       },
@@ -145,13 +145,9 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json(activityReportSummary);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

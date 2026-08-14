@@ -1,8 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
-import { Decimal } from '@prisma/client/runtime/library';
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const { searchParams } = request.nextUrl;
@@ -24,7 +23,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const salesGoalValue = salesGoal ? parseInt(salesGoal.toString()) : 0;
 
     // todo: multi tenant business id
-    const businessId = await prisma.business.findFirst({ select: { id: true } });
+    const businessId = mockDb.business.findFirst({ select: { id: true } });
     if (!businessId) {
       return NextResponse.json({ serverError: 'Business not found' }, { status: 404 });
     }
@@ -32,7 +31,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
     // crear o actualizar un monthly goals para el mes actual y la fuente seleccionada
-    const existingSalesGoal = await prisma.monthly_goals.findFirst({
+    const existingSalesGoal = mockDb.monthly_goals.findFirst({
       where: {
         user_id: userId,
         date_month: prismaDateFilter,
@@ -41,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     });
  
     if (existingSalesGoal) {
-      await prisma.monthly_goals.update({
+      mockDb.monthly_goals.update({
         where: {
           id: existingSalesGoal.id,
         },
@@ -52,7 +51,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       console.log('updated: ')
     } else {
       console.log('created: ')
-      await prisma.monthly_goals.create({
+      mockDb.monthly_goals.create({
         data: {
           sales_goal: salesGoalValue,
           user_id: userId,

@@ -1,5 +1,5 @@
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
   try {
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
     // todo: multi tenant business id
-    const businessId = await prisma.business.findFirst({ select: { id: true } });
-    const result = await prisma.charges_back.findMany({
+    const businessId = mockDb.business.findFirst({ select: { id: true } });
+    const result = mockDb.charges_back.findMany({
       where: {
         business_id: businessId?.id,
         created_at: prismaDateFilter,
@@ -49,12 +49,12 @@ export async function POST(request: NextRequest) {
 
   try {
     // todo: multi tenant business id
-    const businessId = await prisma.business.findFirst({ select: { id: true } });
+    const businessId = mockDb.business.findFirst({ select: { id: true } });
     if(!businessId) {
       return NextResponse.json({ serverError: 'Business not found' }, { status: 404 });
     }
 
-    const result = await prisma.charges_back.create({
+    const result = mockDb.charges_back.create({
       data: {
         business_id: businessId.id,
         description,

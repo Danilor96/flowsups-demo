@@ -43,7 +43,23 @@ import {
   seedDeals,
   seedPaymentDates,
   seedAmountPerDates,
+  seedChargesBack,
+  seedOtherSalesLog,
+  seedOtherVehicle,
+  seedMarketingCost,
 } from "./data/deals";
+import {
+  seedSalesGoalsConfig,
+  seedSalesActivityLog,
+  seedComissionInfo,
+  seedComissionSpiff,
+  seedComissionBonus,
+  seedComissionSalary,
+  seedClientsHasReferrer,
+  seedDealReceipts,
+  seedDailyVisitHistory,
+  seedMonthlyGoals,
+} from "./data/reports";
 import {
   seedCreditAppNavigations,
   seedCreditApps,
@@ -103,6 +119,8 @@ import {
 } from "./data/settingsRoutes";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
+import { MockDecimal } from "./decimal";
+export { Decimal, MockDecimal } from "./decimal";
 
 export type MockWhere = Record<string, any>;
 
@@ -126,6 +144,13 @@ export interface Store<T> {
   deleteMany(params: { where: MockWhere }): { count: number };
   upsert(params: { where: MockWhere; create: any; update: any }): T;
   count(params?: { where?: MockWhere }): number;
+  groupBy(params?: {
+    by?: string[];
+    where?: MockWhere;
+    _count?: Record<string, boolean>;
+    _sum?: Record<string, boolean>;
+  }): any[];
+  aggregate(params?: { where?: MockWhere; _sum?: Record<string, boolean> }): any;
   all(): T[];
   reset(): void;
 }
@@ -141,6 +166,16 @@ function matchesValue(actual: any, expected: any): boolean {
   ) {
     if ("equals" in expected) return matchesValue(actual, expected.equals);
     if ("not" in expected) return !matchesValue(actual, expected.not);
+    if ("isNot" in expected) {
+      if (expected.isNot === null) {
+        return actual !== null && actual !== undefined;
+      }
+      return actual !== expected.isNot;
+    }
+    if ("isEmpty" in expected) {
+      if (!Array.isArray(actual)) return false;
+      return expected.isEmpty === true ? actual.length === 0 : actual.length > 0;
+    }
     if ("in" in expected) {
       return (
         Array.isArray(expected.in) &&
@@ -250,7 +285,6 @@ function matchesWhere(
 
 function sortRecords<T>(records: T[], orderBy: any): T[] {
   if (!orderBy) return records;
-
   const fields = Array.isArray(orderBy) ? orderBy : [orderBy];
   const sorted = [...records];
 
@@ -275,6 +309,46 @@ function sortRecords<T>(records: T[], orderBy: any): T[] {
   });
 
   return sorted;
+}
+
+function resolveNestedCreate(data: AnyRecord): AnyRecord {
+  const resolved: AnyRecord = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (value && typeof value === "object" && "create" in value) {
+      const child = resolveNestedCreate(value.create);
+      if (child.id === undefined) {
+        child.id = child.id ?? Math.floor(Math.random() * 1000000) + 1;
+      }
+      resolved[key] = [child];
+    } else {
+      resolved[key] = value;
+    }
+  }
+  return resolved;
+}
+
+function applyIncrementDecrement(current: AnyRecord, data: AnyRecord): AnyRecord {
+  const merged: AnyRecord = { ...data };
+  for (const [key, value] of Object.entries(data)) {
+    if (value && typeof value === "object" && !Array.isArray(value) && !(value instanceof Date)) {
+      if ("increment" in value) {
+        const delta = Number(value.increment) || 0;
+        const currentValue = current[key];
+        merged[key] =
+          currentValue instanceof MockDecimal
+            ? currentValue.plus(delta)
+            : (Number(currentValue) || 0) + delta;
+      } else if ("decrement" in value) {
+        const delta = Number(value.decrement) || 0;
+        const currentValue = current[key];
+        merged[key] =
+          currentValue instanceof MockDecimal
+            ? currentValue.minus(delta)
+            : (Number(currentValue) || 0) - delta;
+      }
+    }
+  }
+  return merged;
 }
 
 export function createStore<T>(initial: T[]): Store<T> {
@@ -329,7 +403,7 @@ export function createStore<T>(initial: T[]): Store<T> {
       return result[0] ?? null;
     },
     create({ data }) {
-      const record = assignId(data);
+      const record = assignId(resolveNestedCreate(data) as T);
       records.push(record);
       return record;
     },
@@ -350,7 +424,7 @@ export function createStore<T>(initial: T[]): Store<T> {
       const current = records[index] as AnyRecord;
       const updated = {
         ...current,
-        ...(data as AnyRecord),
+        ...applyIncrementDecrement(current, data as AnyRecord),
         id: current.id,
       } as T;
       records[index] = updated;
@@ -363,7 +437,7 @@ export function createStore<T>(initial: T[]): Store<T> {
           const current = record as AnyRecord;
           records[index] = {
             ...current,
-            ...(data as AnyRecord),
+            ...applyIncrementDecrement(current, data as AnyRecord),
             id: current.id,
           } as T;
           count += 1;
@@ -403,7 +477,7 @@ export function createStore<T>(initial: T[]): Store<T> {
       const current = records[index] as AnyRecord;
       const updated = {
         ...current,
-        ...(update as AnyRecord),
+        ...applyIncrementDecrement(current, update as AnyRecord),
         id: current.id,
       } as T;
       records[index] = updated;
@@ -413,6 +487,77 @@ export function createStore<T>(initial: T[]): Store<T> {
       return records.filter((record) =>
         matchesWhere(record as AnyRecord, params.where),
       ).length;
+    },
+    groupBy(params = {}) {
+      const { by = [], where, _count = {}, _sum = {} } = params;
+      const filtered = records.filter((record) =>
+        matchesWhere(record as AnyRecord, where),
+      );
+
+      const groups = new Map<string, AnyRecord[]>();
+      filtered.forEach((record) => {
+        const key = JSON.stringify(
+          by.map((field: string) => (record as AnyRecord)[field]),
+        );
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key)!.push(record as AnyRecord);
+      });
+
+      const results: AnyRecord[] = [];
+      groups.forEach((group, key) => {
+        const byValues = JSON.parse(key) as any[];
+        const entry: AnyRecord = {};
+        by.forEach((field: string, index: number) => {
+          entry[field] = byValues[index];
+        });
+
+        const countResult: AnyRecord = {};
+        if ("_all" in _count) countResult._all = group.length;
+        Object.keys(_count).forEach((field) => {
+          if (field === "_all") return;
+          countResult[field] = group.filter(
+            (record) =>
+              record[field] !== null && record[field] !== undefined,
+          ).length;
+        });
+        if (Object.keys(countResult).length > 0) entry._count = countResult;
+
+        const sumResult: AnyRecord = {};
+        Object.keys(_sum).forEach((field) => {
+          sumResult[field] = new MockDecimal(
+            group.reduce((acc: number, record) => {
+              const value = record[field];
+              if (value == null) return acc;
+              if (value instanceof MockDecimal) return acc + value.toNumber();
+              return acc + (Number(value) || 0);
+            }, 0),
+          );
+        });
+        if (Object.keys(sumResult).length > 0) entry._sum = sumResult;
+
+        results.push(entry);
+      });
+
+      return results;
+    },
+    aggregate(params = {}) {
+      const { where, _sum = {} } = params;
+      const filtered = records.filter((record) =>
+        matchesWhere(record as AnyRecord, where),
+      );
+
+      const sumResult: AnyRecord = {};
+      Object.keys(_sum).forEach((field) => {
+        const total = filtered.reduce((acc: number, record) => {
+          const value = (record as AnyRecord)[field];
+          if (value == null) return acc;
+          if (value instanceof MockDecimal) return acc + value.toNumber();
+          return acc + (Number(value) || 0);
+        }, 0);
+        sumResult[field] = filtered.length === 0 ? null : new MockDecimal(total);
+      });
+
+      return { _sum: sumResult };
     },
     all() {
       return records;
@@ -482,6 +627,20 @@ export const mockDb: Record<string, Store<any>> = {
   deal: createStore(seedDeals),
   paymentDate: createStore(seedPaymentDates),
   amountPerDate: createStore(seedAmountPerDates),
+  charges_back: createStore(seedChargesBack),
+  other_sales_log: createStore(seedOtherSalesLog),
+  other_vehicle: createStore(seedOtherVehicle),
+  marketing_cost: createStore(seedMarketingCost),
+  salesGoalsConfig: createStore(seedSalesGoalsConfig),
+  sales_activity_log: createStore(seedSalesActivityLog),
+  comission_info: createStore(seedComissionInfo),
+  comission_spiff: createStore(seedComissionSpiff),
+  comission_bonus: createStore(seedComissionBonus),
+  comission_salary: createStore(seedComissionSalary),
+  clients_has_referrer: createStore(seedClientsHasReferrer),
+  dealReceipt: createStore(seedDealReceipts),
+  daily_visit_history: createStore(seedDailyVisitHistory),
+  monthly_goals: createStore(seedMonthlyGoals),
   credit_app_navigation: createStore(seedCreditAppNavigations),
   credit_app: createStore(seedCreditApps),
   credit_app_address: createStore(seedCreditAppAddresses),

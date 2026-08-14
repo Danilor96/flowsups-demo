@@ -1,14 +1,13 @@
 import { FundingStatuses } from '@/app/libs/customer/customersFunctions';
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
-import prisma from '@/app/libs/prisma';
-import { Prisma } from '@prisma/client';
+import { mockDb, Decimal } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 // todo: multi tenant business id
 
 interface MarketingCost {
-  amount: Prisma.Decimal;
+  amount: Decimal;
   sourceId: number;
 }
 
@@ -21,7 +20,7 @@ export async function GET(request: NextRequest) {
     const searchMonthDateFilterPrisma = buildDateRangeFilter(startDate, endDate);
     const startOfMonthDateFilter = searchMonthDateFilterPrisma.gte;
 
-    const dealsData = await prisma.deal.findMany({
+    const dealsData = mockDb.deal.findMany({
       include: {
         customer: {
           select: {
@@ -48,12 +47,12 @@ export async function GET(request: NextRequest) {
     });
 
     // todo: multi tenant business id
-    const businessId = await prisma.business.findFirst({ select: { id: true } });
+    const businessId = mockDb.business.findFirst({ select: { id: true } });
     if (!businessId) {
       return NextResponse.json({ serverError: 'Business not found' }, { status: 404 });
     }
 
-    const marketingCosts = await prisma.marketing_cost.findMany({
+    const marketingCosts = mockDb.marketing_cost.findMany({
       where: {
         business_id: businessId.id,
         created_at: searchMonthDateFilterPrisma,
@@ -78,7 +77,7 @@ export async function GET(request: NextRequest) {
     // });
 
     const dealsBySource: {
-      [key: string]: { sourceId: number; totalSold: number; totalProfit: Prisma.Decimal; marketingCost: MarketingCost | null };
+      [key: string]: { sourceId: number; totalSold: number; totalProfit: Decimal; marketingCost: MarketingCost | null };
     } = dealsData.reduce((acc, deal) => {
       const sourceName = deal.customer?.lead_source?.source;
       const sourceId = deal.customer?.lead_source?.id;
@@ -86,8 +85,8 @@ export async function GET(request: NextRequest) {
 
       const marketingCost = marketingCostMap.get(sourceId.toString());
 
-      let frontend = deal.frontend || Prisma.Decimal(0);
-      let backend = deal.backend || Prisma.Decimal(0);
+      let frontend = deal.frontend || Decimal(0);
+      let backend = deal.backend || Decimal(0);
 
       if (sourceName) {
         if (acc[sourceName]) {
@@ -105,7 +104,7 @@ export async function GET(request: NextRequest) {
         }
       }
       return acc;
-    }, {} as { [key: string]: { sourceId: number; totalSold: number; totalProfit: Prisma.Decimal; marketingCost: MarketingCost | null } });
+    }, {} as { [key: string]: { sourceId: number; totalSold: number; totalProfit: Decimal; marketingCost: MarketingCost | null } });
 
     const dealsArray = Object.entries(dealsBySource).map(([source, value]) => ({
       source,
@@ -115,8 +114,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ dealsBySource: dealsArray }, { status: 200 });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

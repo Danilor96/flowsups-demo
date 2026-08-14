@@ -1,6 +1,8 @@
 import { seedUsers } from './users';
 import { seedClients } from './clients';
-import { seedClientStatuses, seedLeadStatuses, seedLeadTemperatures } from './settings';
+import { seedClientStatuses, seedLeadStatuses, seedLeadTemperatures, seedFundingListStatuses } from './settings';
+import { seedVehicles } from './vehicles';
+import { Decimal } from '../decimal';
 
 const seller = seedUsers[1];
 const seller2 = seedUsers[2];
@@ -582,3 +584,126 @@ export const seedLeads = [
     client_has_lead: [seedClientHasLead[9]],
   },
 ];
+
+const salesManager = seedUsers[3];
+const financeManager = seedUsers[4];
+
+seedLeads.forEach((lead: any) => {
+  lead.sales_manager = lead.sales_manager_id
+    ? { id: salesManager.id, name: salesManager.name, last_name: salesManager.last_name, username: salesManager.username }
+    : null;
+  lead.customer_cobuyer = null;
+  lead.sellersInSplitDeal = [];
+  lead.daily_visit_history = [];
+  lead.client_vehicle_tradein = null;
+  lead.vehicle = lead.vehicle_id ? seedVehicles[lead.vehicle_id - 1] : null;
+  lead.customer_funding_list_status = lead.customer_funding_list_status_id
+    ? seedFundingListStatuses[lead.customer_funding_list_status_id - 1] || null
+    : null;
+});
+
+(seedLeads[5] as any).deal = {
+  id: 1,
+  downpayment: Decimal(12000),
+  bonus: Decimal(1000),
+  paid: Decimal(5000),
+  loan_id: 'LOAN-2026-0001',
+  created_at: new Date('2026-08-01T18:00:00.000Z'),
+  deferredDownpayment: Decimal(3000),
+  bank: { id: 1, bank: 'Chase Auto Finance' },
+  moneyDuePaid: Decimal(0),
+  customer: { mobile_phone: seedClients[5].mobile_phone, first_name: seedClients[5].first_name, last_name: seedClients[5].last_name },
+};
+(seedLeads[5] as any).customer_cobuyer = null;
+(seedLeads[5] as any).daily_visit_history = [
+  {
+    id: 1,
+    customer_id: 6,
+    sales_rep_id: 2,
+    vehicle_id: 8,
+    decision_id: 2,
+    note_id: 1,
+    created_at: new Date('2026-08-05T14:00:00.000Z'),
+    sales_rep: { id: 2, name: seedUsers[1].name, last_name: seedUsers[1].last_name, username: seedUsers[1].username },
+    vehicle: { ...seedVehicles[7] },
+    note: { note: 'Customer liked the truck, requested a test drive next week.' },
+  },
+];
+
+(seedLeads[9] as any).deal = {
+  id: 2,
+  downpayment: Decimal(20000),
+  bonus: Decimal(2000),
+  paid: Decimal(15000),
+  loan_id: 'LOAN-2026-0002',
+  created_at: new Date('2026-07-20T14:00:00.000Z'),
+  deferredDownpayment: Decimal(0),
+  bank: { id: 2, bank: 'Capital One Auto Finance' },
+  moneyDuePaid: Decimal(5000),
+  customer: { mobile_phone: seedClients[9].mobile_phone, first_name: seedClients[9].first_name, last_name: seedClients[9].last_name },
+};
+(seedLeads[9] as any).customer_cobuyer = null;
+
+const referrerClient = {
+  id: 11,
+  first_name: seedClients[10].first_name,
+  last_name: seedClients[10].last_name,
+  mobile_phone: seedClients[10].mobile_phone,
+  contact_method_id: seedClients[10].contact_method_id,
+  contact_time_id: seedClients[10].contact_time_id,
+  client_address: seedClients[10].client_address,
+};
+
+(seedLeads[5] as any).customer_referrer = {
+  id: 1,
+  amount: '500',
+  created_at: new Date('2026-08-05T00:00:00.000Z'),
+  buyer: {
+    id: 6,
+    first_name: seedClients[5].first_name,
+    last_name: seedClients[5].last_name,
+    mobile_phone: seedClients[5].mobile_phone,
+    contact_method_id: seedClients[5].contact_method_id,
+    contact_time_id: seedClients[5].contact_time_id,
+    client_address: seedClients[5].client_address,
+  },
+  referrer: {
+    id: 11,
+    first_name: seedClients[10].first_name,
+    last_name: seedClients[10].last_name,
+  },
+};
+
+seedClientHasLead.forEach((item: any, index: number) => {
+  const client = seedClients[index];
+  const sellerRep = index === 1 || index === 4 ? seedUsers[2] : index === 2 || index === 5 || index === 8 ? seedUsers[6] : seedUsers[1];
+  item.client_lead = {
+    id: client.id,
+    first_name: client.first_name,
+    last_name: client.last_name,
+    seller: {
+      id: sellerRep.id,
+      name: sellerRep.name,
+      last_name: sellerRep.last_name,
+      username: sellerRep.username,
+    },
+    client_status_id: client.client_status_id,
+  };
+  item.client_leads = {
+    id: index + 1,
+    lead: index % 2 === 0 ? 'Walk In' : 'Phone Call',
+  };
+  item.note_assigned = index === 0 ? { note: 'First client note' } : null;
+  item.lead_created_by = {
+    id: seedUsers[5].id,
+    name: seedUsers[5].name,
+    last_name: seedUsers[5].last_name,
+    username: seedUsers[5].username,
+  };
+  item.assigned_seller = {
+    id: item.assigned_to_id,
+    name: sellerRep.name,
+    last_name: sellerRep.last_name,
+    username: sellerRep.username,
+  };
+});

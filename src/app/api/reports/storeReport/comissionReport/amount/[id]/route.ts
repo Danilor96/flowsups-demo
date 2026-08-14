@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { AmountForm, ComissionType } from '../../types';
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     let data: AmountForm[] = [];
 
-    const comissionInfo = await prisma.comission_info.findUnique({
+    const comissionInfo = mockDb.comission_info.findUnique({
       where: {
         user_id: userId,
       },
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     if (comissionInfo) {
       switch (type) {
         case ComissionType.Spiff:
-          const spiffData = await prisma.comission_spiff.findMany({
+          const spiffData = mockDb.comission_spiff.findMany({
             where: {
               comission_info_id: comissionInfo.id,
             },
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           break;
 
         case ComissionType.Bonus:
-          const bonusData = await prisma.comission_bonus.findMany({
+          const bonusData = mockDb.comission_bonus.findMany({
             where: {
               comission_info_id: comissionInfo.id,
             },
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           break;
 
         case ComissionType.Salary:
-          const salaryData = await prisma.comission_salary.findMany({
+          const salaryData = mockDb.comission_salary.findMany({
             where: {
               comission_info_id: comissionInfo.id,
             },
@@ -137,7 +137,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const forms = validatedData.data;
 
   try {
-    const comissionData = await prisma.comission_info.upsert({
+    const comissionData = mockDb.comission_info.upsert({
       where: {
         user_id: userId,
       },
@@ -177,7 +177,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     switch (forms.type) {
       case ComissionType.Spiff:
-        await prisma.comission_spiff.deleteMany({
+        mockDb.comission_spiff.deleteMany({
           where: {
             id: {
               in: forms.deletedFormsIds?.map((id) => Number(id)),
@@ -186,7 +186,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         });
 
         if (dataToCreate.length > 0) {
-          await prisma.comission_spiff.createMany({
+          mockDb.comission_spiff.createMany({
             data: dataToCreate,
           });
         }
@@ -194,7 +194,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         const updateSpiffPromises = formsToUpdate.map((form) => {
           const idToUpdate = Number(form.id);
 
-          return prisma.comission_spiff.update({
+          return mockDb.comission_spiff.update({
             where: { id: idToUpdate },
             data: {
               amount: form.amount,
@@ -203,9 +203,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           });
         });
 
-        await Promise.all(updateSpiffPromises);
-
-        const currentSpiffs = await prisma.comission_spiff.findMany({
+        const currentSpiffs = mockDb.comission_spiff.findMany({
           where: {
             comission_info_id: comissionData.id,
           },
@@ -228,7 +226,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         break;
 
       case ComissionType.Bonus:
-        await prisma.comission_bonus.deleteMany({
+        mockDb.comission_bonus.deleteMany({
           where: {
             id: {
               in: forms.deletedFormsIds?.map((id) => Number(id)),
@@ -237,7 +235,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         });
 
         if (dataToCreate.length > 0) {
-          await prisma.comission_bonus.createMany({
+          mockDb.comission_bonus.createMany({
             data: dataToCreate,
           });
         }
@@ -245,7 +243,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         const updateBonusPromises = formsToUpdate.map((form) => {
           const idToUpdate = Number(form.id);
 
-          return prisma.comission_bonus.update({
+          return mockDb.comission_bonus.update({
             where: { id: idToUpdate },
             data: {
               amount: form.amount,
@@ -254,9 +252,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           });
         });
 
-        await Promise.all(updateBonusPromises);
-
-        const currentBonus = await prisma.comission_bonus.findMany({
+        const currentBonus = mockDb.comission_bonus.findMany({
           where: {
             comission_info_id: comissionData.id,
           },
@@ -279,7 +275,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         break;
 
       case ComissionType.Salary:
-        await prisma.comission_salary.deleteMany({
+        mockDb.comission_salary.deleteMany({
           where: {
             id: {
               in: forms.deletedFormsIds?.map((id) => Number(id)),
@@ -288,7 +284,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         });
 
         if (dataToCreate.length > 0) {
-          await prisma.comission_salary.createMany({
+          mockDb.comission_salary.createMany({
             data: dataToCreate,
           });
         }
@@ -296,7 +292,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         const updateSalaryPromises = formsToUpdate.map((form) => {
           const idToUpdate = Number(form.id);
 
-          return prisma.comission_salary.update({
+          return mockDb.comission_salary.update({
             where: { id: idToUpdate },
             data: {
               amount: form.amount,
@@ -305,9 +301,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           });
         });
 
-        await Promise.all(updateSalaryPromises);
-
-        const currentSalary = await prisma.comission_salary.findMany({
+        const currentSalary = mockDb.comission_salary.findMany({
           where: {
             comission_info_id: comissionData.id,
           },

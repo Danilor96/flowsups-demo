@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const dealId = parseInt(params.id);
@@ -56,7 +55,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     // throw new Error('Error creating receipt');
     // Handle new payment date creation
     if (selectedPaymentDateId === 'new' && newPaymentDate) {
-      const newPayment = await prisma.paymentDate.create({
+      const newPayment = mockDb.paymentDate.create({
         data: {
           date: new Date(newPaymentDate).toISOString(),
           dealId: dealId,
@@ -71,7 +70,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       paymentDateId = newPayment.id;
     } else if (selectedPaymentDateId && selectedPaymentDateId !== 'new') {
       paymentDateId = selectedPaymentDateId;
-      await prisma.amountPerDate.updateMany({
+      mockDb.amountPerDate.updateMany({
         where: {
           paymentDateId: paymentDateId,
         },
@@ -83,7 +82,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
 
     // Create the receipt
-    const receipt = await prisma.dealReceipt.create({
+    const receipt = mockDb.dealReceipt.create({
       data: {
         receiptNumber,
         amount: amountValid,
@@ -93,7 +92,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     });
 
     // update deferred downpayment
-    await prisma.deal.update({
+    mockDb.deal.update({
       where: {
         id: dealId,
       },

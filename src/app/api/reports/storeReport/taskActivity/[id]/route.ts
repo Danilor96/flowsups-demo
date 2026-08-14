@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { TaskActivityData } from '../types';
 import { revalidatePath } from 'next/cache';
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
     const dueDateWhereClause = buildDatePrismaFilter(dueDateFilterObject);
 
-    const userRole = await prisma.users.findUnique({
+    const userRole = mockDb.users.findUnique({
       where: {
         id: userId,
       },
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         whereClause = { assigned_to: userId };
       }
 
-      const data = await prisma.tasks.findMany({
+      const data = mockDb.tasks.findMany({
         where: { ...whereClause, created_at: dateWhereClause, deadline: dueDateWhereClause },
         include: {
           customer: {
@@ -134,15 +134,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       });
     }
 
-    //await prisma.$disconnect();
-
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(dataToReturn);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

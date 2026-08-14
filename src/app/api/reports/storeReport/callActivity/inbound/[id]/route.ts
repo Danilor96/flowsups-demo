@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { CallDirection, extractIds, InboundCallDetail } from '../types';
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const data = await prisma.client_calls.findMany({
+    const data = mockDb.client_calls.findMany({
       where: {
         call_date: dateWhereClause,
         call_direction_id: CallDirection.inbound,
@@ -56,8 +56,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       },
     });
 
-    //await prisma.$disconnect();
-
     const dataToReturn: InboundCallDetail[] = data.map((call) => {
       const firstname = call.client_call?.first_name || '';
       const lastname = call.client_call?.last_name || '';
@@ -85,8 +83,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return NextResponse.json(dataToReturn);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

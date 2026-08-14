@@ -192,5 +192,10 @@ export const seedClientBulkSms = [
     total_recipients: 3,
     successfully_sent: 3,
     failed_to_send: 0,
+    bulk_sms_creator: {
+      id: demoUser.id,
+      name: demoUser.name,
+      last_name: demoUser.last_name,
+    },
   },
 ];

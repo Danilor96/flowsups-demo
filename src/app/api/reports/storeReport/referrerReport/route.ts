@@ -1,5 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 import { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   try {
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         customer_referrer: {
           buyer: {},
@@ -100,8 +100,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    await prisma.$disconnect();
-
     const referrerSummary: ReferrerSummary[] = leads.map((lead) => {
       const { customer_referrer, vehicle, customer_funding_list_status, sales_rep } = lead;
 
@@ -171,8 +169,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(referrerSummary);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

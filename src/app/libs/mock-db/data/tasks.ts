@@ -1,4 +1,6 @@
 import { seedUsers } from './users';
+import { seedClients } from './clients';
+import { seedTaskStatuses } from './settings';
 
 const seller = seedUsers[1];
 const seller2 = seedUsers[2];
@@ -110,3 +112,26 @@ export const seedTasks = [
     related_task_id: null,
   },
 ];
+
+seedTasks.forEach((task: any, index: number) => {
+  const client = seedClients[task.customer_id - 1];
+  const assigned = task.assigned_to === seller.id ? seller : seller2;
+  task.customer = {
+    id: client.id,
+    first_name: client.first_name,
+    last_name: client.last_name,
+    mobile_phone: client.mobile_phone,
+  };
+  task.assigned = {
+    id: assigned.id,
+    name: assigned.name,
+    last_name: assigned.last_name,
+  };
+  task.task_status = seedTaskStatuses.find((status: any) => status.id === task.status) || null;
+  task.interested_vehicle = null;
+  task.created_by_user = {
+    id: task.created_by,
+    name: seedUsers[task.created_by]?.name || seedUsers[0].name,
+    last_name: seedUsers[task.created_by]?.last_name || seedUsers[0].last_name,
+  };
+});

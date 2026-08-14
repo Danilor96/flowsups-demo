@@ -1,8 +1,7 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb, Decimal } from '@/app/libs/mock-db';
 import { ActivityType } from '@/app/libs/services/salesPointsService';
 import { NextRequest, NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
 import { FundingStatuses } from '@/app/libs/customer/customersFunctions';
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
 
@@ -17,9 +16,9 @@ export async function GET(request: NextRequest) {
   try {
     const dateWhereClause = buildDateRangeFilter(startDate, endDate);
 
-    const businessConfig = await prisma.salesGoalsConfig.findFirst();
+    const businessConfig = mockDb.salesGoalsConfig.findFirst();
 
-    const users = await prisma.users.findMany({
+    const users = mockDb.users.findMany({
       select: {
         id: true,
         name: true,
@@ -65,7 +64,7 @@ export async function GET(request: NextRequest) {
       },
     });
     console.log({dateWhereClause})
-    const soldLeadsByUser = await prisma.leads.findMany({
+    const soldLeadsByUser = mockDb.leads.findMany({
       where: {
         sold_created_at: dateWhereClause,
         customer_status_id: {
@@ -97,7 +96,7 @@ export async function GET(request: NextRequest) {
       const isSplitSold = lead.isSplitSold;
       if (isSplitSold) {
         const sellersInSplitDeal = lead.sellersInSplitDeal;
-        sellersInSplitDeal.forEach(seller => {
+        sellersInSplitDeal.forEach((seller: any) => {
           const sellerId = seller.id.toString();
           const sellerCount = acc.get(sellerId) || 0;
           acc.set(sellerId, sellerCount + 0.5);
@@ -109,7 +108,7 @@ export async function GET(request: NextRequest) {
       return acc;
     }, new Map<string, number>());
 
-    const deals = await prisma.deal.findMany({
+    const deals = mockDb.deal.findMany({
       where: {
         created_at: dateWhereClause,
       },
@@ -137,9 +136,9 @@ export async function GET(request: NextRequest) {
         sold_leads: number;
         active_leads: number;
         businessSalesGoalsConfig: number | null | undefined;
-        frontend: Prisma.Decimal;
-        backend: Prisma.Decimal;
-        total: Prisma.Decimal;
+        frontend: Decimal;
+        backend: Decimal;
+        total: Decimal;
       }
     > = {};
 
@@ -147,8 +146,8 @@ export async function GET(request: NextRequest) {
     users.forEach(user => {
       const user_id = user.id;
      
-      let frontend = Prisma.Decimal(0);
-      let backend = Prisma.Decimal(0);
+      let frontend = Decimal(0);
+      let backend = Decimal(0);
       deals.forEach(deal => {
         if (deal.seller_id === user_id) {
           if (deal.frontend) {
@@ -170,7 +169,6 @@ export async function GET(request: NextRequest) {
         total: frontend.add(backend),     
         };
     });
-    //await prisma.$disconnect();
 
     return NextResponse.json({
       activityCounts: Object.values(report),
@@ -178,8 +176,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

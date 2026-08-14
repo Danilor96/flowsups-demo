@@ -1,5 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { TemporalCreditAppReportSummary } from './types';
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   try {
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const creditAppData = await prisma.credit_app.findMany({
+    const creditAppData = mockDb.credit_app.findMany({
       where: {
         created_at: dateWhereClause,
         client: {
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         clients: {
           credit_app_forms_completed: true,
@@ -247,7 +247,7 @@ export async function GET(request: NextRequest) {
     const creditAppMap = new Map<number, TemporalCreditAppReportSummary>();
 
     creditAppData.forEach((creditApp) => {
-      creditApp.client.lead.forEach((lead) => {
+      creditApp.client.lead.forEach((lead: any) => {
         if (!creditAppMap.has(lead.id)) {
           const { client } = creditApp;
 
@@ -440,8 +440,8 @@ export async function GET(request: NextRequest) {
 
         const employerName = clients.client_employment[0].current_employer_name || '';
         const occupation = clients.client_employment[0].occupation?.occupation || '';
-        const employmentYears = clients.client_employment.map((el) => el.year);
-        const employmentMonths = clients.client_employment.map((el) => el.month_id);
+        const employmentYears = clients.client_employment.map((el: any) => el.year);
+        const employmentMonths = clients.client_employment.map((el: any) => el.month_id);
         const lengthAtJob = totalEmploymentTime(employmentYears, employmentMonths);
         const income = clients.client_employment[0].montly_income || '';
         const workPhone = clients.work_phone || '';

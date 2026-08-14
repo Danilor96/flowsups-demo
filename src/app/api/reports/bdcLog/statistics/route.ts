@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { BdcLogStatisticsSummary, DefaultRoles } from '../types';
 import { revalidatePath } from 'next/cache';
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
 
-    const users = await prisma.users.findMany({
+    const users = mockDb.users.findMany({
       where: {
         user_has: {
           some: {
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         bdc: {
           isNot: null,
@@ -44,8 +44,6 @@ export async function GET(request: NextRequest) {
         customer_funding_list_status_id: true,
       },
     });
-
-    // await prisma.$disconnect();
 
     const bdcLogStatisticsMap = new Map<number, BdcLogStatisticsSummary>();
 
@@ -95,8 +93,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(bdcLogStatisticsSummary);
   } catch (error) {
     console.log(error);
-
-    // await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

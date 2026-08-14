@@ -70,3 +70,25 @@ export const seedConferencesNames = [
     answered: false,
   },
 ];
+
+import { seedClients } from './clients';
+import { seedUsers } from './users';
+
+seedClientCalls.forEach((call: any, index: number) => {
+  const client = seedClients[call.client_id - 1];
+  const caller = index === 0 ? seedUsers[1] : seedUsers[2];
+  call.client_call = {
+    id: client.id,
+    first_name: client.first_name,
+    last_name: client.last_name,
+    client_status: client.client_status,
+  };
+  call.note = index === 0
+    ? {
+        created_at: new Date('2026-08-01T14:05:00.000Z'),
+        created_by: { name: caller.name, last_name: caller.last_name },
+        note: 'Inbound call handled, customer asked about financing options.',
+      }
+    : null;
+  call.followUpDate = index === 1 ? new Date('2026-08-05T10:00:00.000Z') : null;
+});

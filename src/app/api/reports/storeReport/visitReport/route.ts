@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { VisitReportData } from './types';
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   try {
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const visitData = await prisma.daily_visit_history.findMany({
+    const visitData = mockDb.daily_visit_history.findMany({
       where: {
         created_at: dateWhereClause,
       },
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         daily_visit_history: {
           some: {},
@@ -99,8 +99,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    //await prisma.$disconnect();
-
     const reportDataMap = new Map<number, VisitReportData>();
 
     visitData.forEach((visit) => {
@@ -132,7 +130,7 @@ export async function GET(request: NextRequest) {
     leads.forEach((lead) => {
       const visitHistory = lead.daily_visit_history;
 
-      visitHistory.forEach((visit) => {
+      visitHistory.forEach((visit: any) => {
         const visitId = visit.id;
 
         if (visitId) {
@@ -189,8 +187,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(reportData);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

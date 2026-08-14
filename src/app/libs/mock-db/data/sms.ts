@@ -35,6 +35,7 @@ const buildClientMessage = (client: any, conversation: any) => {
         id: client.id + index,
         customer_status: lead.customer_status || null,
       })),
+    client_status: client.client_status || null,
     seller: seller.id
       ? {
           id: seller.id,
@@ -98,10 +99,11 @@ export const seedClientSms = [
     manual_sent: true,
     sender_user_id: seller2.id,
     has_customer_reply: false,
-    is_reply_to_user: false,
+    is_reply_to_user: true,
     user: [pickUser(seller2)],
     client_message: buildClientMessage(client1, conv1),
     unregistered_customer: [],
+    replied_to_user_id: seller2.id,
   },
   {
     id: 2,

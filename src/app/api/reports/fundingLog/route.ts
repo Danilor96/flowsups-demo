@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { FundingLogSummary } from './types';
@@ -14,13 +14,12 @@ export async function GET(request: NextRequest) {
   try {
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         customer_status_id: CustomersStatuses.Sold,
         deal: {
           isNot: null,
         },
-        // funding_created_at: prismaDateFilter,
         sold_created_at: prismaDateFilter,
       },
       select: {
@@ -110,8 +109,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    //await prisma.$disconnect();
-
     const dataSymmary: FundingLogSummary[] = leads.map((lead) => {
       const customer = lead.clients;
       const vehicleData = lead.vehicle;
@@ -198,8 +195,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(dataSymmary);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

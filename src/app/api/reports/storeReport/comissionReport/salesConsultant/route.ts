@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { DefaultRoles } from '../../../bdcLog/types';
 import { buildDateRangeFilter } from '@/app/libs/monthAndYearDateFilter';
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   try {
     const prismaDateFilter = buildDateRangeFilter(startDate, endDate);
 
-    const users = await prisma.users.findMany({
+    const users = mockDb.users.findMany({
       // where: {
       //   user_has: {
       //     some: {
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const leads = await prisma.leads.findMany({
+    const leads = mockDb.leads.findMany({
       where: {
         customer_status_id: {
           in: [CustomersStatuses.Sold, CustomersStatuses.Funded],
@@ -95,15 +95,15 @@ export async function GET(request: NextRequest) {
         let salary = '0';
         let spiff = '0';
 
-        user.comissionInfo?.bonus.forEach((el) => {
+        user.comissionInfo?.bonus.forEach((el: any) => {
           bonus = el.amount.plus(bonus).toString();
         });
 
-        user.comissionInfo?.salary.forEach((el) => {
+        user.comissionInfo?.salary.forEach((el: any) => {
           salary = el.amount.plus(salary).toString();
         });
 
-        user.comissionInfo?.spiff.forEach((el) => {
+        user.comissionInfo?.spiff.forEach((el: any) => {
           spiff = el.amount.plus(spiff).toString();
         });
 
@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
         }
 
         if (lead.isSplitSold && lead.sellersInSplitDeal.length > 0) {
-          lead.sellersInSplitDeal.forEach((splittedSoldCustomer) => {
+          lead.sellersInSplitDeal.forEach((splittedSoldCustomer: any) => {
             const splittedMappedDate = comissionSummaryMap.get(splittedSoldCustomer.id);
 
             if (splittedMappedDate) {

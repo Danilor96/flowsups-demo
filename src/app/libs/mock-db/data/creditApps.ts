@@ -264,3 +264,17 @@ export const seedCreditAppCodes = [
     code_expired: new Date('2026-09-01T00:00:00.000Z'),
   },
 ];
+
+seedCreditApps.forEach((app: any) => {
+  const client = seedClients.find((c: any) => c.id === app.client_id);
+  if (client) {
+    app.client = {
+      id: client.id,
+      created_at: client.created_at,
+      credit_app_forms_completed: client.credit_app_forms_completed,
+      lead: [{ id: client.id }],
+      message: [{ date_sent: new Date('2026-08-10T09:00:00.000Z') }],
+      calls: [{ call_date: new Date('2026-08-09T14:30:00.000Z') }],
+    };
+  }
+});

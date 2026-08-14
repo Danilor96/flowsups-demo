@@ -1,5 +1,5 @@
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const dateFilterObject = option ? { option, value, from, to } : null;
     const dateWhereClause = buildDatePrismaFilter(dateFilterObject);
 
-    const userData = await prisma.users.findMany({
+    const userData = mockDb.users.findMany({
       select: {
         id: true,
         name: true,
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const smsDelivery = await prisma.client_sms.findMany({
+    const smsDelivery = mockDb.client_sms.findMany({
       where: {
         date_sent: dateWhereClause,
         manual_sent: true,
@@ -70,23 +70,7 @@ export async function GET(request: NextRequest) {
       return acc;
     }, new Map<string, { smsDeliveryCount: number }>());
 
-    // const smsReplies = await prisma.client_sms.findMany({
-    //   where: {
-    //     date_sent: dateWhereClause,
-    //     sent_by_user: false,
-    //     is_reply_to_user: true,
-
-    //   },
-    //   include: {
-    //     user: {
-    //       select: {
-    //         id: true,
-    //       },
-    //     },
-    //   }
-    // })
-
-    const smsReplies = await prisma.client_sms.groupBy({
+    const smsReplies = mockDb.client_sms.groupBy({
       by: ['replied_to_user_id'],
       where: {
         date_sent: dateWhereClause,
@@ -105,7 +89,7 @@ export async function GET(request: NextRequest) {
       smsReplies.map(sms => [sms.replied_to_user_id?.toString() || 'uknown', sms._count._all]),
     );
 
-    const smsFailed = await prisma.client_sms.findMany({
+    const smsFailed = mockDb.client_sms.findMany({
       where: {
         date_sent: dateWhereClause,
         manual_sent: true,
@@ -157,8 +141,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1081,3 +1081,52 @@ export const seedClients = [
     bdc: { ...bdc },
   },
 ];
+
+seedClients.forEach((client: any) => {
+  client.deal = [];
+  client.deposit_client = null;
+  client.referrer_client = null;
+  client.buyer_referrer = null;
+  client.appointment = [];
+  client.message = [
+    { date_sent: new Date('2026-08-10T09:00:00.000Z') },
+  ];
+  client.calls = [
+    { call_date: new Date('2026-08-09T14:30:00.000Z') },
+  ];
+  client.credit_app = [];
+  client.file = null;
+  client.vehicle_delivery = null;
+  client.client_lead_temperature = null;
+  client.client_employment = [
+    {
+      current_employer_name: 'Acme Corporation',
+      montly_income: '3500',
+      has_bank_account: true,
+      year: '3',
+      month_id: 5,
+      income_type: { income: 'Salary' },
+      occupation: { occupation: 'Supervisor' },
+    },
+  ];
+});
+
+(seedClients[0] as any).deposit_client = {
+  id: 11,
+  first_name: seedClients[10].first_name,
+  last_name: seedClients[10].last_name,
+  mobile_phone: seedClients[10].mobile_phone,
+  contact_method_id: seedClients[10].contact_method_id,
+  contact_time_id: seedClients[10].contact_time_id,
+  client_address: seedClients[10].client_address,
+};
+(seedClients[10] as any).referrer_client = {
+  id: 1,
+  first_name: seedClients[0].first_name,
+  last_name: seedClients[0].last_name,
+};
+(seedClients[10] as any).buyer_referrer = {
+  id: 1,
+  amount: '500',
+  created_at: new Date('2026-08-05T00:00:00.000Z'),
+};

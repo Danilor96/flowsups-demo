@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 
@@ -25,13 +25,11 @@ export async function POST(request: Request) {
   const { trackingCode } = validatedData.data;
 
   try {
-    const data = await prisma.tracking_code.create({
+    const data = mockDb.tracking_code.create({
       data: {
         code: trackingCode,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Code Successfully Created' }, { status: 200 });
   } catch (error) {

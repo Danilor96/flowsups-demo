@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
@@ -12,7 +12,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const recipientId = parseInt(params.id);
 
   try {
-    const data = await prisma.sms_limit_warning_recipients.delete({
+    const data = mockDb.sms_limit_warning_recipients.delete({
       where: {
         id: recipientId,
       },

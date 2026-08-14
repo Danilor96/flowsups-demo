@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function GET() {
   try {
-    const data = await prisma.incoming_calls_options.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.incoming_calls_options.findMany();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {

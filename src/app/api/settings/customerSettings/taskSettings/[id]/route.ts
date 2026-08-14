@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { checkIncomingId } from '@/app/libs/checkIncomingIds';
@@ -37,7 +37,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { first, second, third } = validatedData.data;
 
   try {
-    const data = await prisma.task_settings.update({
+    const data = mockDb.task_settings.update({
       where: {
         id: taskSettingsId,
       },
@@ -48,13 +48,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Settings Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

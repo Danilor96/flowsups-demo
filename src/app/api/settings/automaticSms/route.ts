@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
@@ -6,7 +6,7 @@ import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function GET() {
   try {
-    const data = await prisma.automatic_sms.findFirst({
+    const data = mockDb.automatic_sms.findFirst({
       select: {
         id: true,
         credit_app: true,
@@ -31,15 +31,11 @@ export async function GET() {
       },
     });
 
-    //await prisma.$disconnect();
-
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -168,7 +164,7 @@ export async function POST(request: Request) {
       return;
     };
 
-    const data = await prisma.automatic_sms.create({
+    const data = mockDb.automatic_sms.create({
       data: {
         appointment_reminder: returnValue(appointmentReminder),
         appointment_reminder_timing: appointmentReminderTiming,
@@ -190,13 +186,9 @@ export async function POST(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Settings Successfully Updated', data: data.id });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -332,7 +324,7 @@ export async function PUT(request: Request) {
 
     console.log(consentSmsTemplate);
 
-    const data = await prisma.automatic_sms.update({
+    const data = mockDb.automatic_sms.update({
       where: {
         id: parseInt(id),
       },
@@ -357,13 +349,9 @@ export async function PUT(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Settings Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

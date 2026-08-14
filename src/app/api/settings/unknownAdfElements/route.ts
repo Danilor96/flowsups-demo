@@ -1,12 +1,10 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const data = await prisma.unknown_adf_elements.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.unknown_adf_elements.findMany();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
@@ -39,13 +37,11 @@ export async function POST(request: Request) {
   const { unknownAdfElement } = validatedData.data;
 
   try {
-    const data = await prisma.unknown_adf_elements.create({
+    const data = mockDb.unknown_adf_elements.create({
       data: {
         element: unknownAdfElement,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Element Successfully Created' }, { status: 200 });
   } catch (error) {

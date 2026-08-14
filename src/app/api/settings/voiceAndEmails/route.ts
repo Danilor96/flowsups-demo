@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function POST(request: Request) {
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
   } = validatedData.data;
 
   try {
-    const data = await prisma.voice_and_sms.create({
+    const data = mockDb.voice_and_sms.create({
       data: {
         system_phone_for_publishing: systemPhonePublishing,
         system_email_address_for_publishing: systemEmailPublishing,
@@ -111,13 +111,9 @@ export async function POST(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Configuration Saved Successfully', data: data.id });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -126,21 +122,18 @@ export async function POST(request: Request) {
 //deberia ser (multi tenant)
 export async function GET() {
   try {
-    const data = await prisma.voice_and_sms.findFirst();
-    const numberPhonActive = await prisma.business_phone_numbers.findFirst({
+    const data = mockDb.voice_and_sms.findFirst();
+    const numberPhonActive = mockDb.business_phone_numbers.findFirst({
       where: {
         is_publishing_number: true,
       },
     });
-    //await prisma.$disconnect();
 
     return NextResponse.json([
       { ...data, system_phone_for_publishing: numberPhonActive?.phone_number || '' },
     ]);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -235,7 +228,7 @@ export async function PUT(request: Request) {
   } = validatedData.data;
 
   try {
-    const data = await prisma.voice_and_sms.update({
+    const data = mockDb.voice_and_sms.update({
       where: {
         id: parseInt(id),
       },
@@ -260,13 +253,9 @@ export async function PUT(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Configuration Saved Successfully' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

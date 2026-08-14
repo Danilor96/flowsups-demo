@@ -1,4 +1,3 @@
-import prisma from '../prisma';
 import { mockDb } from '../mock-db';
 
 export async function checkDuplicateCustomerValues(
@@ -64,7 +63,7 @@ export function handleNameAndLastnameChange(nameAndLastname: string) {
 
 export async function doesTheStateExist(state: string) {
   try {
-    const stateData = await prisma.states.findMany({
+    const stateData = mockDb.states.findMany({
       select: {
         id: true,
         state: true,
@@ -92,7 +91,7 @@ export async function checkDuplicateSmsTemplatesNames(incomingTemplateName: stri
   try {
     let name = incomingTemplateName;
 
-    const templates = await prisma.sms_template.findMany();
+    const templates = mockDb.sms_template.findMany();
 
     let counter = 0;
 
@@ -120,7 +119,7 @@ export async function checkDuplicateEmailTemplatesNames(incomingTemplateName: st
   try {
     let name = incomingTemplateName;
 
-    const templates = await prisma.email_template.findMany();
+    const templates = mockDb.email_template.findMany();
 
     let counter = 0;
 

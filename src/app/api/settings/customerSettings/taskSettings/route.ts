@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -7,17 +7,13 @@ import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function GET() {
   try {
-    const data = await prisma.task_settings.findFirst();
-
-    //await prisma.$disconnect();
+    const data = mockDb.task_settings.findFirst();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -54,7 +50,7 @@ export async function POST(request: Request) {
   const { first, second, third } = validatedData.data;
 
   try {
-    const data = await prisma.task_settings.create({
+    const data = mockDb.task_settings.create({
       data: {
         first_span_limit_id: checkIncomingId(first),
         second_span_limit_id: checkIncomingId(second),
@@ -62,16 +58,12 @@ export async function POST(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({
       successMessage: 'Settings Successfully Updated',
       data: data.id.toString(),
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

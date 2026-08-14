@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 
 // (deberia ser multi tenant)
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const phoneId = parseInt(params.id);
 
   try {
-    const businesPhoneNumber = await prisma.business_phone_numbers.update({
+    const businesPhoneNumber = mockDb.business_phone_numbers.update({
       where: {
         id: phoneId,
       },
@@ -19,7 +19,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ serverError: 'Phone number not found' }, { status: 404 });
     }
 
-    const currentPhoneActive = await prisma.business_phone_numbers.findFirst({
+    const currentPhoneActive = mockDb.business_phone_numbers.findFirst({
       where: {
         business_id: businesPhoneNumber.business_id,
         is_publishing_number: true,
@@ -27,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     });
 
     if (currentPhoneActive) {
-      await prisma.business_phone_numbers.update({
+      mockDb.business_phone_numbers.update({
         where: {
           id: currentPhoneActive.id,
         },
@@ -37,7 +37,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    await prisma.business_phone_numbers.update({
+    mockDb.business_phone_numbers.update({
       where: {
         id: phoneId,
       },

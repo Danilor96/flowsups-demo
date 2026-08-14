@@ -1,14 +1,12 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 export async function GET() {
   try {
-    const data = await prisma.customer_settings.findFirst();
-
-    //await prisma.$disconnect();
+    const data = mockDb.customer_settings.findFirst();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
@@ -83,7 +81,7 @@ export async function POST(request: Request) {
   } = validatedData.data;
 
   try {
-    const data = await prisma.customer_settings.create({
+    const data = mockDb.customer_settings.create({
       data: {
         lead_lost_after: parseInt(setLead),
         active_lost_customer: activateLostCustomerWhenContacted === 'true' ? true : false,
@@ -95,8 +93,6 @@ export async function POST(request: Request) {
         show_followup: showFollowupWindowWhenCompletingATask === 'true' ? true : false,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Customer Settings Successfully Changed', data });
   } catch (error) {

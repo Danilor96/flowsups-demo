@@ -1,12 +1,10 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const data = await prisma.automated_review.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.automated_review.findMany();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
@@ -39,13 +37,11 @@ export async function POST(request: Request) {
   const { automatedReview } = validatedData.data;
 
   try {
-    const data = await prisma.automated_review.create({
+    const data = mockDb.automated_review.create({
       data: {
         invitation: automatedReview,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Review Successfully Created' }, { status: 200 });
   } catch (error) {

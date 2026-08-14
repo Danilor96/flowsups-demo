@@ -1,13 +1,11 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function GET() {
   try {
-    const data = await prisma?.email_to_lead.findMany();
-
-    prisma?.$disconnect();
+    const data = mockDb.email_to_lead.findMany();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
@@ -46,13 +44,11 @@ export async function POST(request: Request) {
   const { forwardIncoming } = validatedData.data;
 
   try {
-    const data = await prisma.email_to_lead.create({
+    const data = mockDb.email_to_lead.create({
       data: {
         lead: forwardIncoming,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Successfully Created' }, { status: 200 });
   } catch (error) {

@@ -1,12 +1,10 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const data = await prisma.custom_no_sale_reasons.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.custom_no_sale_reasons.findMany();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
@@ -39,13 +37,11 @@ export async function POST(request: Request) {
   const { customNoSaleReasons } = validatedData.data;
 
   try {
-    const data = await prisma.custom_no_sale_reasons.create({
+    const data = mockDb.custom_no_sale_reasons.create({
       data: {
         reason: customNoSaleReasons,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Reason Successfully Created' }, { status: 200 });
   } catch (error) {

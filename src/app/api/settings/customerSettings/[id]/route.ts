@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -67,7 +67,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    const data = await prisma.customer_settings.update({
+    const data = mockDb.customer_settings.update({
       where: {
         id: settingId,
       },
@@ -82,8 +82,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         show_followup: showFollowupWindowWhenCompletingATask === 'true' ? true : false,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Customer Settings Successfully Changed' });
   } catch (error) {

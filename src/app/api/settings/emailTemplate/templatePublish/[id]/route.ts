@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { checkPermissions } from '@/app/libs/auth-helpers';
@@ -34,7 +34,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { status } = validatedData.data;
 
   try {
-    const data = await prisma.email_template.update({
+    const data = mockDb.email_template.update({
       where: {
         id: templateId,
       },
@@ -43,13 +43,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Publish Status Changed Successfully' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

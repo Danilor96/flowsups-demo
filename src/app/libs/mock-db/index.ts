@@ -73,6 +73,25 @@ import {
 import { seedTasks } from "./data/tasks";
 import { seedAppointmentSms } from "./data/appointmentSms";
 import { seedRescheduleSms } from "./data/rescheduleSms";
+import {
+  seedAutomatedReviews,
+  seedAutomaticEmails,
+  seedAutomaticSms,
+  seedCustomBeBackReasons,
+  seedCustomLostReasons,
+  seedCustomNoSaleReasons,
+  seedCustomerSettings,
+  seedTaskSettings,
+  seedEmailToLead,
+  seedPaymentTypes,
+  seedTrackingCodes,
+  seedUnknownAdfElements,
+  seedVoiceAndSms,
+  seedIncomingCallsOptions,
+  seedEmailNameDisplayed,
+  seedSmsLimitWarningRecipients,
+  seedBusiness,
+} from "./data/settingsRoutes";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
 
@@ -86,9 +105,10 @@ export interface Store<T> {
     take?: number;
     cursor?: MockWhere;
     select?: any;
+    include?: any;
   }): T[];
-  findUnique(params: { where: MockWhere; select?: any }): T | null;
-  findFirst(params?: { where?: MockWhere; orderBy?: any; select?: any }): T | null;
+  findUnique(params: { where: MockWhere; select?: any; include?: any }): T | null;
+  findFirst(params?: { where?: MockWhere; orderBy?: any; select?: any; include?: any }): T | null;
   create(params: { data: any }): T;
   createMany(params: { data: any[] }): { count: number };
   update(params: { where: MockWhere; data: Partial<T> }): T;
@@ -478,6 +498,23 @@ export const mockDb: Record<string, Store<any>> = {
   client_Bulk_sms: createStore(seedClientBulkSms),
   appointmentSms: createStore(seedAppointmentSms),
   rescheduleSms: createStore(seedRescheduleSms),
+  automated_review: createStore(seedAutomatedReviews),
+  automatic_emails: createStore(seedAutomaticEmails),
+  automatic_sms: createStore(seedAutomaticSms),
+  custom_be_back_reasons: createStore(seedCustomBeBackReasons),
+  custom_lost_reasons: createStore(seedCustomLostReasons),
+  custom_no_sale_reasons: createStore(seedCustomNoSaleReasons),
+  customer_settings: createStore(seedCustomerSettings),
+  task_settings: createStore(seedTaskSettings),
+  email_to_lead: createStore(seedEmailToLead),
+  payment_types: createStore(seedPaymentTypes),
+  tracking_code: createStore(seedTrackingCodes),
+  unknown_adf_elements: createStore(seedUnknownAdfElements),
+  voice_and_sms: createStore(seedVoiceAndSms),
+  incoming_calls_options: createStore(seedIncomingCallsOptions),
+  email_name_displayed: createStore(seedEmailNameDisplayed),
+  sms_limit_warning_recipients: createStore(seedSmsLimitWarningRecipients),
+  business: createStore(seedBusiness),
 };
 
 export function resetMockDb(): void {

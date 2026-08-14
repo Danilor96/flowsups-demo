@@ -1,17 +1,15 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const reasonId = parseInt(params.id);
 
   try {
-    const data = await prisma.custom_lost_reasons.delete({
+    const data = mockDb.custom_lost_reasons.delete({
       where: {
         id: reasonId,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Reason Successfully Deleted' }, { status: 200 });
   } catch (error) {

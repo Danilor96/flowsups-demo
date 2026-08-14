@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
@@ -12,13 +12,11 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const forwardIncomingId = parseInt(params.id);
 
   try {
-    const data = await prisma.email_to_lead.delete({
+    const data = mockDb.email_to_lead.delete({
       where: {
         id: forwardIncomingId,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Deleted Successfully' }, { status: 200 });
   } catch (error) {

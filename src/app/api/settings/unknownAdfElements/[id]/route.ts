@@ -1,17 +1,15 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const reasonId = parseInt(params.id);
 
   try {
-    const data = await prisma.unknown_adf_elements.delete({
+    const data = mockDb.unknown_adf_elements.delete({
       where: {
         id: reasonId,
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Element Successfully Deleted' }, { status: 200 });
   } catch (error) {

@@ -1,8 +1,6 @@
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
-import { storage } from '@/firebase/firebase.config';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { checkDuplicateEmailTemplatesNames } from '@/app/libs/duplicateValues/duplicateValues';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 
@@ -64,86 +62,70 @@ export async function POST(request: Request) {
   let data: any;
 
   try {
-    await prisma.$transaction(async (prisma) => {
-      if (letterhead) {
-        const letterheadData = await prisma.letterhead.findFirst();
+    if (letterhead) {
+      const letterheadData = mockDb.letterhead.findFirst();
 
-        const templateName = await checkDuplicateEmailTemplatesNames(name);
+      const templateName = await checkDuplicateEmailTemplatesNames(name);
 
-        data = await prisma.email_template.create({
+      data = mockDb.email_template.create({
+        data: {
+          body: template,
+          created_at: new Date(),
+          created_by: parseInt(userId),
+          category_id: parseInt(category),
+          name: templateName,
+          subject: subject,
+          header_id: letterheadData?.header_id || null,
+          footer_id: letterheadData?.footer_id || null,
+          published: true,
+        },
+      });
+    } else {
+      let headerUrl: number | null = null;
+      let footerUrl: number | null = null;
+
+      if (header) {
+        const headerImage = mockDb.header_email_template.create({
           data: {
-            body: template,
-            created_at: new Date(),
-            created_by: parseInt(userId),
-            category_id: parseInt(category),
-            name: templateName,
-            subject: subject,
-            header_id: letterheadData?.header_id || null,
-            footer_id: letterheadData?.footer_id || null,
-            published: true,
+            header: `https://firebasestorage.googleapis.com/v0/b/demo/o/images%2F${header.name}`,
+            name: header.name,
           },
         });
-      } else {
-        let headerUrl: number | null = null;
-        let footerUrl: number | null = null;
 
-        if (header) {
-          const fileRef = ref(storage, `images/${header.name}`);
-          const doUpload = await uploadBytes(fileRef, header);
-
-          const path = await getDownloadURL(doUpload.ref);
-
-          const headerImage = await prisma.header_email_template.create({
-            data: {
-              header: path,
-              name: header.name,
-            },
-          });
-
-          headerUrl = headerImage.id;
-        }
-
-        if (footer) {
-          const fileRef = ref(storage, `images/${footer.name}`);
-          const doUpload = await uploadBytes(fileRef, footer);
-
-          const path = await getDownloadURL(doUpload.ref);
-
-          const footerImage = await prisma.footer_email_template.create({
-            data: {
-              footer: path,
-              name: footer.name,
-            },
-          });
-
-          footerUrl = footerImage.id;
-        }
-
-        const templateName = await checkDuplicateEmailTemplatesNames(name);
-
-        data = await prisma.email_template.create({
-          data: {
-            body: template,
-            created_at: new Date(),
-            created_by: parseInt(userId),
-            category_id: parseInt(category),
-            name: templateName,
-            subject: subject,
-            header_id: headerUrl ? headerUrl : null,
-            footer_id: footerUrl ? footerUrl : null,
-            published: true,
-          },
-        });
+        headerUrl = headerImage.id;
       }
-    });
 
-    //await prisma.$disconnect();
+      if (footer) {
+        const footerImage = mockDb.footer_email_template.create({
+          data: {
+            footer: `https://firebasestorage.googleapis.com/v0/b/demo/o/images%2F${footer.name}`,
+            name: footer.name,
+          },
+        });
+
+        footerUrl = footerImage.id;
+      }
+
+      const templateName = await checkDuplicateEmailTemplatesNames(name);
+
+      data = mockDb.email_template.create({
+        data: {
+          body: template,
+          created_at: new Date(),
+          created_by: parseInt(userId),
+          category_id: parseInt(category),
+          name: templateName,
+          subject: subject,
+          header_id: headerUrl ? headerUrl : null,
+          footer_id: footerUrl ? footerUrl : null,
+          published: true,
+        },
+      });
+    }
 
     return NextResponse.json({ successMessage: 'Template Created Successfully' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -151,22 +133,11 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const data = await prisma.email_template.findMany({
-      include: {
-        category: true,
-        header: true,
-        footer: true,
-        user: true,
-      },
-    });
-
-    //await prisma.$disconnect();
+    const data = mockDb.email_template.findMany();
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

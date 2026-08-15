@@ -1,9 +1,34 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { Roles } from '../types';
-import { getEndOfDay, getStartOfDay } from '@/app/libs/buildDatePrismaFilter';
+import { format } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+
+const getStartOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 00:00:00`, timeZone);
+};
+
+const getEndOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 23:59:59.999`, timeZone);
+};
 
 export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
   const userId = Number(params.userId);
@@ -21,7 +46,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   const endOfTodayUTC = getEndOfDay(now, timeZone);
 
   try {
-    const data = await prisma.client_calls.findMany({
+    const data = mockDb.client_calls.findMany({
       where: {
         call_date: {
           gte: startOfTodayUTC,
@@ -38,48 +63,14 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
           },
         },
       },
-      select: {
-        id: true,
-        client_call: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            // seller: {
-            //   select: {
-            //     id: true,
-            //     name: true,
-            //     last_name: true,
-            //   },
-            // },
-          },
-        },
-        call_date: true,
-        call_direction_id: true,
-        call_duration: true,
-        phone_number: true,
-        user_id: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-          },
-        },
-      },
       orderBy: {
         call_date: 'desc',
       },
     });
 
-    const usersArray = await prisma.users.findMany({
+    const usersArray = mockDb.users.findMany({
       where: {
         deleted_at: null,
-      },
-      select: {
-        id: true,
-        name: true,
-        last_name: true,
       },
     });
 
@@ -104,8 +95,6 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
     return NextResponse.json(dataWithUsers);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

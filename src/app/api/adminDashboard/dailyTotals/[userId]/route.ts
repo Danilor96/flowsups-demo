@@ -1,10 +1,35 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { Roles } from '../../dailyCalls/types';
-import { getStartOfDay, getEndOfDay } from '@/app/libs/buildDatePrismaFilter';
 import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
+import { format } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+
+const getStartOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 00:00:00`, timeZone);
+};
+
+const getEndOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 23:59:59.999`, timeZone);
+};
 
 export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
   const userId = parseInt(params.userId);
@@ -24,7 +49,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   try {
     const seeAllCounts = [1, 2];
 
-    const dailyCallsCount = await prisma.client_calls.count({
+    const dailyCallsCount = mockDb.client_calls.count({
       where: {
         call_date: {
           gte: startOfTodayUTC,
@@ -39,7 +64,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       },
     });
 
-    const dailyMessagesData = await prisma.client_sms.findMany({
+    const dailyMessagesData = mockDb.client_sms.findMany({
       where: {
         date_sent: {
           gte: startOfTodayUTC,
@@ -55,20 +80,12 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
               },
             },
       },
-      select: {
-        client_id: true,
-        unregistered_customer: {
-          select: {
-            id: true,
-          },
-        },
-      },
     });
 
     let dailyMadeAppointmentCount = 0;
 
     if (userId) {
-      dailyMadeAppointmentCount = await prisma.appointments.count({
+      dailyMadeAppointmentCount = mockDb.appointments.count({
         where: {
           created_at: {
             gte: startOfTodayUTC,
@@ -79,17 +96,10 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       });
     }
 
-    const userRole = await prisma.users.findUnique({
+    const userRole = mockDb.users.findUnique({
       where: {
         id: userId,
         deleted_at: null,
-      },
-      select: {
-        user_has: {
-          select: {
-            role_id: true,
-          },
-        },
       },
     });
 
@@ -97,13 +107,13 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
 
     if (userRole?.user_has[0].role_id) {
       if (seeAllCounts.includes(userRole.user_has[0].role_id)) {
-        missingTasksCount = await prisma.tasks.count({
+        missingTasksCount = mockDb.tasks.count({
           where: {
             status: 4,
           },
         });
       } else {
-        missingTasksCount = await prisma.tasks.count({
+        missingTasksCount = mockDb.tasks.count({
           where: {
             status: 4,
             assigned_to: userId,
@@ -116,7 +126,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
 
     if (userRole?.user_has[0].role_id) {
       if (seeAllCounts.includes(userRole?.user_has[0].role_id)) {
-        dailySellsCount = await prisma.leads.count({
+        dailySellsCount = mockDb.leads.count({
           where: {
             customer_status_id: CustomersStatuses.Sold, // Sold
             sold_created_at: {
@@ -126,7 +136,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
           },
         });
       } else {
-        dailySellsCount = await prisma.leads.count({
+        dailySellsCount = mockDb.leads.count({
           where: {
             customer_status_id: CustomersStatuses.Sold,
             sold_created_at: {
@@ -139,16 +149,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       }
     }
 
-    // const dailyMadeCreditAppCount = await prisma.credit_app.count({
-    //   where: {
-    //     created_at: {
-    //       gte: startOfTodayUTC,
-    //       lte: endOfTodayUTC,
-    //     },
-    //   },
-    // });
-
-    const dailyMadeCreditAppCount = await prisma.leads.count({
+    const dailyMadeCreditAppCount = mockDb.leads.count({
       where: {
         OR: [
           {
@@ -185,7 +186,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
     let dailyMessagesCount = 0;
     const messagesArray: number[] = [];
 
-    dailyMessagesData.forEach(el => {
+    dailyMessagesData.forEach((el: any) => {
       if (
         (el.client_id || el?.unregistered_customer[0]?.id) &&
         !messagesArray.includes(el.client_id || el.unregistered_customer[0]?.id)
@@ -204,15 +205,11 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       dailySellsCount,
     };
 
-    //await prisma.$disconnect();
-
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

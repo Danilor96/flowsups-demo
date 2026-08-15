@@ -1,9 +1,34 @@
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { Roles } from '../../dailyCalls/types';
-import { getEndOfDay, getStartOfDay } from '@/app/libs/buildDatePrismaFilter';
+import { format } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+
+const getStartOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 00:00:00`, timeZone);
+};
+
+const getEndOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 23:59:59.999`, timeZone);
+};
 
 export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
   const userId = params.userId;
@@ -21,7 +46,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   const endOfTodayUTC = getEndOfDay(now, timeZone);
 
   try {
-    const data = await prisma.appointments.findMany({
+    const data = mockDb.appointments.findMany({
       where: {
         created_at: {
           gte: startOfTodayUTC,
@@ -33,51 +58,16 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
               created_by: parseInt(userId),
             },
       },
-      include: {
-        customers: {
-          select: {
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-            home_phone: true,
-            home_default: true,
-            email: true,
-            id: true,
-            interested_vehicle: {
-              select: {
-                id: true,
-                vehicle_brands: true,
-                vehicle_models: true,
-                vehicle_manufacture_years: true,
-                vehicle_identification_numbers: true,
-              },
-            },
-          },
-        },
-        users: {
-          select: {
-            name: true,
-            last_name: true,
-          },
-        },
-        appointments_status: {
-          select: { status: true },
-        }
-      },
       orderBy: {
         created_at: 'desc',
       },
     });
-
-    //await prisma.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma?.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

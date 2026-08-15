@@ -1,7 +1,32 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getStartOfDay, getEndOfDay } from '@/app/libs/buildDatePrismaFilter';
+import { format } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+
+const getStartOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 00:00:00`, timeZone);
+};
+
+const getEndOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 23:59:59.999`, timeZone);
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,41 +37,12 @@ export async function GET(request: NextRequest) {
     const startOfTodayUTC = getStartOfDay(now, timeZone);
     const endOfTodayUTC = getEndOfDay(now, timeZone);
 
-    const data = await prisma.leads.findMany({
+    const data = mockDb.leads.findMany({
       where: {
         customer_status_id: 10, // Sold
         sold_created_at: {
           gte: startOfTodayUTC,
           lte: endOfTodayUTC,
-        },
-      },
-      select: {
-        id: true,
-        sold_created_at: true,
-        vehicle: {
-          select: {
-            id: true,
-            vehicle_brands: true,
-            vehicle_models: true,
-            vehicle_manufacture_years: true,
-            vehicle_identification_numbers: true,
-          },
-        },
-        sales_rep: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-            username: true,
-          },
-        },
-        clients: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-          },
         },
       },
     });

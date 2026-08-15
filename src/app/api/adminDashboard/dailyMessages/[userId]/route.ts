@@ -1,10 +1,35 @@
 import { DailyMessagesData } from '@/app/libs/definitions';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { Roles } from '../../dailyCalls/types';
-import { getEndOfDay, getStartOfDay } from '@/app/libs/buildDatePrismaFilter';
+import { format } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+
+const getStartOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 00:00:00`, timeZone);
+};
+
+const getEndOfDay = (date: Date | string, timeZone: string): Date => {
+  let datePart: string;
+
+  if (date instanceof Date) {
+    datePart = format(toZonedTime(date, timeZone), 'yyyy-MM-dd');
+  } else {
+    datePart = date.includes('T') ? date.split('T')[0] : date;
+  }
+
+  return fromZonedTime(`${datePart} 23:59:59.999`, timeZone);
+};
 
 export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
   const userId = parseInt(params.userId);
@@ -22,7 +47,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   const endOfTodayUTC = getEndOfDay(now, timeZone);
 
   try {
-    const data = await prisma.client_sms.findMany({
+    const data = mockDb.client_sms.findMany({
       where: {
         date_sent: {
           gte: startOfTodayUTC,
@@ -38,68 +63,10 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
               },
             },
       },
-      include: {
-        client_message: {
-          select: {
-            first_name: true,
-            last_name: true,
-            lead_temperature_id: true,
-            id: true,
-            email: true,
-            mobile_phone: true,
-            client_status: {
-              select: {
-                status: true,
-              },
-            },
-            seller: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-          },
-        },
-        user: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
-        sender_user: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
-        status: {
-          select: {
-            status: true,
-          },
-        },
-        unregistered_customer: {
-          select: {
-            id: true,
-            mobile_phone_number: true,
-            user: {
-              select: {
-                name: true,
-                last_name: true,
-                id: true,
-              },
-            },
-          },
-        },
-      },
       orderBy: {
         date_sent: 'desc',
       },
     });
-
-    //await prisma.$disconnect();
 
     let newCustomerMessages: DailyMessagesData = [];
 
@@ -109,7 +76,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       );
 
       if (!customerMessageExists) {
-        newCustomerMessages.push(messageData);
+        newCustomerMessages.push(messageData as any);
       }
     });
 
@@ -118,8 +85,6 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
     return NextResponse.json(newCustomerMessages);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -36,7 +36,7 @@ import {
 import { seedLostReasons } from "./data/lostReasons";
 import { seedDisableSelectValues } from "./data/disableSelects";
 import { seedEmailTemplates } from "./data/emailTemplates";
-import { seedEvents } from "./data/events";
+import { seedEvents, seedEventCategories, seedFollowupTaskVisibility } from "./data/events";
 import { seedCounties } from "./data/counties";
 import { seedConversations, seedNotes } from "./data/conversations";
 import {
@@ -625,6 +625,8 @@ export const mockDb: Record<string, Store<any>> = {
   disable_select_values: createStore(seedDisableSelectValues),
   email_template: createStore(seedEmailTemplates),
   events: createStore(seedEvents),
+  event_category: createStore(seedEventCategories),
+  followup_task_visibility: createStore(seedFollowupTaskVisibility),
   county: createStore(seedCounties),
   conversation: createStore(seedConversations),
   notes: createStore(seedNotes),

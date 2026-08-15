@@ -1,4 +1,3 @@
-import prisma from '@/app/libs/prisma';
 import { mockDb } from '@/app/libs/mock-db';
 import { TemplateVariablesValues } from '@/app/libs/definitions';
 import {
@@ -7,31 +6,16 @@ import {
   PrevEmploymentStatus,
   References,
 } from '../api/adminDashboard/creditApp/types';
-// import { Roles } from './definitions/users/users';
-// import { auth } from '@/auth';
 
 // get new sign up data logic
 
 export async function getUserCode(code: string) {
   try {
-    const toActivateUser = await prisma?.activation_codes.findUnique({
+    const toActivateUser = mockDb.activation_codes.findUnique({
       where: {
         code,
       },
-      include: {
-        code_data: {
-          select: {
-            user: {
-              select: {
-                email: true,
-              },
-            },
-          },
-        },
-      },
     });
-
-    //await prisma?.$disconnect();
 
     return toActivateUser;
   } catch (error) {
@@ -43,27 +27,11 @@ export async function getUserCode(code: string) {
 
 export async function getAllUsers() {
   try {
-    const users = await prisma?.users.findMany({
+    const users = mockDb.users.findMany({
       where: {
         deleted_at: null,
       },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        created_at: true,
-        updated_at: true,
-        emailVerified: true,
-        password: false,
-        user_has: {
-          select: {
-            role_id: true,
-          },
-        },
-      },
     });
-
-    //await prisma?.$disconnect();
 
     return users;
   } catch (error) {
@@ -75,15 +43,13 @@ export async function getAllUsers() {
 
 export async function getAllRoles() {
   try {
-    const roles = await prisma?.roles.findMany({
+    const roles = mockDb.roles.findMany({
       where: {
         NOT: {
           id: 1,
         },
       },
     });
-
-    //await prisma?.$disconnect();
 
     return roles;
   } catch (error) {
@@ -94,9 +60,7 @@ export async function getAllRoles() {
 // get all task status logic
 export async function getAllTaskStatuses() {
   try {
-    const statuses = await prisma?.task_status.findMany();
-
-    //await prisma?.$disconnect();
+    const statuses = mockDb.task_status.findMany();
 
     return statuses;
   } catch (error) {
@@ -108,13 +72,11 @@ export async function getAllTaskStatuses() {
 
 export async function getAnUser(email: string) {
   try {
-    const user = await prisma?.users.findUnique({
+    const user = mockDb.users.findUnique({
       where: {
         email,
       },
     });
-
-    //await prisma?.$disconnect();
 
     return user;
   } catch (error) {
@@ -126,13 +88,11 @@ export async function getAnUser(email: string) {
 
 export async function getAnUserActivationCode(codeToVerify: string) {
   try {
-    const code = await prisma?.activation_codes.findUnique({
+    const code = mockDb.activation_codes.findUnique({
       where: {
         code: codeToVerify,
       },
     });
-
-    //await prisma?.$disconnect();
 
     return code;
   } catch (error) {
@@ -144,9 +104,7 @@ export async function getAnUserActivationCode(codeToVerify: string) {
 
 export async function getAllLeadTypes() {
   try {
-    const data = await prisma?.lead_types.findMany();
-
-    //await prisma?.$disconnect();
+    const data = mockDb.lead_types.findMany();
 
     return data;
   } catch (error) {
@@ -158,9 +116,7 @@ export async function getAllLeadTypes() {
 
 export async function getAllLeadSources() {
   try {
-    const data = await prisma?.lead_sources.findMany();
-
-    //await prisma?.$disconnect();
+    const data = mockDb.lead_sources.findMany();
 
     return data;
   } catch (error) {
@@ -172,9 +128,7 @@ export async function getAllLeadSources() {
 
 export async function getAllContactMethods() {
   try {
-    const data = await prisma?.contact_methods.findMany();
-
-    //await prisma?.$disconnect();
+    const data = mockDb.contact_methods.findMany();
 
     return data;
   } catch (error) {
@@ -186,9 +140,7 @@ export async function getAllContactMethods() {
 
 export async function getAllInquiryTypes() {
   try {
-    const data = await prisma?.inquiry_types.findMany();
-
-    //await prisma?.$disconnect();
+    const data = mockDb.inquiry_types.findMany();
 
     return data;
   } catch (error) {
@@ -200,9 +152,7 @@ export async function getAllInquiryTypes() {
 
 export async function getAllGenders() {
   try {
-    const data = await prisma?.genders.findMany();
-
-    //await prisma?.$disconnect();
+    const data = mockDb.genders.findMany();
 
     return data;
   } catch (error) {
@@ -214,13 +164,7 @@ export async function getAllGenders() {
 
 export async function getAllSellerUsers() {
   try {
-    const data = await prisma?.users.findMany({
-      select: {
-        name: true,
-        last_name: true,
-        email: true,
-        id: true,
-      },
+    const data = mockDb.users.findMany({
       where: {
         user_has: {
           some: {
@@ -230,8 +174,6 @@ export async function getAllSellerUsers() {
         deleted_at: null,
       },
     });
-
-    //await prisma?.$disconnect();
 
     return data;
   } catch (error) {
@@ -243,74 +185,7 @@ export async function getAllSellerUsers() {
 
 export async function getAllClients() {
   try {
-    const data = await prisma?.clients.findMany({
-      select: {
-        id: true,
-        name_lastname: true,
-        email: true,
-        mobile_phone: true,
-        home_phone: true,
-        work_phone: true,
-        born_date: true,
-        created_at: true,
-        gender: {
-          select: {
-            gender: true,
-          },
-        },
-        language: {
-          select: {
-            language: true,
-          },
-        },
-        current_address: true,
-        current_job: true,
-        previous_address: true,
-        previous_job: true,
-        social_security: true,
-        duplicate: true,
-        contact_method: {
-          select: {
-            method: true,
-          },
-        },
-        contact_time: true,
-        cash_down: true,
-        file: {
-          select: {
-            file: true,
-          },
-        },
-        inquiry_type: {
-          select: {
-            type: true,
-          },
-        },
-        lead_source: {
-          select: {
-            source: true,
-          },
-        },
-        lead_type: {
-          select: {
-            type: true,
-          },
-        },
-        mailing_address: true,
-        other_income: true,
-        reference: true,
-        seller: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-      },
-    });
-
-    //await prisma?.$disconnect();
+    const data = mockDb.clients.findMany();
 
     return data;
   } catch (error) {
@@ -321,77 +196,11 @@ export async function getAllClients() {
 // get a client by id logic
 export async function getClientById(id: number) {
   try {
-    const data = await prisma?.clients.findUnique({
-      select: {
-        id: true,
-        name_lastname: true,
-        email: true,
-        mobile_phone: true,
-        home_phone: true,
-        work_phone: true,
-        born_date: true,
-        created_at: true,
-        gender: {
-          select: {
-            id: true,
-          },
-        },
-        language: {
-          select: {
-            language: true,
-          },
-        },
-        current_address: true,
-        current_job: true,
-        previous_address: true,
-        previous_job: true,
-        social_security: true,
-        duplicate: true,
-        contact_method: {
-          select: {
-            id: true,
-          },
-        },
-        contact_time: true,
-        cash_down: true,
-        file: {
-          select: {
-            file: true,
-          },
-        },
-        inquiry_type: {
-          select: {
-            id: true,
-          },
-        },
-        lead_source: {
-          select: {
-            id: true,
-          },
-        },
-        lead_type: {
-          select: {
-            id: true,
-          },
-        },
-        mailing_address: true,
-        other_income: true,
-        reference: true,
-        seller: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-      },
+    const data = mockDb.clients.findUnique({
       where: {
         id: id,
       },
     });
-
-    //await prisma?.$disconnect();
 
     return data;
   } catch (error) {
@@ -402,69 +211,7 @@ export async function getClientById(id: number) {
 // get all vehicles logic (listo)
 export async function getAllVehicles() {
   try {
-    const data = await prisma?.vehicles.findMany({
-      select: {
-        id: true,
-        vehicle_type: {
-          select: {
-            type: true,
-          },
-        },
-        vehicle_brands: {
-          select: {
-            brand: true,
-          },
-        },
-        exterior_vehicle_colors: {
-          select: {
-            color: true,
-          },
-        },
-        vehicle_conditions: {
-          select: {
-            condition: true,
-          },
-        },
-        vehicle_fuel_tank_types: {
-          select: {
-            type: true,
-          },
-        },
-        vehicle_identification_numbers: {
-          select: {
-            vin: true,
-          },
-        },
-        vehicle_manufacture_years: {
-          select: {
-            year: true,
-          },
-        },
-        vehicle_mileages: {
-          select: {
-            mileage: true,
-          },
-        },
-        vehicle_models: {
-          select: {
-            model: true,
-          },
-        },
-        vehicle_prices: {
-          select: {
-            price: true,
-          },
-        },
-        vehicle_transmissions: {
-          select: {
-            transmission: true,
-          },
-        },
-        entry_stock: true,
-      },
-    });
-
-    //await prisma?.$disconnect();
+    const data = mockDb.vehicles.findMany();
 
     return data;
   } catch (error) {
@@ -475,9 +222,7 @@ export async function getAllVehicles() {
 // get all appointments statuses logic (listo)
 export async function getAllAppointmentStatuses() {
   try {
-    const data = await prisma?.appointments_status.findMany();
-
-    //await prisma?.$disconnect();
+    const data = mockDb.appointments_status.findMany();
 
     return data;
   } catch (error) {
@@ -487,60 +232,8 @@ export async function getAllAppointmentStatuses() {
 
 // get all appointments logic (listo)
 export async function getAllAppointments() {
-  // const session = await auth();
-  // const userRoleId = session?.user.user_has[0]?.role_id;
-  // const userId = session?.user.id;
-
   try {
-    // const adminRoles = [
-    //   Roles.Superuser,
-    //   Roles.Administrator,
-    //   Roles.SalesManager,
-    //   Roles.FinanceManager,
-    // ];
-
-    const data = await prisma?.appointments.findMany({
-      select: {
-        id: true,
-        start_date: true,
-        end_date: true,
-        users: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-          },
-        },
-        appointments_status: {
-          select: {
-            status: true,
-          },
-        },
-        customers: {
-          select: {
-            id: true,
-            name_lastname: true,
-            email: true,
-          },
-        },
-      },
-      // where: {
-      // ...(userRoleId && !adminRoles.includes(userRoleId)
-      //   ? {
-      //       OR: [
-      //         {
-      //           created_by: userId,
-      //         },
-      //         {
-      //           user_id: userId,
-      //         },
-      //       ],
-      //     }
-      //   : null),
-      // },
-    });
-
-    //await prisma?.$disconnect();
+    const data = mockDb.appointments.findMany();
 
     return data;
   } catch (error) {
@@ -551,38 +244,11 @@ export async function getAllAppointments() {
 // get an appointment by id logic
 export async function getAppointmentById(id: number) {
   try {
-    const data = await prisma?.appointments.findUnique({
-      select: {
-        id: true,
-        start_date: true,
-        end_date: true,
-        users: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-          },
-        },
-        appointments_status: {
-          select: {
-            status: true,
-            id: true,
-          },
-        },
-        customers: {
-          select: {
-            id: true,
-            name_lastname: true,
-            email: true,
-          },
-        },
-      },
+    const data = mockDb.appointments.findUnique({
       where: {
         id,
       },
     });
-
-    //await prisma?.$disconnect();
 
     return data;
   } catch (error) {
@@ -593,22 +259,7 @@ export async function getAppointmentById(id: number) {
 // get all sellers users logic
 export async function getSellersUsers() {
   try {
-    const data = await prisma?.users.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        last_name: true,
-        created_at: true,
-        updated_at: true,
-        emailVerified: true,
-        password: false,
-        user_has: {
-          select: {
-            role_id: true,
-          },
-        },
-      },
+    const data = mockDb.users.findMany({
       where: {
         user_has: {
           some: {
@@ -626,8 +277,6 @@ export async function getSellersUsers() {
       },
     });
 
-    //await prisma?.$disconnect();
-
     return data;
   } catch (error) {
     console.log(error);
@@ -637,9 +286,7 @@ export async function getSellersUsers() {
 // get all client types logic (listo)
 export async function getAllClientTypes() {
   try {
-    const data = await prisma?.client_types.findMany();
-
-    prisma.$disconnect();
+    const data = mockDb.client_types.findMany();
 
     return data;
   } catch (error) {
@@ -650,39 +297,11 @@ export async function getAllClientTypes() {
 // get a customer consent code
 export async function getAConsentCode(code: string) {
   try {
-    const data = await prisma.consent_code.findUnique({
+    const data = mockDb.consent_code.findUnique({
       where: {
         token: code,
       },
-      include: {
-        customer: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-            country_phone_code_id: true,
-            born_date: true,
-            email: true,
-            client_address: {
-              select: {
-                street: true,
-                city: true,
-                state: true,
-                zip: true,
-              },
-            },
-            seller: {
-              select: {
-                email: true,
-              },
-            },
-          },
-        },
-      },
     });
-
-    //await prisma.$disconnect();
 
     return data;
   } catch (error) {
@@ -694,7 +313,7 @@ export async function getAConsentCode(code: string) {
 
 export async function getIdStates() {
   try {
-    const data = await prisma?.client_id_state.findMany();
+    const data = mockDb.client_id_state.findMany();
 
     return data;
   } catch (error) {
@@ -705,21 +324,11 @@ export async function getIdStates() {
 // get states
 export async function getStates() {
   try {
-    const data = await prisma?.states.findMany({
-      select: {
-        id: true,
-        state: true,
-        state_code: true,
-      },
-    });
-
-    //await prisma.$disconnect();
+    const data = mockDb.states.findMany();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 }
 
@@ -728,35 +337,15 @@ export async function getCustomerAppointment(appointmentId: string) {
   const appId = parseInt(appointmentId);
 
   try {
-    const data = await prisma.appointments.findUnique({
+    const data = mockDb.appointments.findUnique({
       where: {
         id: appId,
       },
-      select: {
-        customers: {
-          select: {
-            first_name: true,
-            last_name: true,
-          },
-        },
-        users: {
-          select: {
-            name: true,
-            last_name: true,
-          },
-        },
-        start_date: true,
-        end_date: true,
-      },
     });
-
-    //await prisma.$disconnect();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 }
 
@@ -775,8 +364,6 @@ export async function getCustomerSmsTemplateVariablesValues(customerId: string) 
     return data as TemplateVariablesValues;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 }
 
@@ -803,8 +390,6 @@ export const getUserEmailAndPassword = async (
       },
     });
 
-    //await prisma.$disconnect();
-
     return JSON.parse(JSON.stringify(user));
   } catch (error) {
     console.log(error);
@@ -817,23 +402,15 @@ export const getUserEmailAndPassword = async (
 
 export const getCreditAppCode = async (code: string) => {
   try {
-    const data = await prisma.credit_app_code.findUnique({
+    const data = mockDb.credit_app_code.findUnique({
       where: {
         token: code,
       },
-      select: {
-        customer_id: true,
-        code_expired: true,
-      },
     });
-
-    //await prisma.$disconnect();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
@@ -841,27 +418,21 @@ export const getCreditAppCode = async (code: string) => {
 
 export const getCustomerCreditAppData = async (customerId?: number) => {
   try {
-    const creditAppData = await prisma.credit_app.findUnique({
+    const creditAppData = mockDb.credit_app.findUnique({
       where: {
         client_id: customerId,
       },
     });
 
-    const addressData = await prisma.credit_app_address.findFirst({
+    const addressData = mockDb.credit_app_address.findFirst({
       where: {
         client_id: customerId,
-      },
-      include: {
-        prev_address: true,
       },
     });
 
-    const employmentData = await prisma.customer_employment.findMany({
+    const employmentData = mockDb.customer_employment.findMany({
       where: {
         client_id: customerId,
-      },
-      include: {
-        customer_employment_address: true,
       },
       orderBy: {
         id: 'asc',
@@ -869,7 +440,7 @@ export const getCustomerCreditAppData = async (customerId?: number) => {
     });
 
     const prevAddress: PrevAddress[] | undefined | null = addressData?.prev_address.map(
-      (address) => ({
+      (address: any) => ({
         id: address.id,
         address: address.prev_address,
         year: address.prev_year,
@@ -883,7 +454,7 @@ export const getCustomerCreditAppData = async (customerId?: number) => {
     const filteredData = employmentData.filter((_, index) => index !== 0);
 
     const prevEmploymentData: PrevEmploymentStatus[] | null | undefined = filteredData.map(
-      (el) => ({
+      (el: any) => ({
         id: el.id,
         employmentName: el.previous_employer_name,
         addressId: el.customer_employment_address[0].id,
@@ -900,23 +471,16 @@ export const getCustomerCreditAppData = async (customerId?: number) => {
       }),
     );
 
-    const referencesData = await prisma.credit_app_reference.findMany({
+    const referencesData = mockDb.credit_app_reference.findMany({
       where: {
         customer_id: customerId,
-      },
-      include: {
-        customer: {
-          select: {
-            credit_app_other_income: true,
-          },
-        },
       },
       orderBy: {
         id: 'asc',
       },
     });
 
-    const references: References[] | undefined | null = referencesData.map((el) => ({
+    const references: References[] | undefined | null = referencesData.map((el: any) => ({
       id: el.id,
       name: el.name,
       address: el.address,
@@ -928,13 +492,9 @@ export const getCustomerCreditAppData = async (customerId?: number) => {
     let dateOfBirthVal = creditAppData?.date_of_birth;
 
     if (!ssnVal || !dateOfBirthVal) {
-      const customerDefaultData = await prisma.clients.findUnique({
+      const customerDefaultData = mockDb.clients.findUnique({
         where: {
           id: customerId,
-        },
-        select: {
-          born_date: true,
-          social_security: true,
         },
       });
 
@@ -997,8 +557,6 @@ export const getCustomerCreditAppData = async (customerId?: number) => {
     return creditApp;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
@@ -1006,15 +564,11 @@ export const getCustomerCreditAppData = async (customerId?: number) => {
 
 export const getIdTtype = async () => {
   try {
-    const data = await prisma.client_id_type.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.client_id_type.findMany();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
@@ -1022,15 +576,11 @@ export const getIdTtype = async () => {
 
 export const getGender = async () => {
   try {
-    const data = await prisma.genders.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.genders.findMany();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
@@ -1038,9 +588,7 @@ export const getGender = async () => {
 
 export const getCreditAddressMonths = async () => {
   try {
-    const data = await prisma?.credit_app_address_months.findMany();
-
-    //await prisma?.$disconnect();
+    const data = mockDb.credit_app_address_months.findMany();
 
     return data;
   } catch (error) {
@@ -1052,9 +600,7 @@ export const getCreditAddressMonths = async () => {
 
 export const getCreditAppAddressType = async () => {
   try {
-    const data = await prisma?.credit_app_address_type.findMany();
-
-    //await prisma?.$disconnect();
+    const data = mockDb.credit_app_address_type.findMany();
 
     return data;
   } catch (error) {
@@ -1066,77 +612,29 @@ export const getCreditAppAddressType = async () => {
 
 export const addressPreliminaryData = async (customerId?: number) => {
   try {
-    const data = await prisma.credit_app_address.findFirst({
+    const data = mockDb.credit_app_address.findFirst({
       where: {
         client_id: customerId,
       },
-      select: {
-        id: true,
-        current_address: true,
-        current_year: true,
-        current_month_id: true,
-        current_address_type_id: true,
-        current_rent_mort: true,
-        current_street: true,
-        current_city: true,
-        current_state: true,
-        current_state_id: true,
-        current_zip: true,
-        current_county: true,
-        mailing_address: true,
-        mailing_street: true,
-        mailing_state: true,
-        mailing_city: true,
-        mailing_state_id: true,
-        mailing_zip: true,
-        mailing_county: true,
-      },
     });
 
-    const data2 = await prisma.credit_app_address_prev.findMany({
+    const data2 = mockDb.credit_app_address_prev.findMany({
       where: {
         credit_app_address_id: data?.id,
       },
-      select: {
-        id: true,
-        credit_app_address_id: true,
-        prev_address: true,
-        prev_street: true,
-        prev_city: true,
-        prev_state_id: true,
-        prev_zip: true,
-        prev_county: true,
-        prev_year: true,
-        prev_month_id: true,
-        prev_state: true,
-        prev_address_type_id: true,
-        prev_rent_mort: true,
-      },
     });
-
-    //await prisma.$disconnect();
 
     return { data, data2 };
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
 export const getCustomerAddress = async (customerId?: number) => {
   try {
-    const address = await prisma.clients.findUnique({
+    const address = mockDb.clients.findUnique({
       where: {
         id: customerId,
-      },
-      select: {
-        client_address: {
-          include: {
-            state: true,
-            county: true,
-          },
-        },
       },
     });
 
@@ -1150,125 +648,95 @@ export const getCustomerAddress = async (customerId?: number) => {
 
 export const getEmploymentStatus = async () => {
   try {
-    const data = await prisma.employment_statuses.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.employment_statuses.findMany();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
 export const getOccupation = async () => {
   try {
-    const data = await prisma.customer_occupation.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.customer_occupation.findMany();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
 export const getIncomeType = async () => {
   try {
-    const data = await prisma.customer_income_type.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.customer_income_type.findMany();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
 export const getCreditAppEmploymentPreliminary = async (customerId?: number) => {
   try {
-    const data = await prisma.customer_employment.findMany({
+    const data = mockDb.customer_employment.findMany({
       where: {
         client_id: customerId,
       },
-      include: {
-        customer_employment_address: true,
-      },
     });
-
-    //await prisma.$disconnect();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
 export const getReferenceRelationship = async () => {
   try {
-    const data = await prisma.credit_app_reference_relationship.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.credit_app_reference_relationship.findMany();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
 export const getChecks = async () => {
   try {
-    const data = await prisma.consent_checks.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.consent_checks.findMany();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
 export const getStatement = async () => {
   try {
-    const data = await prisma.consent_terms.findFirst();
-
-    //await prisma.$disconnect();
+    const data = mockDb.consent_terms.findFirst();
 
     return data;
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
   }
 };
 
 export const getCustomerRelatedUsers = async (customerId: string) => {
   try {
-    const customerData = await prisma.leads.findFirst({
+    const customerData = mockDb.leads.findFirst({
       where: {
         is_active: true,
         id: Number(customerId),
       },
-      select: {
-        sales_rep_id: true,
-        bdc_id: true,
-        sales_manager_id: true,
-        finance_manager_id: true,
-      },
     });
 
-    const relatedUsersArray = customerData ? Object.values(customerData) : [];
+    const relatedUsersArray = customerData
+      ? [
+          customerData.sales_rep_id,
+          customerData.bdc_id,
+          customerData.sales_manager_id,
+          customerData.finance_manager_id,
+        ]
+      : [];
 
     return relatedUsersArray;
   } catch (error) {

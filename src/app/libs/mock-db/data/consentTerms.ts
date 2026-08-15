@@ -34,6 +34,31 @@ export const seedConsentCodes = [
   },
 ];
 
+seedConsentCodes.forEach((consent: any) => {
+  consent.customer = {
+    id: 1,
+    first_name: 'Carlos',
+    last_name: 'Mendez',
+    mobile_phone: '3055552101',
+    country_phone_code_id: 1,
+    born_date: new Date('1992-04-18T00:00:00.000Z'),
+    email: 'carlos.mendez@example.com',
+    client_address: {
+      street: '1200 Coral Way',
+      city: 'Miami',
+      state: {
+        id: 11,
+        state: 'Florida',
+        state_code: 'FL',
+      },
+      zip: '33145',
+    },
+    seller: {
+      email: 'sarah.mitchell@flowsups.com',
+    },
+  };
+});
+
 export const seedClientAddresses = [
   {
     id: 1,

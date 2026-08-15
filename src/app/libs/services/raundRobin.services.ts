@@ -1,14 +1,30 @@
-import { Round_robin, Time_span } from '@prisma/client';
+type RoundRobinSettings = {
+  id: number;
+  ready_for_leads: boolean;
+  automatic_reassign_leads: boolean;
+  span_time_id: number | null;
+  avoid_automatic_reassign_olders_leads: boolean;
+  days_until_avoid: number | null;
+  assign_leads_during_store_hours: boolean;
+  assign_leads_during_shift_hours: boolean;
+  users_must_activate_ready_for_leads: boolean;
+  create_task_after_assign_new_lead: boolean;
+};
+
+type TimeSpan = {
+  id: number;
+  time_span: string;
+};
 
 export const getRaundRobinSettings = async () => {
-  const roundRobinSettings: Round_robin = await (
+  const roundRobinSettings: RoundRobinSettings = await (
     await fetch('/api/adminDashboard/roundRobin', { cache: 'no-store' })
   ).json();
   return roundRobinSettings;
 };
 
 export const getTimeSpan = async () => {
-  const timeSpan: Time_span[] = await (await fetch('/api/adminDashboard/timeSpan', { cache: 'no-store' })).json();
+  const timeSpan: TimeSpan[] = await (await fetch('/api/adminDashboard/timeSpan', { cache: 'no-store' })).json();
   return timeSpan;
 };
 

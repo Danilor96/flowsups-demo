@@ -350,6 +350,56 @@ seedUsers.forEach((user: any) => {
   }
 });
 
+export const seedUsersHasCodes = [
+  {
+    id: 1,
+    user_id: 2,
+    code_id: 1,
+    user: {
+      id: 2,
+      email: 'sarah.mitchell@flowsups.com',
+    },
+    code: {
+      id: 1,
+      code: 'REG-0001',
+      activation_code_expired: new Date('2027-01-01T00:00:00.000Z'),
+    },
+  },
+];
+
+export const seedActivationCodes = [
+  {
+    id: 1,
+    code: 'REG-0001',
+    activation_code_expired: new Date('2027-01-01T00:00:00.000Z'),
+    code_data: [
+      {
+        user: {
+          id: 2,
+          email: 'sarah.mitchell@flowsups.com',
+        },
+      },
+    ],
+  },
+];
+
+export const seedSellerActivityCounters = seedUsers.map((user: any) => ({
+  id: user.id,
+  sellerId: user.id,
+  smsSentCurrentCount: 0,
+  smsSentTotalCount: 0,
+  callsMadeCurrentCount: 0,
+  callsMadeTotalCount: 0,
+  emailsSentCurrentCount: 0,
+  emailsSentTotalCount: 0,
+  appointmentsCompletedCurrentCount: 0,
+  appointmentsCompletedTotalCount: 0,
+  appointmentsMadeCurrentCount: 0,
+  appointmentsMadeTotalCount: 0,
+  soldCustomersCurrentCount: 0,
+  soldCustomersTotalCount: 0,
+}));
+
 (seedUsers[1] as any).client_seller = [
   { id: 6, client_status_id: 10, first_name: 'Luis', last_name: 'Alvarez' },
   { id: 7, client_status_id: 1, first_name: 'Maria', last_name: 'Gonzalez' },

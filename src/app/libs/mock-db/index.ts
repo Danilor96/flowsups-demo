@@ -1,4 +1,10 @@
-import { seedUsers, seedUserSchedules } from "./data/users";
+import {
+  seedUsers,
+  seedUserSchedules,
+  seedUsersHasCodes,
+  seedActivationCodes,
+  seedSellerActivityCounters,
+} from "./data/users";
 import {
   seedRoles,
   seedPermissions,
@@ -603,6 +609,9 @@ const buildStores = (
 
 export const mockDb: Record<string, Store<any>> = {
   users: createStore<Record<string, any>>(seedUsers),
+  users_has_codes: createStore(seedUsersHasCodes),
+  activation_codes: createStore(seedActivationCodes),
+  sellerActivityCounter: createStore(seedSellerActivityCounters),
   roles: createStore(seedRoles),
   permissions: createStore(seedPermissions),
   roles_has_permissions: createStore(seedRolesHasPermissions),

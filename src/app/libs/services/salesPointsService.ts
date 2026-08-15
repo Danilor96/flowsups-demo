@@ -1,5 +1,4 @@
-import prisma from '@/app/libs/prisma';
-import { SalesGoalsConfig, SellerActivityCounter } from '@prisma/client';
+import { mockDb } from '@/app/libs/mock-db';
 
 export const enum ActivityType {
   SMS_SENT = 'SMS_SENT',
@@ -10,6 +9,32 @@ export const enum ActivityType {
   CUSTOMER_SOLD = 'CUSTOMER_SOLD',
 }
 
+export type SellerActivityCounter = {
+  id: number;
+  sellerId: number;
+  smsSentCurrentCount: number;
+  smsSentTotalCount: number;
+  callsMadeCurrentCount: number;
+  callsMadeTotalCount: number;
+  emailsSentCurrentCount: number;
+  emailsSentTotalCount: number;
+  appointmentsCompletedCurrentCount: number;
+  appointmentsCompletedTotalCount: number;
+  appointmentsMadeCurrentCount: number;
+  appointmentsMadeTotalCount: number;
+  soldCustomersCurrentCount: number;
+  soldCustomersTotalCount: number;
+};
+
+type SalesGoalsConfig = {
+  smssSentNumber: number;
+  emailsSentNumber: number;
+  callsMadeNumber: number;
+  appointmentsCompletedNumber: number;
+  appointmentsMadeNumber: number;
+  soldCustomersNumber: number;
+};
+
 export async function salesPointsAssignService({
   userId,
   activityType,
@@ -17,27 +42,23 @@ export async function salesPointsAssignService({
   userId: number;
   activityType: ActivityType;
 }) {
-  const user = await prisma.users.findUnique({
+  const user = mockDb.users.findUnique({
     where: { id: userId, deleted_at: null },
-    select: {
-      id: true,
-      SellerActivityCounter: true,
-      sales_points_today_date: true,
-      sales_points_today: true,
-    },
   });
   if (!user) return;
 
-  await prisma.sales_activity_log.create({
+  mockDb.sales_activity_log.create({
     data: {
       user_id: userId,
       activity_type: activityType,
     },
   });
 
-  let userActivityCounter = user.SellerActivityCounter;
+  let userActivityCounter = mockDb.sellerActivityCounter.findUnique({
+    where: { sellerId: userId },
+  });
   if (!userActivityCounter) {
-    userActivityCounter = await prisma.sellerActivityCounter.create({
+    userActivityCounter = mockDb.sellerActivityCounter.create({
       data: {
         sellerId: userId,
       },
@@ -47,7 +68,7 @@ export async function salesPointsAssignService({
   const counters = getCountersByActivityType(activityType, userActivityCounter);
   if (counters.keysToUpdate === null) return;
 
-  const salesGoalsConfig = await prisma.salesGoalsConfig.findFirst();
+  const salesGoalsConfig = mockDb.salesGoalsConfig.findFirst();
   const target = salesGoalsConfig ? getTarget(activityType, salesGoalsConfig) : null;
   const hasTarget = target !== null && target > 0;
 
@@ -72,7 +93,7 @@ export async function salesPointsAssignService({
     // Increment sales points
     if (lastUpdateDate.getTime() < today.getTime()) {
       //reset today's points
-      await prisma.users.update({
+      mockDb.users.update({
         where: { id: userId, deleted_at: null },
         data: {
           sales_points_total: { increment: 1 },
@@ -81,14 +102,14 @@ export async function salesPointsAssignService({
         },
       });
     } else {
-      await prisma.users.update({
+      mockDb.users.update({
         where: { id: userId, deleted_at: null },
         data: { sales_points_total: { increment: 1 }, sales_points_today: { increment: 1 } },
       });
     }
   }
 
-  const result = await prisma.sellerActivityCounter.update({
+  const result = mockDb.sellerActivityCounter.update({
     where: { sellerId: userId },
     data: {
       [counters.keysToUpdate?.currentCountKey]: newCurrentCounterValue,

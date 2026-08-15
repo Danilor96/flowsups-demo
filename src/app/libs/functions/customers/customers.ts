@@ -1,5 +1,3 @@
-import { Prisma } from '@prisma/client';
-
 export function returnLeadPrismaClauses({
   leadId,
   customerId,
@@ -49,7 +47,7 @@ export function returnLeadPrismaClauses({
         },
         take: 1,
         orderBy: {
-          created_at: 'desc' as Prisma.SortOrder,
+          created_at: 'desc' as const,
         },
       }
     : {
@@ -63,7 +61,7 @@ export function returnLeadPrismaClauses({
         },
         take: 1,
         orderBy: {
-          created_at: 'desc' as Prisma.SortOrder,
+          created_at: 'desc' as const,
         },
       };
 

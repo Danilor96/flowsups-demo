@@ -47,6 +47,8 @@ import {
   seedOtherSalesLog,
   seedOtherVehicle,
   seedMarketingCost,
+  seedDeposits,
+  seedVehicleDelivery,
 } from "./data/deals";
 import {
   seedSalesGoalsConfig,
@@ -642,6 +644,8 @@ export const mockDb: Record<string, Store<any>> = {
   clients_has_referrer: createStore(seedClientsHasReferrer),
   dealReceipt: createStore(seedDealReceipts),
   daily_visit_history: createStore(seedDailyVisitHistory),
+  vehicle_delivery: createStore(seedVehicleDelivery),
+  deposits: createStore(seedDeposits),
   monthly_goals: createStore(seedMonthlyGoals),
   credit_app_navigation: createStore(seedCreditAppNavigations),
   credit_app: createStore(seedCreditApps),

@@ -113,6 +113,14 @@ export const seedConversations = [
   },
 ];
 
+export const seedClientNoteFrom = [
+  { id: 1, from: 'Call' },
+  { id: 2, from: 'Email' },
+  { id: 3, from: 'Lost Reason' },
+  { id: 4, from: 'SMS' },
+  { id: 5, from: 'Deposit' },
+];
+
 export const seedNotes = [
   {
     id: 1,
@@ -123,6 +131,21 @@ export const seedNotes = [
     from_id: null,
     is_call_note: false,
     is_sms_note: false,
+    created_by: {
+      id: 1,
+      name: 'Daniel',
+      last_name: 'Demo',
+      email: 'demo@flowsups.com',
+    },
+    from: null,
+    client_note: {
+      id: 1,
+      client_status_id: 1,
+      name_lastname: 'Daniel Demo',
+      first_name: 'Daniel',
+      last_name: 'Demo',
+      seller_id: 1,
+    },
   },
   {
     id: 2,
@@ -133,5 +156,20 @@ export const seedNotes = [
     from_id: null,
     is_call_note: true,
     is_sms_note: false,
+    created_by: {
+      id: 2,
+      name: 'Maria',
+      last_name: 'Lopez',
+      email: 'maria@flowsups.com',
+    },
+    from: null,
+    client_note: {
+      id: 2,
+      client_status_id: 2,
+      name_lastname: 'Maria Lopez',
+      first_name: 'Maria',
+      last_name: 'Lopez',
+      seller_id: 2,
+    },
   },
 ];

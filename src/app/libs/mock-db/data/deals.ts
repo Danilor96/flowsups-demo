@@ -183,3 +183,49 @@ export const seedMarketingCost = [
     source_id: 3,
   },
 ];
+
+export const seedDeposits: any[] = [
+  {
+    id: 1,
+    client_id: 4,
+    vehicle_id: 4,
+    amount: '1000',
+    processing_fee: '50',
+    total: '1050',
+    method_id: 1,
+    reference: 'DEP-0001',
+    deposit_date: new Date('2026-07-21T00:00:00.000Z'),
+    good_through_date: new Date('2026-08-21T00:00:00.000Z'),
+    non_refundable: false,
+    scanned_deposit_url: null,
+    note_id: 1,
+  },
+  {
+    id: 2,
+    client_id: 6,
+    vehicle_id: 8,
+    amount: '3000',
+    processing_fee: '100',
+    total: '3100',
+    method_id: 2,
+    reference: 'DEP-0002',
+    deposit_date: new Date('2026-08-06T15:20:00.000Z'),
+    good_through_date: new Date('2026-09-06T00:00:00.000Z'),
+    non_refundable: true,
+    scanned_deposit_url: null,
+    note_id: 2,
+  },
+];
+
+export const seedVehicleDelivery: any[] = [
+  {
+    id: 1,
+    customer_id: 4,
+    vehicle_id: 4,
+    assigned_to: 2,
+    start_date: new Date('2026-08-07T10:00:00.000Z'),
+    end_date: new Date('2026-08-07T12:00:00.000Z'),
+    reminder_time: 0,
+    created_by: 1,
+  },
+];

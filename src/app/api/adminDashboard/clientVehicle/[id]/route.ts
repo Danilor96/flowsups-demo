@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 
@@ -97,14 +97,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     let commentId;
 
     try {
-      const tradeinInfo = await prisma.client_vehicle_tradein.findFirst({
+      const tradeinInfo = mockDb.client_vehicle_tradein.findFirst({
         where: {
           id: tradeinId,
         },
       });
 
       if (tradeinCommentInput && tradeinInfo?.comment_id) {
-        const comment = await prisma?.vehicle_tradein_comments.update({
+        const comment = mockDb.vehicle_tradein_comments.update({
           where: {
             id: tradeinInfo.comment_id,
           },
@@ -116,7 +116,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         commentId = comment.id;
       }
 
-      const make = await prisma?.vehicle_make.upsert({
+      const make = mockDb.vehicle_make.upsert({
         where: {
           brand: tradeinVehicleMakeInput.toLowerCase(),
         },
@@ -126,14 +126,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      const mileage = await prisma?.vehicle_mileages.create({
+      const mileage = mockDb.vehicle_mileages.create({
         data: {
           mileage: vehicleTradeinMileageInput,
           milleage_type_id: 1,
         },
       });
 
-      const model = await prisma?.vehicle_models.upsert({
+      const model = mockDb.vehicle_models.upsert({
         where: {
           model: tradeinVehicleModelInput.toLowerCase(),
         },
@@ -143,13 +143,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      const trim = await prisma?.vehicle_trims.create({
+      const trim = mockDb.vehicle_trims.create({
         data: {
           trim: tradeinVehicleTrimInput,
         },
       });
 
-      const vin = await prisma?.vehicle_identification_numbers.upsert({
+      const vin = mockDb.vehicle_identification_numbers.upsert({
         where: {
           vin: vinInput,
         },
@@ -159,7 +159,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      const year = await prisma?.vehicle_manufacture_years.upsert({
+      const year = mockDb.vehicle_manufacture_years.upsert({
         where: {
           year: tradeinVehicleYearInput,
         },
@@ -169,7 +169,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         },
       });
 
-      const data = await prisma?.client_vehicle_tradein.update({
+      const data = mockDb.client_vehicle_tradein.update({
         where: {
           id: tradeinId,
         },
@@ -190,8 +190,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           vehicle_type_id: parseInt(tradeinVehicleTypeInput),
         },
       });
-
-      //await prisma?.$disconnect();
 
       return NextResponse.json({ successMessage: 'Traede in updated' });
     } catch (error) {

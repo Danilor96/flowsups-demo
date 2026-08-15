@@ -862,11 +862,38 @@ export const seedVehicleDetailsKeyInfo = [
   },
 ];
 
+export const seedVehicleTradeinComments = [
+  { id: 1, comment: 'Minor wear on driver seat' },
+];
+
+export const seedClientVehicleTradein = [
+  {
+    id: 1,
+    vin_id: 1,
+    year_id: 2,
+    make_id: 1,
+    model_id: 1,
+    trim_id: 1,
+    mileage_id: 1,
+    vehicle_type_id: 1,
+    int_color_id: 2,
+    ext_color_id: 1,
+    client_id: 1,
+    comment_id: 1,
+    book_value: '12000',
+    trade_allowance: '11000',
+    trade_payoff: '9500',
+  },
+];
+
 export const seedVehicleLookups: Record<string, any[]> = {
   vehicle_make: seedVehicleMakes,
   vehicle_models: seedVehicleModels,
   vehicle_manufacture_years: seedVehicleManufactureYears,
   vehicle_trim: seedVehicleTrims,
+  vehicle_trims: seedVehicleTrims,
+  vehicle_tradein_comments: seedVehicleTradeinComments,
+  client_vehicle_tradein: seedClientVehicleTradein,
   vehicle_colors: seedVehicleColors,
   vehicle_status: seedVehicleStatuses,
   vehicle_types: seedVehicleTypes,

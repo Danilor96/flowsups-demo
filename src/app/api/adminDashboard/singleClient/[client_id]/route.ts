@@ -1,8 +1,6 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { startOfDay, endOfDay } from 'date-fns';
-import { checkDuplicateCustomerValues } from '@/app/libs/duplicateValues/duplicateValues';
 import { createEvent, trackChanges } from '@/app/libs/events/events';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { revalidatePath } from 'next/cache';
@@ -10,521 +8,14 @@ import { CustomersStatuses, filterNumber } from '@/app/libs/customer/customersFu
 import { LostReasons } from '@/app/libs/definitions/customer/lostReason/lostReason.definitions';
 import { auth } from '@/auth';
 import { LeadHistoryCategoriesEnum } from '@/app/ui/dashboard/clientSystem/clientDetail/leadHistory/categoriesIdMap';
-import { Prisma } from '@prisma/client';
-import { returnLeadPrismaClauses } from '@/app/libs/functions/customers/customers';
 
 export async function GET(request: NextRequest, { params }: { params: { client_id: string } }) {
-  const searchParams = request.nextUrl.searchParams;
-
-  const leadId = searchParams.get('leadId');
-
   try {
     const customerId = parseInt(params.client_id);
 
-    const leadSelection = {
-      id: true,
-      customer_funding_list_status_id: true,
-      customer_status_id: true,
-    };
-
-    const leadClause: Prisma.LeadsFindManyArgs = leadId
-      ? {
-          where: {
-            id: Number(leadId),
-          },
-          select: leadSelection,
-        }
-      : {
-          select: leadSelection,
-          take: 1,
-          orderBy: {
-            created_at: 'desc',
-          },
-        };
-
-    const userDataSelect = {
-      name: true,
-      last_name: true,
-      id: true,
-      email: true,
-      mobile_phone: true,
-      username: true,
-    };
-
-    const data = await prisma?.clients.findUnique({
+    const data = await mockDb.clients.findUnique({
       where: {
         id: customerId,
-      },
-      select: {
-        id: true,
-        name_lastname: true,
-        first_name: true,
-        last_name: true,
-        suffix: true,
-        mobile_default: true,
-        home_default: true,
-        work_default: true,
-        nickname: true,
-        salutation: true,
-        last_activity: true,
-        middle_initials: true,
-        consent_approved: true,
-        country_code: true,
-        consent_to_sent_sms: true,
-        email: true,
-        mobile_phone: true,
-        home_phone: true,
-        lead: {
-          where: {
-            ...leadClause.where,
-          },
-          select: {
-            ...leadClause.select,
-            sales_rep: {
-              select: userDataSelect,
-            },
-            sales_manager: {
-              select: userDataSelect,
-            },
-            finance_manager: {
-              select: userDataSelect,
-            },
-            bdc: {
-              select: userDataSelect,
-            },
-          },
-        },
-        funding_list_status_id: true,
-        work_phone: true,
-        born_date: true,
-        created_at: true,
-        gender: {
-          select: {
-            gender: true,
-          },
-        },
-        language: {
-          select: {
-            language: true,
-            id: true,
-          },
-        },
-        current_address: true,
-        current_job: true,
-        previous_address: true,
-        previous_job: true,
-        social_security: true,
-        duplicate: true,
-        contact_method: {
-          select: {
-            id: true,
-            method: true,
-          },
-        },
-        contact_time: {
-          select: {
-            id: true,
-            time: true,
-          },
-        },
-        cash_down: true,
-        file: {
-          select: {
-            file: true,
-          },
-        },
-        inquiry_type: {
-          select: {
-            id: true,
-            type: true,
-          },
-        },
-        lead_source: {
-          select: {
-            id: true,
-            source: true,
-          },
-        },
-        lead_type: {
-          select: {
-            id: true,
-            type: true,
-          },
-        },
-        mailing_address: true,
-        other_income: true,
-        reference: true,
-        referrer_client: {
-          ...returnLeadPrismaClauses({ customerId, leadId }),
-          select: {
-            buyer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-                first_name: true,
-                last_name: true,
-              },
-            },
-            referrer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-                first_name: true,
-                last_name: true,
-              },
-            },
-          },
-        },
-        buyer_referrer: {
-          ...returnLeadPrismaClauses({ customerId, leadId }),
-          select: {
-            buyer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-                first_name: true,
-                last_name: true,
-                suffix: true,
-                salutation: true,
-                middle_initials: true,
-                nickname: true,
-                client_address: {
-                  select: {
-                    street: true,
-                    city: true,
-                    county_id: true,
-                    state_id: true,
-                    zip: true,
-                    county: true,
-                    id: true,
-                    state: true,
-                  },
-                },
-              },
-            },
-            referrer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-                first_name: true,
-                last_name: true,
-                suffix: true,
-                salutation: true,
-                middle_initials: true,
-                nickname: true,
-                client_address: {
-                  select: {
-                    street: true,
-                    city: true,
-                    county_id: true,
-                    state_id: true,
-                    zip: true,
-                    county: true,
-                    id: true,
-                    state: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        seller: {
-          ...(returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-            whereLeadRelationName: 'leadSalesRep',
-          }) as Prisma.UsersWhereInput),
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-            mobile_phone: true,
-            username: true,
-          },
-        },
-        bdc: {
-          ...(returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-            whereLeadRelationName: 'leadBdc',
-          }) as Prisma.UsersWhereInput),
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-            mobile_phone: true,
-            username: true,
-          },
-        },
-        finance_manager: {
-          ...(returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-            whereLeadRelationName: 'leadFinanceManager',
-          }) as Prisma.UsersWhereInput),
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-            mobile_phone: true,
-            username: true,
-          },
-        },
-        sales_manager: {
-          ...(returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-            whereLeadRelationName: 'leadSalesManager',
-          }) as Prisma.UsersWhereInput),
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-            mobile_phone: true,
-            username: true,
-          },
-        },
-        interested_vehicle: {
-          ...returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-          }),
-          include: {
-            general_info: true,
-            vehicle_status: true,
-            key_info: true,
-            purchase_info: true,
-            title_license: true,
-            vehicle_identification_numbers: true,
-            vehicle_brands: true,
-            vehicle_models: true,
-            exterior_vehicle_colors: true,
-            interior_vehicle_colors: true,
-            vehicle_mileages: true,
-            vehicle_trim: true,
-            vehicle_manufacture_years: true,
-          },
-        },
-        client_status: {
-          ...returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-          }),
-          select: {
-            id: true,
-            status: true,
-          },
-        },
-        message: {
-          select: {
-            message: true,
-            date_sent: true,
-            sent_by_user: true,
-          },
-          orderBy: {
-            date_sent: 'asc',
-          },
-        },
-        cobuyer: true,
-        cobuyer_client: {
-          ...returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-          }),
-          orderBy: {
-            lead: {
-              _count: 'desc',
-            },
-          },
-          take: 1,
-          select: {
-            cobuyer: {
-              select: {
-                name_lastname: true,
-                id: true,
-                current_address: true,
-                home_phone: true,
-                mobile_phone: true,
-                work_phone: true,
-                email: true,
-              },
-            },
-            relationship: {
-              select: {
-                id: true,
-                relationship: true,
-              },
-            },
-          },
-        },
-        buyer_client: {
-          ...returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-          }),
-          orderBy: {
-            lead: {
-              _count: 'desc',
-            },
-          },
-          take: 1,
-          select: {
-            cobuyer: {
-              select: {
-                name_lastname: true,
-                id: true,
-                current_address: true,
-                home_phone: true,
-                mobile_phone: true,
-                work_phone: true,
-                email: true,
-              },
-            },
-            relationship: {
-              select: {
-                id: true,
-                relationship: true,
-              },
-            },
-          },
-        },
-        client_language_id: true,
-        client_lead_temperature: {
-          ...returnLeadPrismaClauses({
-            customerId,
-            leadId,
-            noOrderBy: true,
-          }),
-          select: {
-            id: true,
-            temperature: true,
-          },
-        },
-        tradein_client: {
-          select: {
-            book_value: true,
-            comment: {
-              select: {
-                comment: true,
-              },
-            },
-            ext_color_id: true,
-            int_color_id: true,
-            id: true,
-            make: true,
-            model: true,
-            trade_allowance: true,
-            mileage_id: true,
-            trade_payoff: true,
-            trim: true,
-            vehicle_type_id: true,
-            vin: true,
-            year: true,
-          },
-        },
-        client_address: {
-          include: {
-            state: true,
-            county: true,
-          },
-        },
-        wishlist_client: {
-          select: {
-            id: true,
-            body_type: true,
-            exterior_color_id: true,
-            max_mileage_id: true,
-            max_price_id: true,
-            year: true,
-            vehicle: {
-              select: {
-                vehicle_type_id: true,
-                vehicle_manufacture_years: {
-                  select: {
-                    year: true,
-                  },
-                },
-                vehicle_brands: {
-                  select: {
-                    brand: true,
-                  },
-                },
-                vehicle_models: {
-                  select: {
-                    model: true,
-                  },
-                },
-                vehicle_prices: {
-                  select: {
-                    price: true,
-                  },
-                },
-                vehicle_identification_numbers: {
-                  select: {
-                    vin: true,
-                  },
-                },
-                vehicle_status: {
-                  select: {
-                    status: true,
-                  },
-                },
-                exterior_vehicle_colors: {
-                  select: {
-                    color: true,
-                  },
-                },
-                interior_vehicle_colors: {
-                  select: {
-                    color: true,
-                  },
-                },
-                vehicle_mileages: {
-                  select: {
-                    mileage: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        appointment: {
-          select: {
-            id: true,
-            status_id: true,
-          },
-          where: {
-            start_date: {
-              gte: startOfDay(new Date()),
-              lte: endOfDay(new Date()),
-            },
-          },
-        },
-        deal: true,
       },
     });
 
@@ -533,8 +24,6 @@ export async function GET(request: NextRequest, { params }: { params: { client_i
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -692,7 +181,7 @@ export async function PUT(request: Request, { params }: { params: { client_id: s
       (number) => number !== '' && number !== null && number !== undefined,
     );
 
-    const duplicateData = await prisma?.clients.findFirst({
+    const duplicateData = mockDb.clients.findFirst({
       where: {
         id: {
           not: customerId,
@@ -748,7 +237,7 @@ export async function PUT(request: Request, { params }: { params: { client_id: s
       return NextResponse.json({ fieldErrors }, { status: 422 });
     }
 
-    const prevData = await prisma.clients.findUnique({
+    const prevData = mockDb.clients.findUnique({
       where: {
         id: customerId,
       },
@@ -760,17 +249,15 @@ export async function PUT(request: Request, { params }: { params: { client_id: s
     if (leadSource) {
       leadId = parseInt(leadSource);
     } else if (leadSourceName) {
-      const existsLeadSource = await prisma.lead_sources.findFirst({
-        where: {
-          source: {
-            equals: leadSourceName,
-            mode: 'insensitive',
-          },
-        },
-      });
+      const leadSources = mockDb.lead_sources.findMany();
+
+      const existsLeadSource = leadSources.find(
+        (source) =>
+          source.source && source.source.toLowerCase() === (leadSourceName as string).toLowerCase(),
+      );
 
       if (!existsLeadSource) {
-        const newLead = await prisma.lead_sources.create({
+        const newLead = mockDb.lead_sources.create({
           data: {
             source: leadSourceName,
           },
@@ -783,19 +270,13 @@ export async function PUT(request: Request, { params }: { params: { client_id: s
       }
     }
 
-    const prevDataValues = await prisma.clients.findUnique({
+    const prevDataValues = mockDb.clients.findUnique({
       where: {
         id: customerId,
       },
-      select: {
-        seller_id: true,
-        bdc_id: true,
-        sales_manager_id: true,
-        finance_manager_id: true,
-      },
     });
 
-    const updatedData = await prisma?.clients.update({
+    const updatedData = mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -850,17 +331,17 @@ export async function PUT(request: Request, { params }: { params: { client_id: s
     }
 
     if (usersRelated && usersRelated.length > 0) {
-      await prisma.users_has_customers.createMany({ data: usersRelated });
+      mockDb.users_has_customers.createMany({ data: usersRelated });
     }
 
-    let leadWhereClause: Prisma.LeadsWhereUniqueInput | null = null;
+    let leadWhereClause: Record<string, any> | null = null;
 
     if (currentLeadId) {
       leadWhereClause = {
         id: Number(currentLeadId),
       };
     } else {
-      const activeLead = await prisma.leads.findFirst({
+      const activeLead = mockDb.leads.findFirst({
         where: {
           customer_id: customerId,
           is_selected: true,
@@ -874,7 +355,7 @@ export async function PUT(request: Request, { params }: { params: { client_id: s
     }
 
     if (leadWhereClause && leadWhereClause.id) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: leadWhereClause,
         data: {
           vehicle_id: interestedVehicle ? parseInt(interestedVehicle) : null,
@@ -885,8 +366,6 @@ export async function PUT(request: Request, { params }: { params: { client_id: s
         },
       });
     }
-
-    //await prisma?.$disconnect();
 
     const worksWith = [
       'first_name',
@@ -926,8 +405,6 @@ export async function PUT(request: Request, { params }: { params: { client_id: s
   } catch (error: any) {
     console.log(error);
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
 }
@@ -946,7 +423,7 @@ export async function DELETE(request: Request, { params }: { params: { client_id
   const id = parseInt(params.client_id);
 
   try {
-    const data = await prisma?.clients.update({
+    const data = mockDb.clients.update({
       where: {
         id: id,
       },
@@ -958,7 +435,7 @@ export async function DELETE(request: Request, { params }: { params: { client_id
       },
     });
 
-    const noteDb = await prisma.notes.create({
+    const noteDb = mockDb.notes.create({
       data: {
         note: 'Manual Deleted',
         created_at: new Date(),
@@ -966,12 +443,9 @@ export async function DELETE(request: Request, { params }: { params: { client_id
         client_id: id,
         from_id: 3,
       },
-      select: {
-        id: true,
-      },
     });
 
-    await prisma.client_has_lead.create({
+    mockDb.client_has_lead.create({
       data: {
         created_at: new Date(),
         client_id: id,
@@ -982,18 +456,15 @@ export async function DELETE(request: Request, { params }: { params: { client_id
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: id,
         is_selected: true,
       },
-      select: {
-        id: true,
-      },
     });
 
     if (activeLead) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: activeLead.id,
           customer_id: id,
@@ -1005,13 +476,9 @@ export async function DELETE(request: Request, { params }: { params: { client_id
       });
     }
 
-    //await prisma?.$disconnect();
-
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

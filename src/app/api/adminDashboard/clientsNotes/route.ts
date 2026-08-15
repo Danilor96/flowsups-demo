@@ -2,40 +2,18 @@ import { checkPermissions } from '@/app/libs/auth-helpers';
 import { createEvent } from '@/app/libs/events/events';
 import { createGeneralLead } from '@/app/libs/generalLead/generalLead';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 export async function GET() {
   try {
-    const data = await prisma?.notes.findMany({
-      select: {
-        id: true,
-        note: true,
-        created_at: true,
-        created_by: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        from: {
-          select: {
-            id: true,
-            from: true,
-          },
-        },
-        client_id: true,
-      },
+    const data = await mockDb.notes.findMany({
       orderBy: {
         created_at: 'desc',
       },
     });
-
-    //await prisma?.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
@@ -89,7 +67,7 @@ export async function POST(request: Request) {
   const { note, client_id, created_by, from, today } = validatedData.data;
 
   try {
-    const data = await prisma?.notes.create({
+    const created = await mockDb.notes.create({
       data: {
         note: note,
         created_at: new Date().toISOString(),
@@ -97,28 +75,40 @@ export async function POST(request: Request) {
         created_by_id: parseInt(created_by),
         from_id: from ? parseInt(from) : undefined,
       },
-      include: {
-        created_by: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        client_note: {
-          select: {
-            id: true,
-            name_lastname: true,
-            first_name: true,
-            last_name: true,
-            seller_id: true,
-          },
-        },
+    });
+
+    const createdByUser = mockDb.users.findUnique({
+      where: {
+        id: parseInt(created_by),
       },
     });
 
-    //await prisma?.$disconnect();
+    const clientNote = mockDb.clients.findUnique({
+      where: {
+        id: parseInt(client_id),
+      },
+    });
+
+    const data = {
+      ...created,
+      created_by: createdByUser
+        ? {
+            name: createdByUser.name,
+            last_name: createdByUser.last_name,
+            id: createdByUser.id,
+            email: createdByUser.email,
+          }
+        : null,
+      client_note: clientNote
+        ? {
+            id: clientNote.id,
+            name_lastname: clientNote.name_lastname,
+            first_name: clientNote.first_name,
+            last_name: clientNote.last_name,
+            seller_id: clientNote.seller_id,
+          }
+        : null,
+    };
 
     const notiMessage = `${data?.created_by?.name} ${
       data?.created_by?.last_name

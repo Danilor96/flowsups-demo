@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -8,156 +8,6 @@ export async function POST(request: Request) {
   const wishlist = formData.get('wishlist');
   const alreadyExist = formData.get('wishlistAlreadyExist');
   const tradein = formData.get('tradein');
-  // wishlist
-
-  // if (wishlist && !alreadyExist) {
-  //   const clientVehicleSchema = z.object({
-  //     vehicle_id: z
-  //       .string({ invalid_type_error: 'Please enter a valid value' })
-  //       .min(1, 'Please enter a value'),
-  //     max_mileage: z
-  //       .string({ invalid_type_error: 'Please enter a valid value' })
-  //       .min(1, 'Please enter a value'),
-  //     max_price: z
-  //       .string({ invalid_type_error: 'Please enter a valid value' })
-  //       .min(1, 'Please enter a value'),
-  //     min_year: z
-  //       .string({ invalid_type_error: 'Please enter a valid value' })
-  //       .min(1, 'Please enter a value'),
-  //     exterior_color: z
-  //       .string({ invalid_type_error: 'Please enter a valid value' })
-  //       .min(1, 'Please enter a value'),
-  //     body_type: z
-  //       .string({ invalid_type_error: 'Please enter a valid value' })
-  //       .min(1, 'Please enter a value'),
-  //     client_id: z
-  //       .string({ invalid_type_error: 'Please enter a valid value' })
-  //       .min(1, 'Please enter a value'),
-  //   });
-
-  //   const validatedData = clientVehicleSchema.safeParse({
-  //     vehicle_id: formData.get('vehicle_id'),
-  //     max_mileage: formData.get('max_mileage'),
-  //     max_price: formData.get('max_price'),
-  //     min_year: formData.get('min_year'),
-  //     exterior_color: formData.get('exterior_color'),
-  //     body_type: formData.get('body_type'),
-  //     client_id: formData.get('client_id'),
-  //   });
-
-  //   if (!validatedData.success) {
-  //     return NextResponse.json(
-  //       { fieldErrors: validatedData.error.flatten().fieldErrors },
-  //       { status: 422 },
-  //     );
-  //   }
-
-  //   const { body_type, client_id, exterior_color, max_mileage, max_price, min_year, vehicle_id } =
-  //     validatedData.data;
-
-  //   let colorId, mileageId, priceId;
-
-  //   try {
-  //     const mileage_id = await prisma?.vehicle_mileages.findUnique({
-  //       where: {
-  //         id: parseInt(max_mileage),
-  //       },
-  //     });
-
-  //     //await prisma?.$disconnect();
-
-  //     if (!mileage_id?.id) {
-  //       // const mil = await prisma?.vehicle_mileages.create({
-  //       //   data: {
-  //       //     mileage: max_mileage,
-  //       //   },
-  //       // });
-  //       // //await prisma?.$disconnect();
-  //       // mileageId = mil.id;
-  //     } else {
-  //       mileageId = mileage_id.id;
-  //     }
-
-  //     const price_id = await prisma?.vehicle_prices.findUnique({
-  //       where: {
-  //         id: parseInt(max_price),
-  //       },
-  //     });
-
-  //     //await prisma?.$disconnect();
-
-  //     if (!price_id) {
-  //       const pri = await prisma?.vehicle_prices.create({
-  //         data: {
-  //           price: max_price,
-  //         },
-  //       });
-
-  //       //await prisma?.$disconnect();
-
-  //       priceId = pri.id;
-  //     } else {
-  //       priceId = price_id.id;
-  //     }
-
-  //     const color_id = await prisma?.vehicle_colors.findUnique({
-  //       where: {
-  //         id: parseInt(exterior_color),
-  //       },
-  //     });
-
-  //     //await prisma?.$disconnect();
-
-  //     if (!color_id) {
-  //       const col = await prisma?.vehicle_colors.create({
-  //         data: {
-  //           color: exterior_color,
-  //         },
-  //       });
-  //       //await prisma?.$disconnect();
-
-  //       colorId = col.id;
-  //     } else {
-  //       colorId = color_id.id;
-  //     }
-
-  //     const body_type_id = await prisma?.vehicle_body_types.create({
-  //       data: {
-  //         type: body_type,
-  //       },
-  //     });
-
-  //     //await prisma?.$disconnect();
-
-  //     const year_id = await prisma?.vehicle_manufacture_years.create({
-  //       data: {
-  //         year: min_year,
-  //       },
-  //     });
-
-  //     //await prisma?.$disconnect();
-
-  //     // const data = await prisma?.client_vehicle_wishlist.create({
-  //     //   data: {
-  //     //     body_type_id: body_type_id.id,
-  //     //     client_id_id: parseInt(client_id),
-  //     //     min_year_id: year_id.id,
-  //     //     vehicle_id: parseInt(vehicle_id),
-  //     //     exterior_color_id: colorId,
-  //     //     max_mileage_id: mileageId,
-  //     //     max_price_id: priceId,
-  //     //   },
-  //     // });
-
-  //     return NextResponse.json(
-  //       { successMessage: 'Vehicle Wishlist Created Sucsseffuly' },
-  //       { status: 200 },
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
-  //   }
-  // }
 
   // tradein
 
@@ -248,7 +98,7 @@ export async function POST(request: Request) {
 
     try {
       if (tradeinCommentInput) {
-        const comment = await prisma?.vehicle_tradein_comments.create({
+        const comment = mockDb.vehicle_tradein_comments.create({
           data: {
             comment: tradeinCommentInput,
           },
@@ -257,7 +107,7 @@ export async function POST(request: Request) {
         commentId = comment.id;
       }
 
-      const make = await prisma?.vehicle_make.upsert({
+      const make = mockDb.vehicle_make.upsert({
         where: {
           brand: tradeinVehicleMakeInput.toLowerCase(),
         },
@@ -267,14 +117,14 @@ export async function POST(request: Request) {
         },
       });
 
-      const mileage = await prisma?.vehicle_mileages.create({
+      const mileage = mockDb.vehicle_mileages.create({
         data: {
           mileage: vehicleTradeinMileageInput,
           milleage_type_id: 1,
         },
       });
 
-      const model = await prisma?.vehicle_models.upsert({
+      const model = mockDb.vehicle_models.upsert({
         where: {
           model: tradeinVehicleModelInput.toLowerCase(),
         },
@@ -284,13 +134,13 @@ export async function POST(request: Request) {
         },
       });
 
-      const trim = await prisma?.vehicle_trims.create({
+      const trim = mockDb.vehicle_trims.create({
         data: {
           trim: tradeinVehicleTrimInput,
         },
       });
 
-      const vin = await prisma?.vehicle_identification_numbers.upsert({
+      const vin = mockDb.vehicle_identification_numbers.upsert({
         where: {
           vin: vinInput,
         },
@@ -300,7 +150,7 @@ export async function POST(request: Request) {
         },
       });
 
-      const year = await prisma?.vehicle_manufacture_years.upsert({
+      const year = mockDb.vehicle_manufacture_years.upsert({
         where: {
           year: tradeinVehicleYearInput,
         },
@@ -310,7 +160,7 @@ export async function POST(request: Request) {
         },
       });
 
-      const data = await prisma?.client_vehicle_tradein.create({
+      const data = mockDb.client_vehicle_tradein.create({
         data: {
           comment_id: commentId,
           int_color_id: parseInt(vehicleTradeinInteriorColorInput),
@@ -328,8 +178,6 @@ export async function POST(request: Request) {
           vehicle_type_id: parseInt(tradeinVehicleTypeInput),
         },
       });
-
-      //await prisma?.$disconnect();
 
       return NextResponse.json({ successMessage: 'Traede in created' });
     } catch (error) {

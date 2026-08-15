@@ -1,12 +1,11 @@
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { createNotification } from '@/app/libs/notifications/notifications';
 import { uploadDepositScanned } from '@/app/libs/uploadImages.services';
 import { createEvent } from '@/app/libs/events/events';
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import { Prisma } from '@prisma/client';
 import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
@@ -98,7 +97,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const scannedDepositUrl = receiptFile ? await uploadDepositScanned(receiptFile) : null;
 
     if (note && userId) {
-      const newNote = await prisma.notes.create({
+      const newNote = mockDb.notes.create({
         data: {
           note: note,
           created_at: new Date(),
@@ -110,7 +109,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
       noteId = newNote.id;
 
-      await prisma.client_has_lead.create({
+      mockDb.client_has_lead.create({
         data: {
           created_at: new Date(),
           client_id: clientId,
@@ -124,7 +123,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       noteId = undefined;
     }
 
-    const data = await prisma.deposits.create({
+    const data = mockDb.deposits.create({
       data: {
         amount: amount,
         deposit_date: new Date(depositDate),
@@ -139,28 +138,35 @@ export async function POST(request: Request, { params }: { params: { id: string 
         note_id: noteId,
         scanned_deposit_url: scannedDepositUrl,
       },
-      select: {
-        id: true,
-        client: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            seller_id: true,
-          },
-        },
+    });
+
+    const clientRecord = mockDb.clients.findUnique({
+      where: {
+        id: clientId,
       },
     });
 
+    const dataWithClient = {
+      ...data,
+      client: clientRecord
+        ? {
+            id: clientRecord.id,
+            first_name: clientRecord.first_name,
+            last_name: clientRecord.last_name,
+            seller_id: clientRecord.seller_id,
+          }
+        : null,
+    };
+
     let leadToUpdate;
     if (currentLeadId) {
-      leadToUpdate = await prisma.leads.findUnique({
+      leadToUpdate = mockDb.leads.findUnique({
         where: {
           id: Number(currentLeadId),
         },
       });
     } else {
-      leadToUpdate = await prisma.leads.findFirst({
+      leadToUpdate = mockDb.leads.findFirst({
         where: {
           customer_id: clientId,
           is_active: true,
@@ -175,20 +181,20 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
         if (leadToUpdate.customer_status_id === 10) {
           if (oldVehicleId && oldVehicleId !== newVehicleIdParsed) {
-            await prisma.vehicles.update({
+            mockDb.vehicles.update({
               where: { id: oldVehicleId },
               data: { vehicle_status_id: 1 },
             });
           }
 
-          await prisma.vehicles.update({
+          mockDb.vehicles.update({
             where: { id: newVehicleIdParsed },
             data: { vehicle_status_id: 3 },
           });
         }
       }
 
-      await prisma.clients.update({
+      mockDb.clients.update({
         where: {
           id: clientId,
         },
@@ -199,27 +205,28 @@ export async function POST(request: Request, { params }: { params: { id: string 
         },
       });
 
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: { id: leadToUpdate.id },
         data: {
-          deposit_id: {
-            push: data.id,
-          },
+          deposit_id: [
+            ...(Array.isArray(leadToUpdate.deposit_id) ? leadToUpdate.deposit_id : []),
+            data.id,
+          ],
           vehicle_id: interestedVehicle ? parseInt(interestedVehicle) : undefined,
           customer_status_id: CustomersStatuses.Deposit,
         },
       });
     }
 
-    const message = `Customer ${data.client.first_name} ${data.client.last_name} has made a deposit`;
+    const message = `Customer ${dataWithClient.client?.first_name} ${dataWithClient.client?.last_name} has made a deposit`;
 
     await createNotification({
       message: message,
       notificationType: {
         general: true,
       },
-      assignedToId: data.client.seller_id,
-      customerId: data.client.id,
+      assignedToId: dataWithClient.client?.seller_id,
+      customerId: dataWithClient.client?.id,
       eventTypeId: 10,
     });
 
@@ -227,13 +234,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     await createEvent(description, userId, clientId);
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Desposit Added Successfully' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -241,54 +244,73 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const data = await prisma.deposits.findUnique({
+    const data = mockDb.deposits.findUnique({
       where: {
         id: parseInt(params.id),
       },
-      include: {
-        client: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            name_lastname: true,
-            lead: {
-              where: {
-                is_active: true,
-              },
-              include: {
-                vehicle: {
-                  include: {
-                    vehicle_brands: true,
-                    vehicle_models: true,
-                    vehicle_identification_numbers: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        method: {
-          select: {
-            id: true,
-            method: true,
-          },
-        },
-        note: true,
-      },
     });
+
+    const client = data?.client_id
+      ? mockDb.clients.findUnique({ where: { id: data.client_id } })
+      : null;
+
+    const method = data?.method_id
+      ? mockDb.deposit_methods.findUnique({ where: { id: data.method_id } })
+      : null;
+
+    const note = data?.note_id ? mockDb.notes.findUnique({ where: { id: data.note_id } }) : null;
+
+    const lead = client?.id
+      ? mockDb.leads.findFirst({
+          where: {
+            customer_id: client.id,
+            is_active: true,
+          },
+        })
+      : null;
+
+    const vehicle = lead?.vehicle_id
+      ? mockDb.vehicles.findUnique({ where: { id: lead.vehicle_id } })
+      : null;
 
     const result = {
       ...(data as any),
-      // vehicle: (data as any)?.client?.lead?.[0]?.vehicle || null,
-      // vehicle_id: (data as any)?.client?.lead?.[0]?.vehicle?.id || null,
+      client: client
+        ? {
+            id: client.id,
+            first_name: client.first_name,
+            last_name: client.last_name,
+            name_lastname: client.name_lastname,
+            lead: lead
+              ? [
+                  {
+                    ...lead,
+                    vehicle: vehicle
+                      ? {
+                          ...vehicle,
+                          vehicle_brands: vehicle.vehicle_brands || null,
+                          vehicle_models: vehicle.vehicle_models || null,
+                          vehicle_identification_numbers:
+                            vehicle.vehicle_identification_numbers || null,
+                        }
+                      : null,
+                  },
+                ]
+              : [],
+          }
+        : null,
+      method: method
+        ? {
+            id: method.id,
+            method: method.method,
+          }
+        : null,
+      note: note || null,
     };
 
     return NextResponse.json({ data: result });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -372,7 +394,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   try {
     const scannedDepositUrl = receiptFile ? await uploadDepositScanned(receiptFile) : undefined;
 
-    const updatedDeposit = await prisma.deposits.update({
+    const updatedDeposit = mockDb.deposits.update({
       where: {
         id: depositId,
       },
@@ -390,7 +412,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: updatedDeposit.client_id,
         is_active: true,
@@ -403,18 +425,18 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
       if (activeLead.customer_status_id === CustomersStatuses.Sold) {
         if (oldVehicleId && oldVehicleId !== newVehicleIdParsed) {
-          await prisma.vehicles.update({
+          mockDb.vehicles.update({
             where: { id: oldVehicleId },
             data: { vehicle_status_id: 1 },
           });
         }
 
-        await prisma.vehicles.update({
+        mockDb.vehicles.update({
           where: { id: newVehicleIdParsed },
           data: { vehicle_status_id: 3 },
         });
       }
-      await prisma.clients.update({
+      mockDb.clients.update({
         where: {
           id: updatedDeposit.client_id,
         },
@@ -422,7 +444,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           intereseted_vehicle_id: newVehicleIdParsed,
         },
       });
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: activeLead.id,
         },
@@ -434,7 +456,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // Update the note if it exists
     if (note && updatedDeposit.note_id) {
-      await prisma.notes.update({
+      mockDb.notes.update({
         where: {
           id: updatedDeposit.note_id,
         },
@@ -445,21 +467,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
     //create a new note if it doesn't exist
     if (!updatedDeposit.note_id && note && userId) {
-      const newNote = await prisma.notes.create({
+      const newNote = mockDb.notes.create({
         data: {
           note: note,
           created_at: new Date(),
           client_id: updatedDeposit.client_id,
           created_by_id: userId,
-          deposit: {
-            connect: {
-              id: updatedDeposit.id,
-            },
-          },
         },
       });
 
-      await prisma.client_has_lead.create({
+      mockDb.client_has_lead.create({
         data: {
           created_at: new Date(),
           client_id: updatedDeposit.client_id,
@@ -469,9 +486,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           note_id: newNote.id,
         },
       });
-    }
 
-    //await prisma.$disconnect();
+      mockDb.deposits.update({
+        where: {
+          id: updatedDeposit.id,
+        },
+        data: {
+          note_id: newNote.id,
+        },
+      });
+    }
 
     return NextResponse.json({
       successMessage: 'Desposit Updated Successfully',
@@ -479,8 +503,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

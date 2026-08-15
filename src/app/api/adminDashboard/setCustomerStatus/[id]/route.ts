@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createNotification } from '@/app/libs/notifications/notifications';
@@ -8,7 +8,6 @@ import { LeadHistoryCategoriesEnum as LeadCategoriesEnum } from '&/dashboard/cli
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { CustomersStatuses, FundingStatuses } from '@/app/libs/customer/customersFunctions';
 import { Permissions } from '@/app/libs/definitions/permissions/permissions';
-import { Prisma } from '@prisma/client';
 import { fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 interface Result {
@@ -72,16 +71,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       const { statusSelected, deliveryDate } = data;
 
       if (parseInt(statusSelected) === CustomersStatuses.Delivery) {
-        const activeLead = await prisma.leads.findFirst({
+        const activeLead = mockDb.leads.findFirst({
           where: {
             AND: {
               customer_id: customerId,
               is_selected: true,
             },
-          },
-          select: {
-            vehicle_id: true,
-            sales_rep_id: true,
           },
         });
 
@@ -111,19 +106,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       }
 
       if (parseInt(statusSelected) === CustomersStatuses.Sold) {
-        // const activeLead = await prisma.leads.findFirst({
-        //   where: {
-        //     AND: {
-        //       customer_id: customerId,
-        //       is_active: true,
-        //     },
-        //   },
-        //   select: {
-        //     vehicle_id: true,
-        //     sales_rep_id: true,
-        //   },
-        // });
-
         if (!data.vehicleId || !data.sellerIds || !data.soldDate) {
           ctx.addIssue({
             path: ['customerStatus'],
@@ -217,34 +199,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 
   try {
-    const prevCurrentClientData = await prisma.clients.findUnique({
+    const prevCurrentClientData = mockDb.clients.findUnique({
       where: { id: customerId },
-      select: {
-        id: true,
-        client_status_id: true,
-        intereseted_vehicle_id: true,
-        interested_vehicle: {
-          select: {
-            id: true,
-            vehicle_status_id: true,
-          },
-        },
-        client_status: true,
-      },
     });
-
-    // const prevStatus = await prisma.client_status.findFirst({
-    //   where: {
-    //     client_status: {
-    //       some: {
-    //         id: customerId,
-    //       },
-    //     },
-    //   },
-    //   select: {
-    //     status: true,
-    //   },
-    // });
 
     const prevStatus = prevCurrentClientData?.client_status;
     const isSoldStatus = parseInt(statusSelected) === CustomersStatuses.Sold;
@@ -252,7 +209,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const sellersIdsInSplit = sellerIds?.split(',').map((id) => parseInt(id)) || null;
 
-    const data = await prisma.clients.update({
+    const data = mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -285,16 +242,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         //   }
         // }
       },
-      include: {
-        client_status: true,
-      },
     });
 
-    let leadWhereClause: Prisma.LeadsWhereUniqueInput | null = null;
+    let leadWhereClause: Record<string, any> | null = null;
     let cobuyerRelationId: number | null = null;
 
     if (currentLeadId) {
-      const currentLead = await prisma.leads.findUnique({
+      const currentLead = mockDb.leads.findUnique({
         where: {
           id: Number(currentLeadId),
         },
@@ -308,7 +262,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         cobuyerRelationId = currentLead.customer_cobuyer_id;
       }
     } else {
-      const activeLead = await prisma.leads.findFirst({
+      const activeLead = mockDb.leads.findFirst({
         where: {
           customer_id: customerId,
           is_selected: true,
@@ -325,22 +279,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       }
     }
 
-    const prevActiveLeadData = await prisma.leads.findFirst({
+    const prevActiveLeadData = mockDb.leads.findFirst({
       where: leadWhereClause,
-      select: {
-        id: true,
-        customer_status: true,
-        vehicle: {
-          select: {
-            id: true,
-            vehicle_status_id: true,
-          },
-        },
-      },
     });
 
     if (prevActiveLeadData && prevActiveLeadData.id) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: prevActiveLeadData.id,
         },
@@ -388,9 +332,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             isSoldStatus && sellersIdsInSplit && sellersIdsInSplit.length > 1 ? true : false,
           sellersInSplitDeal:
             isSoldStatus && sellersIdsInSplit && sellersIdsInSplit.length > 1
-              ? {
-                  connect: sellersIdsInSplit.map((id) => ({ id: id })),
-                }
+              ? sellersIdsInSplit.map((id) => ({ id: id }))
               : undefined,
         },
       });
@@ -401,39 +343,24 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       leadWhereClause &&
       leadWhereClause.id
     ) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: leadWhereClause,
         data: {
-          customer_cobuyer: {
-            ...(cobuyerRelationId && cobuyer && cobuyerRelationhip
+          customer_cobuyer:
+            cobuyer && cobuyerRelationhip
               ? {
-                  update: {
-                    where: {
-                      id: cobuyerRelationId,
-                    },
-                    data: {
-                      buyer_client_id: customerId,
-                      cobuyer_client_id: cobuyer,
-                      relationship_id: cobuyerRelationhip,
-                    },
-                  },
+                  id: cobuyerRelationId || undefined,
+                  buyer_client_id: customerId,
+                  cobuyer_client_id: cobuyer,
+                  relationship_id: cobuyerRelationhip,
                 }
-              : cobuyer && cobuyerRelationhip
-                ? {
-                    create: {
-                      buyer_client_id: customerId,
-                      cobuyer_client_id: cobuyer,
-                      relationship_id: cobuyerRelationhip,
-                    },
-                  }
-                : undefined),
-          },
+              : undefined,
         },
       });
     }
 
     if (isSoldStatus && vehicleId) {
-      await prisma.vehicles.update({
+      mockDb.vehicles.update({
         where: {
           id: parseInt(vehicleId),
         },
@@ -452,7 +379,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       data.intereseted_vehicle_id &&
       user?.id
     ) {
-      const delivery = await prisma.vehicle_delivery.create({
+      const delivery = mockDb.vehicle_delivery.create({
         data: {
           reminder_time: 0,
           start_date: new Date(deliveryDate).toISOString(),
@@ -465,7 +392,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (statusSelected === '10' && data.seller_id && data.intereseted_vehicle_id) {
-      const dailyVisitData = await prisma.daily_visit_history.create({
+      const dailyVisitData = mockDb.daily_visit_history.create({
         data: {
           assigned_manager_id: data.sales_manager_id,
           customer_id: customerId,
@@ -481,7 +408,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // Create sold note + lead history
     if (isSoldStatus && user?.id) {
-      await prisma.notes.create({
+      mockDb.notes.create({
         data: {
           created_at: new Date().toISOString(),
           note: soldNote || 'Status changed to Sold',
@@ -502,7 +429,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     if (data.deleted) {
       if (statusSelected !== '12') {
-        await prisma.clients.update({
+        mockDb.clients.update({
           where: {
             id: customerId,
           },
@@ -517,7 +444,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     let noteId: number | null = null;
     if (statusSelected === '12' && lostReasonDescription) {
       // lost status
-      const noteDb = await prisma.notes.create({
+      const noteDb = mockDb.notes.create({
         data: {
           note: lostReasonDescription,
           created_at: todaysDate,
@@ -525,25 +452,19 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           client_id: customerId,
           from_id: 3,
         },
-        select: {
-          id: true,
-        },
       });
 
       noteId = noteDb.id;
     }
     if (statusSelected === '12' && note) {
       // lost status
-      const noteDb = await prisma.notes.create({
+      const noteDb = mockDb.notes.create({
         data: {
           note: note,
           created_at: todaysDate,
           created_by_id: user?.id || 0,
           client_id: customerId,
           from_id: 3,
-        },
-        select: {
-          id: true,
         },
       });
 
@@ -567,14 +488,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     ) {
       if (prevVehicleId && prevCustomerLeadVehicleStatusAssigned === 3) {
         // 3 = vehicle sold
-        await prisma.vehicles.update({
+        mockDb.vehicles.update({
           where: { id: prevVehicleId },
           data: { vehicle_status_id: 1 }, // In Stock
         });
       }
     }
 
-    await prisma.client_has_lead.create({
+    mockDb.client_has_lead.create({
       data: {
         created_at: todaysDate,
         client_id: customerId,
@@ -586,7 +507,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const statusName = data.client_status?.status || '';
+    const currentClient = mockDb.clients.findUnique({
+      where: { id: customerId },
+    });
+
+    const currentClientStatus = currentClient?.client_status_id
+      ? mockDb.client_status.findUnique({ where: { id: currentClient.client_status_id } })
+      : null;
+
+    const statusName = currentClientStatus?.status || '';
 
     const byUserName = `${user?.name || ''} ${user?.last_name || ''}`;
 
@@ -606,13 +535,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     if (user?.id) await createEvent(description, user.id, customerId, new Date());
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Status Successfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

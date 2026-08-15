@@ -176,7 +176,40 @@ export const seedBusiness = [
     is_Mailing_Address_Same_As_Physical: true,
     appointment_reminder_time_id: 1,
     task_reminder_time_id: 1,
+    mailing_address: {
+      id: 1,
+      full_address: '1200 SW 1st Street, Miami, FL 33130',
+      street: '1200 SW 1st Street',
+      city: 'Miami',
+      state_id: 1,
+      state: { id: 1, state: 'Florida' },
+      zip: '33130',
+      county: 'Miami-Dade',
+    },
+    salesGoalsConfig: {
+      id: 1,
+      monthlySalesGoal: 30,
+      dailySalesPointsTarget: 10,
+      emailsSentNumber: 0,
+      smssSentNumber: 0,
+      callsMadeNumber: 0,
+      appointmentsCompletedNumber: 0,
+      appointmentsMadeNumber: 0,
+      soldCustomersNumber: 0,
+    },
   },
+];
+
+export const seedBusinessWebsites = [
+  { id: 1, website: 'https://www.flowsupsdemo.com' },
+];
+
+export const seedBusinessPrimaryWebsiteUrl = [
+  { id: 1, url: 'https://www.flowsupsdemo.com' },
+];
+
+export const seedBusinessVehicleDetailPageUrl = [
+  { id: 1, url: 'https://www.flowsupsdemo.com/vehicle/{id}' },
 ];
 
 export const seedTimeSpan = [

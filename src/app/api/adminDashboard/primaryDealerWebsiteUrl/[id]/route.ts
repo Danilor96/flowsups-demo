@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -34,7 +34,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { primaryDealerWebsiteUrl } = validatedData.data;
 
   try {
-    const data = await prisma.business_primary_website_url.update({
+    const data = mockDb.business_primary_website_url.update({
       where: {
         id: urlId,
       },
@@ -43,13 +43,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Website Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -65,19 +61,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const urlId = parseInt(params.id);
 
   try {
-    const data = await prisma.business_primary_website_url.delete({
+    const data = mockDb.business_primary_website_url.delete({
       where: {
         id: urlId,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Website Successfully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

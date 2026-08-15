@@ -121,6 +121,9 @@ import {
   seedEmailNameDisplayed,
   seedSmsLimitWarningRecipients,
   seedBusiness,
+  seedBusinessWebsites,
+  seedBusinessPrimaryWebsiteUrl,
+  seedBusinessVehicleDetailPageUrl,
   seedTimeSpan,
 } from "./data/settingsRoutes";
 
@@ -703,6 +706,9 @@ export const mockDb: Record<string, Store<any>> = {
   email_name_displayed: createStore(seedEmailNameDisplayed),
   sms_limit_warning_recipients: createStore(seedSmsLimitWarningRecipients),
   business: createStore(seedBusiness),
+  business_websites: createStore(seedBusinessWebsites),
+  business_primary_website_url: createStore(seedBusinessPrimaryWebsiteUrl),
+  business_vehicle_detail_page_url: createStore(seedBusinessVehicleDetailPageUrl),
   time_span: createStore(seedTimeSpan),
 };
 

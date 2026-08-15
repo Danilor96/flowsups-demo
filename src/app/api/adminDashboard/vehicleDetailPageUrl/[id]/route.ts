@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
@@ -12,19 +12,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const vehicleUrlId = parseInt(params.id);
 
   try {
-    const data = await prisma.business_vehicle_detail_page_url.delete({
+    const data = mockDb.business_vehicle_detail_page_url.delete({
       where: {
         id: vehicleUrlId,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Url Successfully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma?.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

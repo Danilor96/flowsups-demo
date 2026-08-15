@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { storage } from '@/firebase/firebase.config';
@@ -169,197 +169,68 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   const is_Mailing_Address_Same_As_Physical = isMailingAddressSameAsPhysical === 'true';
+
+  const mailingAddressData = {
+    full_address: full_address,
+    street: street,
+    city: city,
+    state: { id: parseInt(stateId) },
+    zip: zip,
+    county: county,
+  };
+
+  const salesGoalsData = {
+    monthlySalesGoal: monthlySalesGoal ? parseInt(monthlySalesGoal) : null,
+    dailySalesPointsTarget: dailySalesPointsTarget ? parseInt(dailySalesPointsTarget) : null,
+    emailsSentNumber: emailsSentNumber ? parseInt(emailsSentNumber) : null,
+    smssSentNumber: smssSentNumber ? parseInt(smssSentNumber) : null,
+    callsMadeNumber: callsMadeNumber ? parseInt(callsMadeNumber) : null,
+    appointmentsCompletedNumber: appointmentsCompletedNumber
+      ? parseInt(appointmentsCompletedNumber)
+      : null,
+    appointmentsMadeNumber: appointmentsMadeNumber
+      ? parseInt(appointmentsMadeNumber)
+      : null,
+    soldCustomersNumber: soldCustomersNumber ? parseInt(soldCustomersNumber) : null,
+  };
+
   try {
-    if (typeof image !== 'string') {
+    let finalImage = image;
+    if (typeof image !== 'string' && image) {
       const fileRef = ref(storage, `images/${image.name}`);
       const doUpload = await uploadBytes(fileRef, image);
-
-      const path = await getDownloadURL(doUpload.ref);
-
-      const data = await prisma.business.update({
-        where: {
-          id: businessId,
-        },
-        data: {
-          name: storeName,
-          county: county,
-          county_code: countyCode,
-          store_id: storeId,
-          store_license_number: storeLicense,
-          store_alias: storeAlias,
-          sales_tax_license: salesTax,
-          ein_number: einNumber,
-          fax_number: faxNumber,
-          email: email,
-          image: path,
-          appointment_reminder_time_id: defaultAppointmentReminderId
-            ? parseInt(defaultAppointmentReminderId)
-            : null,
-          task_reminder_time_id: defaultTaskReminderId ? parseInt(defaultTaskReminderId) : null,
-          is_Mailing_Address_Same_As_Physical,
-          mailing_address: {
-            upsert: {
-              create: {
-                full_address: full_address,
-                street: street,
-                city: city,
-                state: {
-                  connect: {
-                    id: parseInt(stateId),
-                  },
-                },
-                zip: zip,
-                county: county,
-              },
-              update: {
-                full_address: full_address,
-                street: street,
-                city: city,
-                state: {
-                  connect: {
-                    id: parseInt(stateId),
-                  },
-                },
-                zip: zip,
-                county: county,
-              },
-            },
-          },
-          salesGoalsConfig: {
-            upsert: {
-              create: {
-                monthlySalesGoal: monthlySalesGoal ? parseInt(monthlySalesGoal) : null,
-                dailySalesPointsTarget: dailySalesPointsTarget
-                  ? parseInt(dailySalesPointsTarget)
-                  : null,
-                emailsSentNumber: emailsSentNumber ? parseInt(emailsSentNumber) : null,
-                smssSentNumber: smssSentNumber ? parseInt(smssSentNumber) : null,
-                callsMadeNumber: callsMadeNumber ? parseInt(callsMadeNumber) : null,
-                appointmentsCompletedNumber: appointmentsCompletedNumber
-                  ? parseInt(appointmentsCompletedNumber)
-                  : null,
-                appointmentsMadeNumber: appointmentsMadeNumber
-                  ? parseInt(appointmentsMadeNumber)
-                  : null,
-                soldCustomersNumber: soldCustomersNumber ? parseInt(soldCustomersNumber) : null,
-              },
-              update: {
-                monthlySalesGoal: monthlySalesGoal ? parseInt(monthlySalesGoal) : null,
-                dailySalesPointsTarget: dailySalesPointsTarget
-                  ? parseInt(dailySalesPointsTarget)
-                  : null,
-                emailsSentNumber: emailsSentNumber ? parseInt(emailsSentNumber) : null,
-                smssSentNumber: smssSentNumber ? parseInt(smssSentNumber) : null,
-                callsMadeNumber: callsMadeNumber ? parseInt(callsMadeNumber) : null,
-                appointmentsCompletedNumber: appointmentsCompletedNumber
-                  ? parseInt(appointmentsCompletedNumber)
-                  : null,
-                appointmentsMadeNumber: appointmentsMadeNumber
-                  ? parseInt(appointmentsMadeNumber)
-                  : null,
-                soldCustomersNumber: soldCustomersNumber ? parseInt(soldCustomersNumber) : null,
-              },
-            },
-          },
-        },
-      });
-    } else {
-      const data = await prisma.business.update({
-        where: {
-          id: businessId,
-        },
-        data: {
-          name: storeName,
-          county: county,
-          county_code: countyCode,
-          store_id: storeId,
-          store_license_number: storeLicense,
-          store_alias: storeAlias,
-          sales_tax_license: salesTax,
-          ein_number: einNumber,
-          fax_number: faxNumber,
-          email: email,
-          image: image,
-          appointment_reminder_time_id: defaultAppointmentReminderId
-            ? parseInt(defaultAppointmentReminderId)
-            : null,
-          task_reminder_time_id: defaultTaskReminderId ? parseInt(defaultTaskReminderId) : null,
-          is_Mailing_Address_Same_As_Physical,
-          mailing_address: {
-            upsert: {
-              create: {
-                full_address: full_address,
-                street: street,
-                city: city,
-                state: {
-                  connect: {
-                    id: parseInt(stateId),
-                  },
-                },
-                zip: zip,
-                county: county,
-              },
-              update: {
-                full_address: full_address,
-                street: street,
-                city: city,
-                state: {
-                  connect: {
-                    id: parseInt(stateId),
-                  },
-                },
-                zip: zip,
-                county: county,
-              },
-            },
-          },
-          salesGoalsConfig: {
-            upsert: {
-              create: {
-                monthlySalesGoal: monthlySalesGoal ? parseInt(monthlySalesGoal) : null,
-                dailySalesPointsTarget: dailySalesPointsTarget
-                  ? parseInt(dailySalesPointsTarget)
-                  : null,
-                emailsSentNumber: emailsSentNumber ? parseInt(emailsSentNumber) : null,
-                smssSentNumber: smssSentNumber ? parseInt(smssSentNumber) : null,
-                callsMadeNumber: callsMadeNumber ? parseInt(callsMadeNumber) : null,
-                appointmentsCompletedNumber: appointmentsCompletedNumber
-                  ? parseInt(appointmentsCompletedNumber)
-                  : null,
-                appointmentsMadeNumber: appointmentsMadeNumber
-                  ? parseInt(appointmentsMadeNumber)
-                  : null,
-                soldCustomersNumber: soldCustomersNumber ? parseInt(soldCustomersNumber) : null,
-              },
-              update: {
-                monthlySalesGoal: monthlySalesGoal ? parseInt(monthlySalesGoal) : null,
-                dailySalesPointsTarget: dailySalesPointsTarget
-                  ? parseInt(dailySalesPointsTarget)
-                  : null,
-                emailsSentNumber: emailsSentNumber ? parseInt(emailsSentNumber) : null,
-                smssSentNumber: smssSentNumber ? parseInt(smssSentNumber) : null,
-                callsMadeNumber: callsMadeNumber ? parseInt(callsMadeNumber) : null,
-                appointmentsCompletedNumber: appointmentsCompletedNumber
-                  ? parseInt(appointmentsCompletedNumber)
-                  : null,
-                appointmentsMadeNumber: appointmentsMadeNumber
-                  ? parseInt(appointmentsMadeNumber)
-                  : null,
-                soldCustomersNumber: soldCustomersNumber ? parseInt(soldCustomersNumber) : null,
-              },
-            },
-          },
-        },
-      });
+      finalImage = await getDownloadURL(doUpload.ref);
     }
 
-    //await prisma.$disconnect();
+    const data = mockDb.business.update({
+      where: {
+        id: businessId,
+      },
+      data: {
+        name: storeName,
+        county: county,
+        county_code: countyCode,
+        store_id: storeId,
+        store_license_number: storeLicense,
+        store_alias: storeAlias,
+        sales_tax_license: salesTax,
+        ein_number: einNumber,
+        fax_number: faxNumber,
+        email: email,
+        image: finalImage,
+        appointment_reminder_time_id: defaultAppointmentReminderId
+          ? parseInt(defaultAppointmentReminderId)
+          : null,
+        task_reminder_time_id: defaultTaskReminderId ? parseInt(defaultTaskReminderId) : null,
+        is_Mailing_Address_Same_As_Physical,
+        mailing_address: mailingAddressData,
+        salesGoalsConfig: salesGoalsData,
+      },
+    });
 
     return NextResponse.json({ successMessage: 'Business Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

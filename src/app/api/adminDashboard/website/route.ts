@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -33,19 +33,15 @@ export async function POST(request: Request) {
   const { website } = validatedData.data;
 
   try {
-    const data = await prisma.business_websites.create({
+    const data = mockDb.business_websites.create({
       data: {
         website: website,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Website Successfully Saved' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -53,15 +49,11 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const data = await prisma.business_websites.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.business_websites.findMany();
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

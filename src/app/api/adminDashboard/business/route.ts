@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { storage } from '@/firebase/firebase.config';
@@ -169,7 +169,7 @@ export async function POST(request: Request) {
     }
 
     const is_Mailing_Address_Same_As_Physical = isMailingAddressSameAsPhysical === 'true';
-    const data = await prisma.business.create({
+    const data = mockDb.business.create({
       data: {
         name: storeName,
         county: county,
@@ -188,47 +188,33 @@ export async function POST(request: Request) {
         task_reminder_time_id: defaultTaskReminderId ? parseInt(defaultTaskReminderId) : null,
         is_Mailing_Address_Same_As_Physical,
         mailing_address: {
-          create: {
-            full_address: full_address,
-            street: street,
-            city: city,
-            state: {
-              connect: {
-                id: parseInt(stateId),
-              },
-            },
-            zip: zip,
-            county: county,
-          },
+          full_address: full_address,
+          street: street,
+          city: city,
+          state: { id: parseInt(stateId) },
+          zip: zip,
+          county: county,
         },
         salesGoalsConfig: {
-          create: {
-            monthlySalesGoal: monthlySalesGoal ? parseInt(monthlySalesGoal) : null,
-            dailySalesPointsTarget: dailySalesPointsTarget
-              ? parseInt(dailySalesPointsTarget)
-              : null,
-            emailsSentNumber: emailsSentNumber ? parseInt(emailsSentNumber) : null,
-            smssSentNumber: smssSentNumber ? parseInt(smssSentNumber) : null,
-            callsMadeNumber: callsMadeNumber ? parseInt(callsMadeNumber) : null,
-            appointmentsCompletedNumber: appointmentsCompletedNumber
-              ? parseInt(appointmentsCompletedNumber)
-              : null,
-            appointmentsMadeNumber: appointmentsMadeNumber
-              ? parseInt(appointmentsMadeNumber)
-              : null,
-            soldCustomersNumber: soldCustomersNumber ? parseInt(soldCustomersNumber) : null,
-          },
+          monthlySalesGoal: monthlySalesGoal ? parseInt(monthlySalesGoal) : null,
+          dailySalesPointsTarget: dailySalesPointsTarget ? parseInt(dailySalesPointsTarget) : null,
+          emailsSentNumber: emailsSentNumber ? parseInt(emailsSentNumber) : null,
+          smssSentNumber: smssSentNumber ? parseInt(smssSentNumber) : null,
+          callsMadeNumber: callsMadeNumber ? parseInt(callsMadeNumber) : null,
+          appointmentsCompletedNumber: appointmentsCompletedNumber
+            ? parseInt(appointmentsCompletedNumber)
+            : null,
+          appointmentsMadeNumber: appointmentsMadeNumber
+            ? parseInt(appointmentsMadeNumber)
+            : null,
+          soldCustomersNumber: soldCustomersNumber ? parseInt(soldCustomersNumber) : null,
         },
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Business Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -236,22 +222,13 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const data = await prisma.business.findFirst({
-      include: {
-        mailing_address: true,
-        salesGoalsConfig: true,
-      },
-    });
-
-    //await prisma.$disconnect();
+    const data = mockDb.business.findFirst();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

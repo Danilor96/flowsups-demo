@@ -6,11 +6,13 @@ import {
   seedContactMethods,
   seedContactTimes,
   seedGenders,
+  seedInquiryTypes,
   seedLanguages,
   seedLeadSources,
   seedLeadTemperatures,
   seedLeadTypes,
 } from './settings';
+import { Decimal } from '../decimal';
 
 const seller = seedUsers[1];
 const seller2 = seedUsers[2];
@@ -1084,7 +1086,7 @@ export const seedClients = [
 
 seedClients.forEach((client: any) => {
   client.deal = [];
-  client.deposit_client = null;
+  client.deposit_client = [];
   client.referrer_client = null;
   client.buyer_referrer = null;
   client.appointment = [];
@@ -1096,8 +1098,22 @@ seedClients.forEach((client: any) => {
   ];
   client.credit_app = [];
   client.file = null;
-  client.vehicle_delivery = null;
-  client.client_lead_temperature = null;
+  client.vehicle_delivery = [];
+  client.daily_visit_history = [];
+  client.usersRelated = [];
+  client.note = [];
+  client.client_lead_temperature = seedLeadTemperatures[client.lead_temperature_id - 1] || null;
+  client.inquiry_type = seedInquiryTypes[client.inquiry_type_id - 1] || null;
+  client.client_address.county = null;
+  if (client.lead && client.lead[0]) {
+    client.lead[0].id = client.id;
+    client.lead[0].customer_status_id = client.client_status_id;
+    client.lead[0].sold_created_at = null;
+    client.lead[0].funding_created_at = null;
+    client.lead[0].isSplitSold = false;
+    client.lead[0].sellersInSplitDeal = [];
+    client.lead[0].customer_cobuyer = null;
+  }
   client.client_employment = [
     {
       current_employer_name: 'Acme Corporation',
@@ -1111,15 +1127,112 @@ seedClients.forEach((client: any) => {
   ];
 });
 
-(seedClients[0] as any).deposit_client = {
-  id: 11,
-  first_name: seedClients[10].first_name,
-  last_name: seedClients[10].last_name,
-  mobile_phone: seedClients[10].mobile_phone,
-  contact_method_id: seedClients[10].contact_method_id,
-  contact_time_id: seedClients[10].contact_time_id,
-  client_address: seedClients[10].client_address,
-};
+(seedClients[0] as any).deposit_client = [
+  {
+    id: 1,
+    amount: Decimal(1000),
+    deposit_date: new Date('2026-07-21T00:00:00.000Z'),
+    reference: 'DEP-0001',
+    non_refundable: false,
+    vehicle: { ...seedVehicles[0] },
+  },
+];
+(seedClients[3] as any).deposit_client = [
+  {
+    id: 2,
+    amount: Decimal(3000),
+    deposit_date: new Date('2026-08-06T15:20:00.000Z'),
+    reference: 'DEP-0002',
+    non_refundable: true,
+    vehicle: { ...seedVehicles[6] },
+  },
+];
+(seedClients[5] as any).deposit_client = [
+  {
+    id: 3,
+    amount: Decimal(2000),
+    deposit_date: new Date('2026-08-01T17:00:00.000Z'),
+    reference: 'DEP-0003',
+    non_refundable: false,
+    vehicle: { ...seedVehicles[7] },
+  },
+];
+(seedClients[5] as any).daily_visit_history = [
+  {
+    id: 1,
+    customer_id: 6,
+    sales_rep_id: 2,
+    vehicle_id: 8,
+    decision_id: 2,
+    note_id: 1,
+    created_at: new Date('2026-08-05T14:00:00.000Z'),
+    sales_rep: {
+      id: 2,
+      name: seedUsers[1].name,
+      last_name: seedUsers[1].last_name,
+      username: seedUsers[1].username,
+    },
+    vehicle: { ...seedVehicles[7] },
+    note: { note: 'Customer liked the truck, requested a test drive next week.' },
+  },
+];
+(seedClients[3] as any).vehicle_delivery = [
+  {
+    id: 1,
+    start_date: new Date('2026-08-07T00:00:00.000Z'),
+    end_date: new Date('2026-08-14T00:00:00.000Z'),
+    vehicle: { ...seedVehicles[6] },
+  },
+];
+(seedClients[5] as any).lead[0].sold_created_at = new Date('2026-08-01T17:00:00.000Z');
+(seedClients[5] as any).lead[0].funding_created_at = new Date('2026-08-02T00:00:00.000Z');
+(seedClients[5] as any).deal = [
+  {
+    id: 1,
+    downpayment: Decimal(12000),
+    bonus: Decimal(1000),
+    paid: Decimal(5000),
+    loan_id: 'LOAN-2026-0001',
+    created_at: new Date('2026-08-01T18:00:00.000Z'),
+    deferredDownpayment: Decimal(3000),
+    bank: { id: 1, bank: 'Chase Auto Finance' },
+    moneyDuePaid: Decimal(0),
+    customer: {
+      mobile_phone: seedClients[5].mobile_phone,
+      first_name: seedClients[5].first_name,
+      last_name: seedClients[5].last_name,
+    },
+  },
+];
+(seedClients[9] as any).lead[0].sold_created_at = new Date('2026-07-20T13:00:00.000Z');
+(seedClients[9] as any).lead[0].funding_created_at = new Date('2026-07-22T00:00:00.000Z');
+(seedClients[9] as any).deal = [
+  {
+    id: 2,
+    downpayment: Decimal(20000),
+    bonus: Decimal(2000),
+    paid: Decimal(15000),
+    loan_id: 'LOAN-2026-0002',
+    created_at: new Date('2026-07-20T14:00:00.000Z'),
+    deferredDownpayment: Decimal(0),
+    bank: { id: 2, bank: 'Capital One Auto Finance' },
+    moneyDuePaid: Decimal(5000),
+    customer: {
+      mobile_phone: seedClients[9].mobile_phone,
+      first_name: seedClients[9].first_name,
+      last_name: seedClients[9].last_name,
+    },
+  },
+];
+(seedClients[0] as any).usersRelated = [
+  { id: 1, user_id: 2, created_at: new Date('2025-01-02T09:00:00.000Z') },
+];
+(seedClients[1] as any).usersRelated = [
+  { id: 2, user_id: 3, created_at: new Date('2025-01-03T09:00:00.000Z') },
+];
+(seedClients[2] as any).usersRelated = [
+  { id: 3, user_id: 6, created_at: new Date('2025-01-04T09:00:00.000Z') },
+];
 (seedClients[10] as any).referrer_client = {
   id: 1,
   first_name: seedClients[0].first_name,

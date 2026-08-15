@@ -1,6 +1,6 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { LeadHistoryCategoriesEnum } from '@/app/ui/dashboard/clientSystem/clientDetail/leadHistory/categoriesIdMap';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
         const assignedIdNum = parseInt(assigned[i]);
         const assignedId = await ensureActiveUserOrGetReplacement(assignedIdNum, customerId ? parseInt(customerId) : undefined);
 
-        const task = await prisma.tasks.create({
+        const task = await mockDb.tasks.create({
           data: {
             deadline: finalDate,
             description: noteInput && !isTypeBank ? noteInput : '',
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
         });
 
         if(isTypeBank && noteInput) {
-          const taskNote = await prisma.task_Notes.create({
+          const taskNote = await mockDb.task_Notes.create({
             data: {
               created_at: new Date().toISOString(),
               note: noteInput || '',
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
           });
 
           if (customerId) {
-            const regularNote = await prisma.notes.create({
+            const regularNote = await mockDb.notes.create({
               data: {
                 created_at: new Date().toISOString(),
                 note: `Pending to Fund: ${subject}. ${noteInput}`,
@@ -98,7 +98,7 @@ export async function POST(request: Request) {
                 client_id: parseInt(customerId),
               },
             });
-            await prisma.client_has_lead.create({
+            await mockDb.client_has_lead.create({
               data: {
                 created_at: new Date().toISOString(),
                 assigned_to_id: assignedId,
@@ -123,8 +123,6 @@ export async function POST(request: Request) {
           taskId: task?.id,
         });
       }
-
-      //await prisma.$disconnect();
     }
 
     if (!creator) {
@@ -134,8 +132,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ successMessage: 'Manager Task Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { z } from 'zod';
@@ -9,179 +9,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const taskId = params.id;
 
   try {
-    const data = await prisma.tasks.findUnique({
+    const data = await mockDb.tasks.findUnique({
       where: {
         id: parseInt(taskId),
       },
-      include: {
-        interested_vehicle: {
-          select: {
-            id: true,
-            vehicle_brands: {
-              select: {
-                brand: true,
-              },
-            },
-            vehicle_models: {
-              select: {
-                model: true,
-              },
-            },
-            vehicle_identification_numbers: {
-              select: {
-                vin: true,
-              },
-            },
-          },
-        },
-        notes: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-          },
-          orderBy: {
-            created_at: 'desc',
-          },
-        },
-        customer: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            email: true,
-            home_phone: true,
-            work_phone: true,
-            mobile_phone: true,
-            intereseted_vehicle_id: true,
-            lead_temperature_id: true,
-            interested_vehicle: {
-              select: {
-                id: true,
-                vehicle_brands: {
-                  select: {
-                    brand: true,
-                  },
-                },
-                vehicle_models: {
-                  select: {
-                    model: true,
-                  },
-                },
-                vehicle_identification_numbers: {
-                  select: {
-                    vin: true,
-                  },
-                },
-              },
-            },
-            note: {
-              select: {
-                note: true,
-                id: true,
-                client_lead_note: {
-                  select: {
-                    client_leads: {
-                      select: {
-                        id: true,
-                        lead: true,
-                      },
-                    },
-                  },
-                },
-                created_at: true,
-                created_by: {
-                  select: {
-                    name: true,
-                    last_name: true,
-                    id: true,
-                  },
-                },
-              },
-            },
-            bdc: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-                username: true,
-              },
-            },
-            seller: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-                username: true,
-              },
-            },
-            sales_manager: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-                username: true,
-              },
-            },
-            finance_manager: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-                username: true,
-              },
-            },
-          },
-        },
-        assigned: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            username: true,
-          },
-        },
-        assigned_seller: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
-        assigned_bdc: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
-        assigned_manager: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
-        assigned_finance_manager: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-          },
-        },
-        task_status: {
-          select: {
-            status: true,
-          },
-        },
-      },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
@@ -254,62 +86,22 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     taskAssignedTo,
   } = validatedData.data;
 
-  // const userAuthenticated = await prisma.users.findUnique({
-  //   where: {
-  //     id: userSession.id,
-  //     deleted_at: null,
-  //   },
-  //   include: {
-  //     user_has: true,
-  //   },
-  // });
-
-  // const userAuthenticatedIsManager = userAuthenticated?.user_has.some(
-  //   (role) => role.role_id === 1 || role.role_id === 3 || role.role_id === 4,
-  // );
-
-  // if (!userAuthenticatedIsManager) {
-  //   return NextResponse.json({ serverError: 'Unauthorized' }, { status: 401 });
-  // }
-
   try {
     const newUsersIdsInt = taskAssignedTo.map((id) => parseInt(id));
 
-    const relatedTasks = await prisma.tasks.findMany({
+    const relatedTasks = await mockDb.tasks.findMany({
       where: {
         OR: [{ id: taskId }, { related_task_id: taskId }],
-      },
-      select: {
-        id: true,
-        assigned_to: true,
       },
     });
 
     const currentUsersIds = relatedTasks.map((task) => task.assigned_to);
 
-    // const usersToRemove = currentUsersIds.filter(
-    //   (userId) => userId && !newUsersIdsInt.includes(userId),
-    // );
-
-    // if (usersToRemove.length > 0) {
-    //   const notNullValue = usersToRemove.filter((userId) => userId !== null);
-
-    //   await prisma.tasks.deleteMany({
-    //     where: {
-    //       AND: [{ related_task_id: taskId }, { assigned_to: { in: notNullValue } }],
-    //     },
-    //   });
-    // }
-
     const [firstUser, ...otherUsers] = newUsersIdsInt;
 
-    const currentTask = await prisma.tasks.findUnique({
+    const currentTask = await mockDb.tasks.findUnique({
       where: {
         id: taskId,
-      },
-      select: {
-        status: true,
-        customer_id: true,
       },
     });
 
@@ -318,50 +110,21 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       assignedCustomerId ? parseInt(assignedCustomerId) : currentTask?.customer_id || undefined
     );
 
-    const data = await prisma.tasks.update({
+    const data = await mockDb.tasks.update({
       where: {
         id: taskId,
       },
       data: {
-        ...(reminderTimeId
-          ? {
-              reminder_time: {
-                connect: {
-                  id: Number(reminderTimeId),
-                },
-              },
-            }
-          : undefined),
-        customer: assignedCustomerId
-          ? { connect: { id: parseInt(assignedCustomerId) } }
-          : { disconnect: true },
+        reminder_time_id: reminderTimeId ? Number(reminderTimeId) : undefined,
+        customer_id: assignedCustomerId ? parseInt(assignedCustomerId) : null,
         deadline: new Date(followUpDate),
         title: subject ? subject : '',
         description: description ? description : '',
-        interested_vehicle: interestedVehicleId
-          ? {
-              connect: {
-                id: parseInt(interestedVehicleId),
-              },
-            }
-          : { disconnect: true },
-        assigned: {
-          connect: {
-            id: finalAssigneeId,
-          },
-        },
-        task_status:
-          new Date(followUpDate) > new Date()
-            ? {
-                connect: {
-                  id: 1,
-                },
-              }
-            : {
-                connect: {
-                  id: currentTask?.status,
-                },
-              },
+        interested_vehicle_id: interestedVehicleId ? parseInt(interestedVehicleId) : null,
+        assigned_to: finalAssigneeId,
+        status: new Date(followUpDate) > new Date()
+          ? 1
+          : (currentTask?.status ?? undefined),
       },
     });
 
@@ -400,36 +163,38 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         });
       }
 
-      await prisma.tasks.createMany({
+      await mockDb.tasks.createMany({
         data: tasksToCreate,
-        skipDuplicates: true,
       });
     }
 
     if (data && data.customer_id) {
-      const activeLead = await prisma.leads.findFirst({
+      const activeLead = await mockDb.leads.findFirst({
         where: {
           is_active: true,
           customer_id: data.customer_id,
         },
-        select: {
-          id: true,
-        },
       });
 
       if (activeLead && activeLead.id) {
-        const lead = await prisma.leads.update({
+        const lead = mockDb.leads.findFirst({
           where: {
             id: activeLead.id,
             is_active: true,
             customer_id: data.customer_id,
           },
-          data: {
-            task_id: {
-              push: data.id,
-            },
-          },
         });
+
+        if (lead) {
+          mockDb.leads.update({
+            where: {
+              id: lead.id,
+            },
+            data: {
+              task_id: [...(lead.task_id || []), data.id],
+            },
+          });
+        }
       }
     }
 

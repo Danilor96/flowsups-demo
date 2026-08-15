@@ -96,6 +96,7 @@ import {
   seedClientBulkSms,
 } from "./data/smsTemplates";
 import { seedTasks } from "./data/tasks";
+import { seedTaskNotes } from "./data/taskNotes";
 import { seedAppointmentSms } from "./data/appointmentSms";
 import { seedRescheduleSms } from "./data/rescheduleSms";
 import {
@@ -663,6 +664,7 @@ export const mockDb: Record<string, Store<any>> = {
   customer_consent_logs: createStore(seedCustomerConsentLogs),
   client_sms: createStore(seedClientSms),
   tasks: createStore(seedTasks),
+  task_Notes: createStore(seedTaskNotes),
   sms_template: createStore(seedSmsTemplates),
   sms_template_category: createStore(seedSmsTemplateCategories),
   sms_template_variables: createStore(seedSmsTemplateVariables),

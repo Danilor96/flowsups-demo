@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   console.log({ dataBodyJson });
    
   try { 
-    const data = await prisma.tasks.updateMany({
+    const data = await mockDb.tasks.updateMany({
       where: {
         id: {
           in: dataBodyJson.taskIds,

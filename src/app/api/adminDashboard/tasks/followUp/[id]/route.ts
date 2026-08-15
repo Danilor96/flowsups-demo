@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
@@ -67,18 +67,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { assignedTo, completedBy, followUpDate, noteInput } = validatedData.data;
 
   try {
-    const relatedTaskUser = await prisma.tasks.findUnique({
+    const relatedTaskUser = await mockDb.tasks.findUnique({
       where: {
         id: taskId,
-      },
-      select: {
-        customer: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-          },
-        },
       },
     });
 
@@ -108,13 +99,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         });
       }
 
-      const newtasks = await prisma.tasks.createMany({
+      const newtasks = await mockDb.tasks.createMany({
         data: tasksToCreate,
-        skipDuplicates: true,
       });
     }
 
-    const data = await prisma.tasks.update({
+    const data = await mockDb.tasks.update({
       where: {
         id: taskId,
       },
@@ -122,21 +112,30 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         status: 2,
         completed_by: parseInt(completedBy),
         finished_at: new Date().toISOString(),
-        notes: {
-          create: {
-            note: noteInput,
-            created_at: new Date().toISOString(),
-            created_by_id: userId,
-          },
-        },
+      },
+    });
+
+    const createdNote = await mockDb.task_Notes.create({
+      data: {
+        note: noteInput,
+        created_at: new Date().toISOString(),
+        created_by_id: userId,
+        task_id: taskId,
+      },
+    });
+
+    mockDb.tasks.update({
+      where: {
+        id: taskId,
+      },
+      data: {
+        notes: [...(data.notes || []), createdNote],
       },
     });
 
     return NextResponse.json({ successMessage: 'Task Successfully Completed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server'
@@ -31,42 +31,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data = await prisma.tasks.findMany({
+    const data = await mockDb.tasks.findMany({
       where,
-      include: {
-        customer: {
-          select: {
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-            lead_temperature_id: true,
-            email: true,
-            id: true,
-            client_status_id: true,
-            client_status: {
-              select: {
-                status: true,
-              },
-            },
-            client_lead_temperature: {
-              select: {
-                temperature: true,
-              },
-            },
-          },
-        },
-        assigned: {
-          select: {
-            name: true,
-            last_name: true,
-          },
-        },
-        task_status: {
-          select: {
-            status: true,
-          },
-        },
-      },
       orderBy: [
         {
           manager_task: 'desc',
@@ -75,13 +41,9 @@ export async function GET(request: NextRequest) {
       ],
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,11 +1,9 @@
-import { Prisma } from '@prisma/client';
-
-export function buildPrismaWhereClause(filters: AppliedFilter[]): Prisma.ClientsWhereInput {
+export function buildPrismaWhereClause(filters: AppliedFilter[]): Record<string, any> {
   if (!filters || filters.length === 0) {
     return {};
   }
 
-  const prismaFilters: Prisma.ClientsWhereInput[] = [];
+  const prismaFilters: Record<string, any>[] = [];
 
   filters.forEach(filter => {
     if (

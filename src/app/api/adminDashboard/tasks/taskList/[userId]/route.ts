@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { TaskStatuses } from '@/app/ui/dashboard/reports/storeReport/taskActivity/taskStatus/TaskStatus';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
@@ -16,17 +16,10 @@ export async function GET(request: Request, { params }: { params: { userId: stri
     status && status.length > 0 ? status.map((id) => Number(id)) : [TaskStatuses.Pending];
 
   try {
-    const userRole = await prisma.users.findUnique({
+    const userRole = await mockDb.users.findUnique({
       where: {
         id: userId,
         deleted_at: null,
-      },
-      select: {
-        user_has: {
-          select: {
-            role_id: true,
-          },
-        },
       },
     });
 
@@ -54,42 +47,8 @@ export async function GET(request: Request, { params }: { params: { userId: stri
       };
     }
 
-    const tasks = await prisma.tasks.findMany({
+    const tasks = await mockDb.tasks.findMany({
       where,
-      include: {
-        customer: {
-          select: {
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-            lead_temperature_id: true,
-            email: true,
-            id: true,
-            client_status_id: true,
-            client_status: {
-              select: {
-                status: true,
-              },
-            },
-            client_lead_temperature: {
-              select: {
-                temperature: true,
-              },
-            },
-          },
-        },
-        assigned: {
-          select: {
-            name: true,
-            last_name: true,
-          },
-        },
-        task_status: {
-          select: {
-            status: true,
-          },
-        },
-      },
       orderBy: [
         {
           manager_task: 'desc',
@@ -98,13 +57,9 @@ export async function GET(request: Request, { params }: { params: { userId: stri
       ],
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json(tasks);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -153,7 +108,7 @@ export async function POST(request: Request) {
     try {
       const assignedId = await ensureActiveUserOrGetReplacement(parseInt(sellerIdInput), parseInt(clientId));
 
-      const data = await prisma.tasks.create({
+      const data = await mockDb.tasks.create({
         data: {
           deadline: new Date(finalDate),
           description: noteInput,
@@ -165,13 +120,9 @@ export async function POST(request: Request) {
         },
       });
 
-      //await prisma.$disconnect();
-
       return NextResponse.json({ successMessage: 'Task Successfully Created' });
     } catch (error) {
       console.log(error);
-
-      //await prisma.$disconnect();
 
       return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
     }

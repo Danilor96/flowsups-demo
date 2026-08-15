@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { checkPermissions } from '@/app/libs/auth-helpers';
@@ -8,255 +8,7 @@ import { filterNumber } from '@/app/libs/customer/customersFunctions';
 
 export async function GET() {
   try {
-    const data = await prisma?.clients.findMany({
-      select: {
-        id: true,
-        name_lastname: true,
-        email: true,
-        mobile_phone: true,
-        home_phone: true,
-        work_phone: true,
-        credit_app_list_status_id: true,
-        born_date: true,
-        created_at: true,
-        consent_approved: true,
-        last_activity: true,
-        client_status_changed_at: true,
-        deposit_client: {
-          select: {
-            amount: true,
-            id: true,
-            deposit_date: true,
-          },
-        },
-        gender: {
-          select: {
-            gender: true,
-          },
-        },
-        language: {
-          select: {
-            language: true,
-          },
-        },
-        client_address: {
-          select: {
-            street: true,
-            city: true,
-            county_id: true,
-            state_id: true,
-            zip: true,
-            county: true,
-            id: true,
-            state: true,
-          },
-        },
-        current_address: true,
-        current_job: true,
-        previous_address: true,
-        previous_job: true,
-        social_security: true,
-        duplicate: true,
-        contact_method: {
-          select: {
-            method: true,
-          },
-        },
-        contact_time: {
-          select: {
-            id: true,
-            time: true,
-          },
-        },
-        cash_down: true,
-        file: {
-          select: {
-            file: true,
-          },
-        },
-        inquiry_type: {
-          select: {
-            type: true,
-          },
-        },
-        lead_source: {
-          select: {
-            source: true,
-            id: true,
-          },
-        },
-        lead_type: {
-          select: {
-            type: true,
-            id: true,
-          },
-        },
-        mailing_address: true,
-        other_income: true,
-        reference: true,
-        referrer_client: {
-          select: {
-            buyer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-              },
-            },
-            referrer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-              },
-            },
-          },
-        },
-        buyer_referrer: {
-          select: {
-            buyer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-              },
-            },
-            referrer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-              },
-            },
-          },
-        },
-        seller: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        bdc: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        sales_manager: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        finance_manager: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        deal: true,
-        // created_by: {
-        //   select: {
-        //     name: true,
-        //     last_name: true,
-        //     id: true,
-        //     email: true
-        //   }
-        // },
-        interested_vehicle: {
-          include: {
-            vehicle_brands: true,
-            vehicle_models: true,
-            vehicle_manufacture_years: true,
-            vehicle_identification_numbers: true,
-            vehicle_prices: true,
-            title_license: {
-              select: {
-                id: true,
-                asking_price: true,
-              },
-            },
-            general_info: {
-              select: {
-                id: true,
-                stock_no: true,
-              },
-            },
-            vehicle_image: { select: { id: true, path: true } },
-            vehicle_mileages: true,
-          },
-        },
-        client_status: {
-          select: {
-            status: true,
-            id: true,
-          },
-        },
-        message: {
-          select: {
-            date_sent: true,
-          },
-          orderBy: {
-            date_sent: 'asc',
-          },
-        },
-        appointment: true,
-        first_name: true,
-        last_name: true,
-        suffix: true,
-        salutation: true,
-        middle_initials: true,
-        nickname: true,
-        client_lead_temperature: {
-          select: {
-            temperature: true,
-            id: true,
-          },
-        },
-        note: {
-          select: {
-            note: true,
-            id: true,
-            created_at: true,
-            created_by: {
-              select: {
-                name: true,
-                last_name: true,
-                id: true,
-              },
-            },
-            from: {
-              select: {
-                from: true,
-                id: true,
-              },
-            },
-            client_note: {
-              select: {
-                name_lastname: true,
-                email: true,
-                id: true,
-              },
-            },
-          },
-        },
-      },
+    const data = await mockDb.clients.findMany({
       orderBy: {
         created_at: 'desc',
       },
@@ -269,15 +21,11 @@ export async function GET() {
       },
     });
 
-    //await prisma?.$disconnect();
-
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -406,7 +154,7 @@ export async function POST(request: Request) {
 
   const duplicateEmail =
     email && email.length > 0
-      ? await prisma?.clients.findUnique({
+      ? await mockDb.clients.findUnique({
           where: {
             email: email,
           },
@@ -417,7 +165,7 @@ export async function POST(request: Request) {
     number => number !== '' && number !== null && number !== undefined,
   );
 
-  const duplicatePhoneNumber = await prisma?.clients.findFirst({
+  const duplicatePhoneNumber = await mockDb.clients.findFirst({
     where: {
       OR: [
         { mobile_phone: { in: phoneNumbers as string[] } },
@@ -489,15 +237,11 @@ export async function POST(request: Request) {
       const splitAddress1 = splitAddress[0];
       const splitAddress2 = splitAddress[1];
 
-      address = await prisma?.client_address.create({
+      address = await mockDb.client_address.create({
         data: {
           street: splitAddress1,
           city: splitAddress2,
-          state: {
-            connect: {
-              id: parseInt(splitAddress[splitAddress.length - 1]),
-            },
-          },
+          state_id: parseInt(splitAddress[splitAddress.length - 1]),
         },
       });
     }
@@ -508,17 +252,16 @@ export async function POST(request: Request) {
     if (lead_source) {
       leadId = parseInt(lead_source);
     } else if (leadSourceName) {
-      const existsLeadSource = await prisma.lead_sources.findFirst({
+      const existsLeadSource = await mockDb.lead_sources.findFirst({
         where: {
           source: {
             equals: leadSourceName,
-            mode: 'insensitive',
           },
         },
       });
 
       if (!existsLeadSource) {
-        const newLead = await prisma.lead_sources.create({
+        const newLead = await mockDb.lead_sources.create({
           data: {
             source: leadSourceName,
           },
@@ -531,7 +274,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const data = await prisma?.clients.create({
+    const data = await mockDb.clients.create({
       data: {
         born_date: born_date ? new Date(born_date).toISOString() : null,
         current_address: current_address ? current_address : '',
@@ -554,20 +297,10 @@ export async function POST(request: Request) {
         client_status_id: 1,
         seller_id: parseInt(created_by),
       },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        current_address: true,
-        mobile_phone: true,
-        home_phone: true,
-        work_phone: true,
-        email: true,
-      },
     });
 
     if (data.id) {
-      const lead = await prisma.leads.create({
+      const lead = await mockDb.leads.create({
         data: {
           customer_id: data.id,
           sales_rep_id: parseInt(created_by),
@@ -575,7 +308,7 @@ export async function POST(request: Request) {
         },
       });
 
-      const relatedUser = await prisma.users_has_customers.create({
+      const relatedUser = await mockDb.users_has_customers.create({
         data: {
           user_id: parseInt(created_by),
           customer_id: data.id,
@@ -583,7 +316,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const event = await prisma?.events.create({
+    const event = await mockDb.events.create({
       data: {
         description: `Customer created`,
         updated_at: new Date(),
@@ -592,7 +325,7 @@ export async function POST(request: Request) {
       },
     });
 
-    await prisma?.notifications.create({
+    await mockDb.notifications.create({
       data: {
         message: `New customer created: ${data.first_name ?? ''} ${data.last_name ?? ''}`,
         type_id: 1,
@@ -601,8 +334,6 @@ export async function POST(request: Request) {
         notification_for_managers: true,
       },
     });
-
-    //await prisma?.$disconnect();
 
     return NextResponse.json({
       successMessage: 'Client Successfully Created',

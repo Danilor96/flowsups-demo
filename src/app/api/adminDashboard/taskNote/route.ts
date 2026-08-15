@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   const { createdById, note, createdAt, taskId } = validatedData.data;
 
   try {
-    const data = await prisma.task_Notes.create({
+    const data = await mockDb.task_Notes.create({
       data: {
         created_at: new Date(createdAt),
         created_by_id: parseInt(createdById),
@@ -53,13 +53,9 @@ export async function POST(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Note Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

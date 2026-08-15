@@ -1,9 +1,8 @@
-import prisma from '@/app/libs/prisma';
 import { auth } from '@/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { Roles } from '../../dailyCalls/types';
 import { buildDatePrismaFilter } from '@/app/libs/buildDatePrismaFilter';
-import { Prisma } from '@prisma/client';
+import { mockDb } from '@/app/libs/mock-db';
 import { Permissions } from '@/app/libs/definitions/permissions/permissions';
 import { serverCan } from '@/app/libs/functions/permissions/permissions.functions';
 import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
@@ -116,7 +115,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     timeZone || undefined,
   );
 
-  const whereCondition: Prisma.ClientsWhereInput = {};
+  const whereCondition: Record<string, any> = {};
 
   const canAllClients = await serverCan({
     requiredPermissions: Permissions.CustomerViewAnyCustomer,
@@ -131,306 +130,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 
   try {
-    const data = await prisma.clients.findMany({
-      select: {
-        id: true,
-        lost_reason_id: true,
-        lost_date: true,
-        name_lastname: true,
-        email: true,
-        mobile_phone: true,
-        home_phone: true,
-        work_phone: true,
-        credit_app_list_status_id: true,
-        born_date: true,
-        created_at: true,
-        consent_approved: true,
-        last_activity: true,
-        funding_list_status_id: true,
-        gender: {
-          select: {
-            gender: true,
-          },
-        },
-        language: {
-          select: {
-            language: true,
-          },
-        },
-        client_address: {
-          select: {
-            street: true,
-            city: true,
-            county_id: true,
-            state_id: true,
-            zip: true,
-            county: true,
-            id: true,
-            state: true,
-          },
-        },
-        current_address: true,
-        current_job: true,
-        previous_address: true,
-        previous_job: true,
-        social_security: true,
-        duplicate: true,
-        contact_method: {
-          select: {
-            method: true,
-          },
-        },
-        contact_time: {
-          select: {
-            id: true,
-            time: true,
-          },
-        },
-        cash_down: true,
-        file: {
-          select: {
-            file: true,
-          },
-        },
-        inquiry_type: {
-          select: {
-            type: true,
-          },
-        },
-        lead_source: {
-          select: {
-            source: true,
-            id: true,
-          },
-        },
-        lead_type: {
-          select: {
-            type: true,
-            id: true,
-          },
-        },
-        mailing_address: true,
-        other_income: true,
-        reference: true,
-        referrer_client: {
-          select: {
-            buyer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-              },
-            },
-            referrer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-              },
-            },
-          },
-        },
-        buyer_referrer: {
-          select: {
-            buyer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-              },
-            },
-            referrer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-              },
-            },
-          },
-        },
-        seller: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        bdc: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        sales_manager: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        interested_vehicle: {
-          select: {
-            id: true,
-            stock_no: true,
-            vehicle_brands: true,
-            vehicle_models: true,
-            vehicle_manufacture_years: true,
-            vehicle_identification_numbers: true,
-            vehicle_status: true,
-          },
-        },
-        vehicle_delivery: {
-          select: {
-            id: true,
-            end_date: true,
-            start_date: true,
-            vehicle: {
-              select: {
-                id: true,
-                vehicle_brands: true,
-                vehicle_models: true,
-                vehicle_manufacture_years: true,
-                vehicle_identification_numbers: true,
-              },
-            },
-          },
-        },
-        client_status: {
-          select: {
-            status: true,
-            id: true,
-          },
-        },
-        client_status_changed_at: true,
-        deposit_client: {
-          select: {
-            amount: true,
-            id: true,
-            deposit_date: true,
-            reference: true,
-            non_refundable: true,
-            vehicle:
-              clientStatusId === CustomersStatuses.Deposit
-                ? {
-                    select: {
-                      id: true,
-                      stock_no: true,
-                      vehicle_brands: true,
-                      vehicle_models: true,
-                      vehicle_manufacture_years: true,
-                      vehicle_identification_numbers: true,
-                    },
-                  }
-                : undefined,
-          },
-          orderBy: {
-            deposit_date: 'asc',
-          },
-        },
-        finance_manager: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        deal: {
-          orderBy: {
-            created_at: 'asc',
-          },
-          include: {
-            bank: true,
-          },
-          // where: {
-          //   lead: {
-          //     is_active: true,
-          //   },
-          // },
-        },
-        lead: {
-          where: {
-            is_active: true,
-          },
-          select: {
-            id: true,
-            sold_created_at: true,
-            funding_created_at: true,
-            customer_funding_list_status_id: true,
-            isSplitSold: true,
-            sellersInSplitDeal: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-            customer_cobuyer: {
-              select: {
-                cobuyer: {
-                  select: {
-                    id: true,
-                    first_name: true,
-                    last_name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        appointment: true,
-        first_name: true,
-        last_name: true,
-        suffix: true,
-        salutation: true,
-        middle_initials: true,
-        nickname: true,
-        client_lead_temperature: {
-          select: {
-            temperature: true,
-            id: true,
-          },
-        },
-        note: {
-          select: {
-            note: true,
-            id: true,
-            created_at: true,
-            created_by: {
-              select: {
-                name: true,
-                last_name: true,
-                id: true,
-              },
-            },
-            from: {
-              select: {
-                from: true,
-                id: true,
-              },
-            },
-            client_note: {
-              select: {
-                name_lastname: true,
-                email: true,
-                id: true,
-              },
-            },
-          },
-        },
-      },
+    const data = await mockDb.clients.findMany({
       orderBy: {
         created_at: 'desc',
       },
@@ -513,13 +213,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json(sortedData);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

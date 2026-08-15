@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { TaskStatuses } from '@/app/ui/dashboard/reports/storeReport/taskActivity/taskStatus/TaskStatus';
 import { NextResponse } from 'next/server';
 
@@ -17,20 +17,18 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Missing or invalid taskIds' }, { status: 400 });
     }
 
-    await prisma.$transaction(async (prisma) => {
-      await prisma.tasks.updateMany({
-        where: {
-          id: {
-            in: taskIds,
-          },
-          status: {
-            in: [TaskStatuses.Pending, TaskStatuses.Late],
-          },
+    await mockDb.tasks.updateMany({
+      where: {
+        id: {
+          in: taskIds,
         },
-        data: {
-          status: 3,
+        status: {
+          in: [TaskStatuses.Pending, TaskStatuses.Late],
         },
-      });
+      },
+      data: {
+        status: 3,
+      },
     });
 
     return NextResponse.json({ successMessage: 'Selected Tasks Canceled' });

@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
@@ -12,7 +12,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const taskId = parseInt(params.id);
 
   try {
-    const data = await prisma.tasks.update({
+    const data = await mockDb.tasks.update({
       where: {
         id: taskId,
       },

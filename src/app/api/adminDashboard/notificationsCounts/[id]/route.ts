@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -27,12 +27,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const { userRoleId } = validatedData.data;
 
   try {
-    const notificationsPreferences = await prisma.notifications_preferences.findMany();
-
-    // Get event_type_ids where user is NOT allowed (has preference but user not in user_ids)
-    // const excludedEventTypeIds = notificationsPreferences
-    //   .filter((pref) => pref.event_type_id !== null && !pref.user_ids.includes(userId))
-    //   .map((pref) => pref.event_type_id as number);
+    const notificationsPreferences = mockDb.notifications_preferences.findMany();
 
     let whereVal: any = {
       user_id: userId,
@@ -57,20 +52,11 @@ export async function POST(request: Request, { params }: { params: { id: string 
       };
     }
 
-    // Add filter to exclude notifications with excluded event_type_ids
-    // const finalWhere = {
-    //   ...whereVal,
-    //   NOT: excludedEventTypeIds.length > 0 ? {
-    //     event_type_id: {
-    //       in: excludedEventTypeIds,
-    //     },
-    //   } : undefined,
-    // };
     const finalWhere = {
       ...whereVal,
     };
 
-    const groupedCounts = await prisma.notifications.groupBy({
+    const groupedCounts = mockDb.notifications.groupBy({
       by: ['type_id'],
       where: finalWhere,
       _count: {

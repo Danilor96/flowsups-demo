@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -19,23 +19,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 
   try {
-    // await prisma.notifications_preferences.updateMany({
-    //   where: {
-    //     user_id: userId,
-    //     notification: key,
-    //   },
-    //   data: {
-    //     active: value !== '' ? true : false,
-    //   },
-    // });
-
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Notifications Preference Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

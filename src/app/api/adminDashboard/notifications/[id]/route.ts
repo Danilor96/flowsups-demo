@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -38,7 +38,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   let noti;
 
   try {
-    const notificationsPreferences = await prisma.notifications_preferences.findMany();
+    const notificationsPreferences = mockDb.notifications_preferences.findMany();
 
     let whereVal: any = {
       user_id: userId,
@@ -72,49 +72,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
       }
     }
 
-    // Get event_type_ids where user is NOT allowed (has preference but user not in user_ids)
-    // const excludedEventTypeIds = notificationsPreferences
-    //   .filter((pref) => pref.event_type_id !== null && !pref.user_ids.includes(userId))
-    //   .map((pref) => pref.event_type_id as number);
-
-    // Add filter to exclude notifications with these event_type_ids
-    // const finalWhere = {
-    //   ...whereVal,
-    //   NOT: excludedEventTypeIds.length > 0 ? {
-    //     event_type_id: {
-    //       in: excludedEventTypeIds,
-    //     },
-    //   } : undefined,
-    // };
     const finalWhere = {
       ...whereVal,
     };
 
-    const data = await prisma.notifications.findMany({
+    const data = mockDb.notifications.findMany({
       where: finalWhere,
-      include: {
-        customers: {
-          select: {
-            first_name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        user: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        unregistered_customer: {
-          select: {
-            mobile_phone_number: true,
-          },
-        },
-      },
       orderBy: {
         created_at: 'desc',
       },
@@ -133,7 +96,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       pagination: {
         page: pageNum,
         limit: limitNum,
-        total: 0, // No longer counting total for performance
+        total: 0,
         hasMore,
       },
     };
@@ -171,7 +134,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { option } = validatedData.data;
 
   try {
-    const data = await prisma.notifications.update({
+    const data = mockDb.notifications.update({
       where: {
         id: notiId,
       },
@@ -180,13 +143,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Notification Successfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -196,19 +155,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const notiId = parseInt(params.id);
 
   try {
-    const data = await prisma.notifications.delete({
+    const data = mockDb.notifications.delete({
       where: {
         id: notiId,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Notification Successfully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

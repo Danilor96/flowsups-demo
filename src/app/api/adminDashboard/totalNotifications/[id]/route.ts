@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -27,7 +27,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const { userRoleId } = validatedData.data;
 
   try {
-    const notificationsPreferences = await prisma.notifications_preferences.findMany();
+    const notificationsPreferences = mockDb.notifications_preferences.findMany();
 
     const excludedEventTypeIds = notificationsPreferences
       .filter((pref) => pref.event_type_id !== null && !pref.user_ids.includes(userId))
@@ -56,20 +56,11 @@ export async function POST(request: Request, { params }: { params: { id: string 
       };
     }
 
-    // const finalWhere = {
-    //   ...whereVal,
-    //   NOT: excludedEventTypeIds.length > 0 ? {
-    //     event_type_id: {
-    //       in: excludedEventTypeIds,
-    //     },
-    //   } : undefined,
-    // };
-
     const finalWhere = {
       ...whereVal,
     };
 
-    const total = await prisma.notifications.count({
+    const total = mockDb.notifications.count({
       where: finalWhere,
     });
 

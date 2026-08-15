@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
@@ -48,8 +48,6 @@ export async function POST(request: Request) {
   const { eventIdSelected, usersByEvent } = validatedData.data;
 
   try {
-    //await prisma.$disconnect();
-
     const usersIds: number[] = [];
 
     if (usersByEvent) {
@@ -60,7 +58,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const data = await prisma.notifications_preferences.upsert({
+    const data = mockDb.notifications_preferences.upsert({
       where: {
         event_type_id: parseInt(eventIdSelected),
       },
@@ -77,25 +75,19 @@ export async function POST(request: Request) {
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
 }
 
 export async function GET() {
   try {
-    const data = await prisma.notifications_preferences.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.notifications_preferences.findMany();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

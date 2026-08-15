@@ -2,7 +2,6 @@ import { Users } from '@prisma/client';
 import { Resend } from 'resend';
 
 const apiKey = process.env.RESEND_API_KEY;
-const resend = new Resend(apiKey);
 
 const emailFrom = process.env.RESEND_EMAIL_FROM || '';
 
@@ -17,6 +16,8 @@ export async function sendPasswordResetEmailService(
   if (!apiKey) {
     throw new Error('RESEND_API_KEY is not defined');
   }
+
+  const resend = new Resend(apiKey);
   const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
            <div style="text-align: center; padding: 20px 0;">

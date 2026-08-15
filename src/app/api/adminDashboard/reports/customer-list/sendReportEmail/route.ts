@@ -4,8 +4,15 @@ import { Resend } from 'resend';
 import { auth } from '@/auth';
 
 const apiKey = process.env.RESEND_API_KEY;
-const resend = new Resend(apiKey);
 const fromEmail = process.env.RESEND_EMAIL_FROM || 'Acme <onboarding@resend.dev>';
+
+function getResend() {
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY is not defined');
+  }
+
+  return new Resend(apiKey);
+}
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -49,6 +56,8 @@ export async function POST(request: Request) {
   }
 
   try {
+
+    const resend = getResend();
 
     const { data, error } = await resend.emails.send({
       from: fromEmail,

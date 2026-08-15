@@ -278,3 +278,17 @@ seedCreditApps.forEach((app: any) => {
     };
   }
 });
+
+seedCreditAppAddresses.forEach((address: any) => {
+  address.prev_address = seedCreditAppPrevAddresses.filter(
+    (prev: any) => prev.credit_app_address_id === address.id,
+  );
+});
+
+seedCreditAppReferences.forEach((reference: any) => {
+  reference.customer = {
+    credit_app_other_income: seedCreditAppOtherIncomes.filter(
+      (income: any) => income.customer_id === reference.customer_id,
+    ),
+  };
+});

@@ -1,17 +1,13 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const data = await prisma.employment_statuses.findMany();
-
-    //await prisma.$disconnect();
+    const data = mockDb.employment_statuses.findMany();
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

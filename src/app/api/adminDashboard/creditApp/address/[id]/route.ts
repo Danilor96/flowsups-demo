@@ -1,32 +1,24 @@
 import { createEvent, trackChanges } from '@/app/libs/events/events';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { AddressData } from '../../types';
-import { Credit_app_address_prev } from '@prisma/client';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const data = await prisma?.credit_app_address.findFirst({
+    const data = mockDb.credit_app_address.findFirst({
       where: {
         client_id: parseInt(params.id),
       },
-      include: {
-        prev_address: true,
-      },
     });
-
-    //await prisma.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -151,13 +143,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
   } = validatedData.data;
 
   try {
-    const prevData = await prisma.credit_app_address.findUnique({
+    const prevData = mockDb.credit_app_address.findUnique({
       where: {
         id: Number(id),
       },
     });
 
-    await prisma.credit_app_navigation.upsert({
+    mockDb.credit_app_navigation.upsert({
       where: {
         customer_id: customerId,
       },
@@ -170,7 +162,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const currentData = await prisma.credit_app_address.upsert({
+    const currentData = mockDb.credit_app_address.upsert({
       where: {
         id: Number(id),
       },
@@ -216,7 +208,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    let prviousAddressData: Credit_app_address_prev[] = [];
+    let prviousAddressData: Record<string, any>[] = [];
 
     if (previousAddressForms && previousAddressForms.length > 0) {
       const formsCopy = [...previousAddressForms];
@@ -230,13 +222,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
         const prevAddressTypeId = form?.prevInputs?.find((el) => el?.name === 'addressType')?.value;
         const prevRentMort = form?.prevInputs?.find((el) => el?.name === 'rentMort')?.value;
 
-        const prevDataPrev = await prisma.credit_app_address_prev.findUnique({
+        const prevDataPrev = mockDb.credit_app_address_prev.findUnique({
           where: {
             id: Number(form?.id),
           },
         });
 
-        const updatedData = await prisma.credit_app_address_prev.upsert({
+        const updatedData = mockDb.credit_app_address_prev.upsert({
           where: {
             id: Number(form?.id),
           },
@@ -296,14 +288,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
         }
       }
     } else {
-      await prisma.credit_app_address_prev.deleteMany({
+      mockDb.credit_app_address_prev.deleteMany({
         where: {
           credit_app_address_id: currentData.id,
         },
       });
     }
-
-    //await prisma.$disconnect();
 
     const worksWith = [
       'current_address',
@@ -361,16 +351,14 @@ export async function POST(request: Request, { params }: { params: { id: string 
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
 }
 
-const deletePreviousForm = async (formId: (number | null | undefined)[]) => {
+const deletePreviousForm = (formId: (number | null | undefined)[]) => {
   try {
     if (formId && formId.length > 0) {
-      const previousForms = await prisma.credit_app_address_prev.findMany();
+      const previousForms = mockDb.credit_app_address_prev.findMany();
 
       if (formId.length < previousForms.length) {
         const formsToDelete = previousForms.filter((form) => !formId.includes(form.id));
@@ -378,7 +366,7 @@ const deletePreviousForm = async (formId: (number | null | undefined)[]) => {
         if (formsToDelete.length > 0) {
           const formsIds = formsToDelete.map((form) => form.id);
 
-          await prisma.credit_app_address_prev.deleteMany({
+          mockDb.credit_app_address_prev.deleteMany({
             where: {
               id: {
                 in: formsIds,

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { CreditAppData, PrevAddress, PrevEmploymentStatus, References } from '../types';
 
@@ -8,27 +8,21 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const customerId = Number(params.id);
 
   try {
-    const creditAppData = await prisma.credit_app.findUnique({
+    const creditAppData = mockDb.credit_app.findUnique({
       where: {
         client_id: customerId,
       },
     });
 
-    const addressData = await prisma.credit_app_address.findFirst({
+    const addressData = mockDb.credit_app_address.findFirst({
       where: {
         client_id: customerId,
-      },
-      include: {
-        prev_address: true,
       },
     });
 
-    const employmentData = await prisma.customer_employment.findMany({
+    const employmentData = mockDb.customer_employment.findMany({
       where: {
         client_id: customerId,
-      },
-      include: {
-        customer_employment_address: true,
       },
       orderBy: {
         id: 'asc',
@@ -36,7 +30,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     });
 
     const prevAddress: PrevAddress[] | undefined | null = addressData?.prev_address.map(
-      (address) => ({
+      (address: Record<string, any>) => ({
         id: address.id,
         address: address.prev_address,
         year: address.prev_year,
@@ -67,16 +61,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
       }),
     );
 
-    const referencesData = await prisma.credit_app_reference.findMany({
+    const referencesData = mockDb.credit_app_reference.findMany({
       where: {
         customer_id: customerId,
-      },
-      include: {
-        customer: {
-          select: {
-            credit_app_other_income: true,
-          },
-        },
       },
       orderBy: {
         id: 'asc',

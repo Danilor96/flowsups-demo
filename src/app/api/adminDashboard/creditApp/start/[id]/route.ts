@@ -1,5 +1,5 @@
 import { createEvent, trackChanges } from '@/app/libs/events/events';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
@@ -8,36 +8,17 @@ import { StartData } from '../../types';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const data = await prisma?.credit_app.findUnique({
+    const data = mockDb.credit_app.findUnique({
       where: {
         client_id: parseInt(params.id),
       },
-      select: {
-        id: true,
-        ssn: true,
-        date_of_birth: true,
-        id_type_id: true,
-        id_state_id: true,
-        id_number: true,
-        id_issue_date: true,
-        id_expiration_date: true,
-        cash_down: true,
-        send_automated_sms: true,
-        client_id: true,
-        gender_id: true,
-        no_id: true,
-      },
     });
-
-    //await prisma?.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -105,13 +86,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    const prevData = await prisma.credit_app.findUnique({
+    const prevData = mockDb.credit_app.findUnique({
       where: {
         id: customerId,
       },
     });
 
-    await prisma.credit_app_navigation.upsert({
+    mockDb.credit_app_navigation.upsert({
       where: {
         customer_id: customerId,
       },
@@ -124,7 +105,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const updatedData = await prisma?.credit_app.upsert({
+    const updatedData = mockDb.credit_app.upsert({
       where: {
         client_id: customerId,
       },
@@ -156,8 +137,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         send_automated_sms: consent ? true : false,
       },
     });
-
-    //await prisma.$disconnect();
 
     const worksWith = [
       'cash_down',
@@ -198,8 +177,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ successMessage: 'Data Successfully Updated', data: dataToReturn });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

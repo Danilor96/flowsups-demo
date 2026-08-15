@@ -249,6 +249,75 @@ export const seedRoundRobin = [
   },
 ];
 
+export const seedCreditAppAddressMonths = [
+  { id: 1, month: 'January' },
+  { id: 2, month: 'February' },
+  { id: 3, month: 'March' },
+  { id: 4, month: 'April' },
+  { id: 5, month: 'May' },
+  { id: 6, month: 'June' },
+  { id: 7, month: 'July' },
+  { id: 8, month: 'August' },
+  { id: 9, month: 'September' },
+  { id: 10, month: 'October' },
+  { id: 11, month: 'November' },
+  { id: 12, month: 'December' },
+];
+
+export const seedCreditAppAddressTypes = [
+  { id: 1, type: 'Current Address' },
+  { id: 2, type: 'Previous Address' },
+];
+
+export const seedCreditAppReferenceRelationships = [
+  { id: 1, relationship: 'Spouse' },
+  { id: 2, relationship: 'Parent' },
+  { id: 3, relationship: 'Child' },
+  { id: 4, relationship: 'Sibling' },
+  { id: 5, relationship: 'Friend' },
+  { id: 6, relationship: 'Employer' },
+  { id: 7, relationship: 'Other' },
+];
+
+export const seedEmploymentStatuses = [
+  { id: 1, status: 'Employed' },
+  { id: 2, status: 'Self-Employed' },
+  { id: 3, status: 'Retired' },
+  { id: 4, status: 'Unemployed' },
+  { id: 5, status: 'Student' },
+];
+
+export const seedCustomerOccupations = [
+  { id: 1, occupation: 'Accountant' },
+  { id: 2, occupation: 'Engineer' },
+  { id: 3, occupation: 'Manager' },
+  { id: 4, occupation: 'Nurse' },
+  { id: 5, occupation: 'Teacher' },
+  { id: 6, occupation: 'Other' },
+];
+
+export const seedCustomerIncomeTypes = [
+  { id: 1, income: 'Full-time' },
+  { id: 2, income: 'Part-time' },
+  { id: 3, income: 'Contract' },
+  { id: 4, income: 'Seasonal' },
+];
+
+export const seedClientIdTypes = [
+  { id: 1, id_type: "Driver's License" },
+  { id: 2, id_type: 'Passport' },
+  { id: 3, id_type: 'State ID' },
+  { id: 4, id_type: 'Military ID' },
+];
+
+export const seedClientIdStates = [
+  { id: 1, id_state: 'Valid' },
+  { id: 2, id_state: 'Expired' },
+  { id: 3, id_state: 'Suspended' },
+  { id: 4, id_state: 'Lost' },
+  { id: 5, id_state: 'Stolen' },
+];
+
 export const seedSettingsStores: Record<string, any[]> = {
   client_status: seedClientStatuses,
   lead_sources: seedLeadSources,
@@ -276,4 +345,12 @@ export const seedSettingsStores: Record<string, any[]> = {
   client_detail_leads: seedClientDetailLeads,
   sms_status: seedSmsStatuses,
   task_due_time_limit: seedTaskDueTimeLimits,
+  credit_app_address_months: seedCreditAppAddressMonths,
+  credit_app_address_type: seedCreditAppAddressTypes,
+  credit_app_reference_relationship: seedCreditAppReferenceRelationships,
+  employment_statuses: seedEmploymentStatuses,
+  customer_occupation: seedCustomerOccupations,
+  customer_income_type: seedCustomerIncomeTypes,
+  client_id_type: seedClientIdTypes,
+  client_id_state: seedClientIdStates,
 };

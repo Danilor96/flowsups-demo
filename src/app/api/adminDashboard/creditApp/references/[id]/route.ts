@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
@@ -6,7 +6,6 @@ import { createNotification } from '@/app/libs/notifications/notifications';
 import { createEvent, trackChanges } from '@/app/libs/events/events';
 import { auth } from '@/auth';
 import { References, ReferencesData } from '../../types';
-import { Credit_app_other_income, Credit_app_reference } from '@prisma/client';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const customerId = parseInt(params.id);
@@ -79,20 +78,20 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const formsCopy = [...references];
     const formsIds = formsCopy.map((el) => (el.id ? parseInt(el.id) : undefined));
 
-    await deletePreviousReferenceData(formsIds);
+    deletePreviousReferenceData(formsIds);
 
-    let referencesData: Credit_app_reference[] = [];
+    let referencesData: Record<string, any>[] = [];
 
     for (let i = 0; i < references.length; i++) {
       const el = references[i];
 
-      const prevData = await prisma.credit_app_reference.findUnique({
+      const prevData = mockDb.credit_app_reference.findUnique({
         where: {
           id: el.id ? parseInt(el.id) : 0,
         },
       });
 
-      const updatedData = await prisma.credit_app_reference.upsert({
+      const updatedData = mockDb.credit_app_reference.upsert({
         where: { id: el.id ? parseInt(el.id) : 0 },
         update: {
           address: el.address,
@@ -127,7 +126,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       }
     }
 
-    const otherIncomeUpdated = await prisma.credit_app_other_income.upsert({
+    const otherIncomeUpdated = mockDb.credit_app_other_income.upsert({
       where: { id: otherIncomeId ? parseInt(otherIncomeId) : 0 },
       update: {
         customer_id: customerId,
@@ -141,16 +140,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const customerData = await prisma.clients.findFirst({
+    const customerData = mockDb.clients.findFirst({
       where: {
         id: customerId,
-      },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        seller_id: true,
-        credit_app_forms_completed: true,
       },
     });
 
@@ -167,7 +159,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         eventTypeId: 9,
       });
 
-      await prisma.clients.update({
+      mockDb.clients.update({
         where: {
           id: customerData?.id,
         },
@@ -181,12 +173,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
       await createEvent(description, userId, customerId);
     }
 
-    const data = await prisma.customer_employment.findMany({
+    const data = mockDb.customer_employment.findMany({
       where: {
         client_id: customerId,
-      },
-      include: {
-        customer_employment_address: true,
       },
     });
 
@@ -207,16 +196,14 @@ export async function POST(request: Request, { params }: { params: { id: string 
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
 }
 
-const deletePreviousReferenceData = async (formId: (number | null | undefined)[]) => {
+const deletePreviousReferenceData = (formId: (number | null | undefined)[]) => {
   try {
     if (formId && formId.length > 0) {
-      const previousForms = await prisma.credit_app_reference.findMany();
+      const previousForms = mockDb.credit_app_reference.findMany();
 
       if (formId.length < previousForms.length) {
         const formsToDelete = previousForms.filter((form) => !formId.includes(form.id));
@@ -224,7 +211,7 @@ const deletePreviousReferenceData = async (formId: (number | null | undefined)[]
         if (formsToDelete.length > 0) {
           const formsIds = formsToDelete.map((form) => form.id);
 
-          await prisma.credit_app_reference.deleteMany({
+          mockDb.credit_app_reference.deleteMany({
             where: {
               id: {
                 in: formsIds,
@@ -243,26 +230,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const customerId = parseInt(params.id);
 
   try {
-    const data = await prisma.credit_app_reference.findMany({
+    const data = mockDb.credit_app_reference.findMany({
       where: { customer_id: customerId },
-      include: {
-        customer: {
-          select: {
-            credit_app_other_income: true,
-          },
-        },
-      },
     });
-
-    //await prisma.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

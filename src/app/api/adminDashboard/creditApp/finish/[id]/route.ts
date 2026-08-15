@@ -1,7 +1,7 @@
 import { CustomersStatuses } from '@/app/libs/customer/customersFunctions';
 import { createEvent } from '@/app/libs/events/events';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 
@@ -13,7 +13,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const userId = session?.user.id;
 
   try {
-    await prisma.clients.update({
+    mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -22,28 +22,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const customerData = await prisma.clients.findFirst({
+    const customerData = mockDb.clients.findFirst({
       where: {
         id: customerId,
       },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        seller_id: true,
-        credit_app_forms_completed: true,
-        credit_app: {
-          select: {
-            id: true,
-          },
-        },
-      },
     });
 
-    // if (customerData && !customerData.credit_app_forms_completed) {
     if (customerData) {
       const message = `There is a new completed credit app for customer ${customerData?.first_name} ${customerData?.last_name}`;
-      //
+
       await createNotification({
         message: message,
         notificationType: {
@@ -54,7 +41,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         eventTypeId: 9,
       });
 
-      await prisma.clients.update({
+      mockDb.clients.update({
         where: {
           id: customerData?.id,
         },
@@ -66,18 +53,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
         },
       });
 
-      const activeLead = await prisma.leads.findFirst({
+      const activeLead = mockDb.leads.findFirst({
         where: {
           customer_id: customerId,
           is_active: true,
         },
-        select: {
-          id: true,
-        },
       });
 
       if (activeLead && activeLead.id) {
-        const lead = await prisma.leads.update({
+        const lead = mockDb.leads.update({
           where: {
             id: activeLead.id,
           },
@@ -85,14 +69,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
             customer_status_id: CustomersStatuses.CreditApp,
             customer_credit_app_list_status_id: 1,
             credit_app_created_at: new Date().toISOString(),
-            // credit_app:
-            //   customerData.credit_app?.length > 0
-            //     ? {
-            //         connect: {
-            //           id: customerData.credit_app[0].id,
-            //         },
-            //       }
-            //     : undefined,
           },
         });
       }
@@ -102,13 +78,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
       await createEvent(description, userId, customerId);
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Credit App Completed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

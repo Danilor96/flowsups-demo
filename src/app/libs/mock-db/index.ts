@@ -1,4 +1,4 @@
-import { seedUsers } from "./data/users";
+import { seedUsers, seedUserSchedules } from "./data/users";
 import {
   seedRoles,
   seedPermissions,
@@ -23,6 +23,7 @@ import {
   seedLeadTypes,
   seedSettingsStores,
   seedTaskDueTimeLimits,
+  seedRoundRobin,
 } from "./data/settings";
 import { seedSystemAccesses } from "./data/systemAccesses";
 import { seedEventTypes } from "./data/eventTypes";
@@ -610,6 +611,8 @@ export const mockDb: Record<string, Store<any>> = {
   vehicle_details_title_license: createStore(seedVehicleDetailsTitleLicense),
   vehicle_details_key_info: createStore(seedVehicleDetailsKeyInfo),
   ...buildStores(seedSettingsStores),
+  user_schedule: createStore(seedUserSchedules),
+  round_robin: createStore(seedRoundRobin),
   task_due_time_limit: createStore(seedTaskDueTimeLimits),
   system_accesses: createStore(seedSystemAccesses),
   events_types: createStore(seedEventTypes),

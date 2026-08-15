@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
@@ -7,35 +7,17 @@ import { z } from 'zod';
 
 export async function GET() {
   try {
-    const data = await prisma.roles.findMany({
-      include: {
-        creator: {
-          select: {
-            name: true,
-            last_name: true,
-          },
-        },
-        roles_has: {
-          select: {
-            id: true,
-            permission_id: true,
-          },
-        },
-      },
+    const data = mockDb.roles.findMany({
       orderBy: {
         created_at: 'asc',
       },
     });
-
-    //await prisma.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -85,30 +67,48 @@ export async function POST(request: Request) {
   const { permissions, roleName } = validatedData.data;
 
   try {
-    const data = await prisma.roles.create({
+    const data = mockDb.roles.create({
       data: {
         role: roleName,
         status_id: 1,
         created_by: userId,
+        creator: {
+          name: 'Demo',
+          last_name: 'User',
+        },
+        status: {
+          status: 'Active',
+        },
+        roles_has: [],
       },
     });
 
     const permissionsIdsArray = returnPermissionsIdArray(permissions);
 
-    await prisma.roles_has_permissions.create({
+    mockDb.roles_has_permissions.create({
       data: {
         role_id: data.id,
         permission_id: permissionsIdsArray,
       },
     });
 
-    //await prisma.$disconnect();
+    mockDb.roles.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        roles_has: [
+          {
+            id: data.id,
+            permission_id: permissionsIdsArray,
+          },
+        ],
+      },
+    });
 
     return NextResponse.json({ successMessage: 'Role Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

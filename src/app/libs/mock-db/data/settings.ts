@@ -234,6 +234,21 @@ export const seedTaskDueTimeLimits = [
   { id: 6, span: '72 hours' },
 ];
 
+export const seedRoundRobin = [
+  {
+    id: 1,
+    ready_for_leads: true,
+    automatic_reassign_leads: true,
+    span_time_id: 1,
+    avoid_automatic_reassign_olders_leads: false,
+    days_until_avoid: null,
+    assign_leads_during_store_hours: true,
+    assign_leads_during_shift_hours: true,
+    users_must_activate_ready_for_leads: true,
+    create_task_after_assign_new_lead: true,
+  },
+];
+
 export const seedSettingsStores: Record<string, any[]> = {
   client_status: seedClientStatuses,
   lead_sources: seedLeadSources,

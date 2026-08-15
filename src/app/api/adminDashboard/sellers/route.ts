@@ -1,12 +1,12 @@
 import { Roles } from '@/app/libs/definitions/users/users';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const data = await prisma?.users.findMany({
+    const data = mockDb.users.findMany({
       where: {
         deleted_at: null,
         user_has: {
@@ -16,13 +16,6 @@ export async function GET() {
             },
           },
         },
-      },
-      select: {
-        name: true,
-        last_name: true,
-        email: true,
-        id: true,
-        username: true,
       },
     });
 

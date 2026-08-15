@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -17,7 +17,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: 'Invalid daily target value' }, { status: 400 });
     }
 
-    const updatedUser = await prisma.users.update({
+    const updatedUser = mockDb.users.update({
       where: { id: userId, deleted_at: null },
       data: {
         daily_points_target: dailyTarget,

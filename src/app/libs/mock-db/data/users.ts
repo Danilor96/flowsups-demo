@@ -2,6 +2,7 @@ export const DEMO_EMAIL = 'demo@flowsups.com';
 export const DEMO_PASSWORD = 'demo1234';
 
 import { Decimal } from '../decimal';
+import { seedUserStatuses } from './settings';
 
 export const allPermissionIds = Array.from({ length: 55 }, (_, index) => index + 1);
 
@@ -318,6 +319,7 @@ seedUsers.forEach((user: any) => {
   user.monthly_goals = [];
   user.client_seller = [];
   user.client_sales_manager = [];
+  user.users_status = seedUserStatuses.find((s) => s.id === user.status_id) || null;
   if ([1, 2, 3, 6, 7].includes(user.id)) {
     user.comissionInfo = {
       bonus: [
@@ -363,5 +365,48 @@ seedUsers.forEach((user: any) => {
     created_at: new Date('2026-08-01T00:00:00.000Z'),
     business_id: 1,
     user_id: 2,
+  },
+];
+
+export const seedUserSchedules = [
+  {
+    id: 1,
+    dayweek_id: 1,
+    from_day_times_id: 1,
+    to_day_times_id: 8,
+    user_id: 2,
+    active: true,
+  },
+  {
+    id: 2,
+    dayweek_id: 2,
+    from_day_times_id: 1,
+    to_day_times_id: 8,
+    user_id: 2,
+    active: true,
+  },
+  {
+    id: 3,
+    dayweek_id: 3,
+    from_day_times_id: 1,
+    to_day_times_id: 8,
+    user_id: 2,
+    active: true,
+  },
+  {
+    id: 4,
+    dayweek_id: 4,
+    from_day_times_id: 1,
+    to_day_times_id: 8,
+    user_id: 2,
+    active: true,
+  },
+  {
+    id: 5,
+    dayweek_id: 5,
+    from_day_times_id: 1,
+    to_day_times_id: 8,
+    user_id: 2,
+    active: true,
   },
 ];

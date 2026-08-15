@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb, MockDecimal } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
@@ -6,7 +6,6 @@ import { storage } from '@/firebase/firebase.config';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { UserSchedule } from '@/app/libs/definitions';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import { Prisma } from '@prisma/client';
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { auth } from '@/auth';
 
@@ -125,13 +124,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   try {
     // check duplicate email and username
 
-    const actualUserEmail = await prisma?.users.findUnique({
+    const actualUserEmail = mockDb.users.findUnique({
       where: {
         id: userId,
       },
     });
 
-    const generalEmail = await prisma?.users.findUnique({
+    const generalEmail = mockDb.users.findUnique({
       where: {
         email: email,
       },
@@ -141,7 +140,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       actualUserEmail?.email === email ? false : generalEmail?.email === email ? true : false;
 
     const duplicateUsername = username
-      ? await prisma.users.findUnique({
+      ? mockDb.users.findUnique({
           where: {
             username: username,
             deleted_at: null,
@@ -167,7 +166,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // do update
 
-    const data = await prisma.users.update({
+    const data = mockDb.users.update({
       where: {
         id: userId,
         deleted_at: null,
@@ -185,28 +184,26 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     // Create or update pay plan
     if (pay_plan_data && pay_plan_type) {
       const payPlanData = JSON.parse(pay_plan_data);
-      const data = {
+      const payPlanValues = {
         front_gross: payPlanData.frontGross
-          ? new Prisma.Decimal(payPlanData.frontGross || 0)
+          ? new MockDecimal(payPlanData.frontGross || 0)
           : null,
-        back_gross: payPlanData.backGross ? new Prisma.Decimal(payPlanData.backGross || 0) : null,
+        back_gross: payPlanData.backGross ? new MockDecimal(payPlanData.backGross || 0) : null,
         of_cash_down: payPlanData.ofCashDown
-          ? new Prisma.Decimal(payPlanData.ofCashDown || 0)
+          ? new MockDecimal(payPlanData.ofCashDown || 0)
           : null,
         sales_person_id: payPlanData.salesPersonId ? payPlanData.salesPersonId : null,
         exclude_reserve_or_flat: payPlanData.excludeReserveOrFlat,
       };
 
-      await prisma.pay_plan.upsert({
-        where: { user_id: userId },
-        update: {
-          pay_type: pay_plan_type,
-          ...data,
-        },
-        create: {
-          user_id: userId,
-          pay_type: pay_plan_type,
-          ...data,
+      mockDb.users.update({
+        where: { id: userId },
+        data: {
+          pay_plan: {
+            user_id: userId,
+            pay_type: pay_plan_type,
+            ...payPlanValues,
+          },
         },
       });
     }
@@ -214,8 +211,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     // update user schedule
 
     if (userScheduleDataArray && userScheduleDataArray.length > 0) {
-      userScheduleDataArray.forEach(async (el) => {
-        const userSch = await prisma.user_schedule.update({
+      userScheduleDataArray.forEach((el) => {
+        mockDb.user_schedule.update({
           where: {
             id: el.id,
           },
@@ -229,7 +226,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     } else {
       for (let i = 0; i < 7; i++) {
-        const userSch = await prisma.user_schedule.create({
+        mockDb.user_schedule.create({
           data: {
             dayweek_id: i + 1,
             from_day_times_id: daytimeFromArray[i] + 1,
@@ -245,7 +242,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await prisma.users.update({
+      mockDb.users.update({
         where: {
           id: data.id,
           deleted_at: null,
@@ -259,20 +256,42 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     // update role
 
     if (role && userId) {
-      const userRole = await prisma.users_has_roles.upsert({
+      const currentUser = mockDb.users.findUnique({
         where: {
-          user_id: data.id,
+          id: data.id,
         },
-        update: {
-          role_id: parseInt(role),
+      });
+
+      const currentRole = mockDb.roles.findUnique({
+        where: {
+          id: parseInt(role),
         },
-        create: {
-          role_id: parseInt(role),
-          user_id: data.id,
+      });
+
+      const userRole = {
+        role: currentRole || { role: 'Role' },
+        user: {
+          name: currentUser?.name,
+          last_name: currentUser?.last_name,
         },
-        include: {
-          role: true,
-          user: true,
+      };
+
+      mockDb.users.update({
+        where: {
+          id: data.id,
+        },
+        data: {
+          user_has: [
+            {
+              role_id: parseInt(role),
+              role: currentRole
+                ? {
+                    role: currentRole.role,
+                    id: currentRole.id,
+                  }
+                : null,
+            },
+          ],
         },
       });
 
@@ -307,7 +326,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
       imgPath = path;
 
-      const userImg = await prisma.users.update({
+      const userImg = mockDb.users.update({
         where: {
           id: data.id,
           deleted_at: null,
@@ -318,13 +337,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'User Successfully Updated' });
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     if (error.fieldErrors) {
       return NextResponse.json(error, { status: 422 });
@@ -338,52 +353,16 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const userId = params.id;
 
   try {
-    const data = await prisma.users.findUnique({
+    const data = mockDb.users.findUnique({
       where: {
         id: parseInt(userId),
         deleted_at: null,
       },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        last_name: true,
-        username: true,
-        created_at: true,
-        updated_at: true,
-        mobile_phone: true,
-        img: true,
-        status_id: true,
-        monthly_vehicle_sales_goal: true,
-        // sales_points_today_date: true,
-        sales_points_total: true,
-        sales_points_today: true,
-        users_status: {
-          select: {
-            status: true,
-          },
-        },
-        user_has: {
-          select: {
-            role: {
-              select: {
-                role: true,
-                id: true,
-              },
-            },
-          },
-        },
-        pay_plan: true,
-      },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -402,7 +381,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const userId = parseInt(params.id);
 
   try {
-    const data = await prisma.users.update({
+    const data = mockDb.users.update({
       where: {
         id: userId,
         deleted_at: null,
@@ -414,25 +393,27 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       },
     });
 
-    await prisma.$executeRaw`
-      UPDATE "Tasks"
-      SET 
-        assigned_bdc_id = CASE WHEN assigned_bdc_id = ${userId} THEN NULL ELSE assigned_bdc_id END,
-        assigned_finance_manager_id = CASE WHEN assigned_finance_manager_id = ${userId} THEN NULL ELSE assigned_finance_manager_id END,
-        assigned_manager_id = CASE WHEN assigned_manager_id = ${userId} THEN NULL ELSE assigned_manager_id END,
-        assigned_seller_id = CASE WHEN assigned_seller_id = ${userId} THEN NULL ELSE assigned_seller_id END,
-        assigned_to = CASE WHEN assigned_to = ${userId} THEN NULL ELSE assigned_to END
-      WHERE 
-        status = 1 AND (
-          assigned_bdc_id = ${userId} OR 
-          assigned_finance_manager_id = ${userId} OR 
-          assigned_manager_id = ${userId} OR 
-          assigned_seller_id = ${userId} OR 
-          assigned_to = ${userId}
-    )
-    `;
+    mockDb.tasks.updateMany({
+      where: {
+        status: 1,
+        OR: [
+          { assigned_bdc_id: userId },
+          { assigned_finance_manager_id: userId },
+          { assigned_manager_id: userId },
+          { assigned_seller_id: userId },
+          { assigned_to: userId },
+        ],
+      },
+      data: {
+        assigned_bdc_id: null,
+        assigned_finance_manager_id: null,
+        assigned_manager_id: null,
+        assigned_seller_id: null,
+        assigned_to: null,
+      },
+    });
 
-    await prisma.appointments.updateMany({
+    mockDb.appointments.updateMany({
       where: {
         user_id: userId,
         status_id: {
@@ -444,13 +425,9 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'User Successfully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

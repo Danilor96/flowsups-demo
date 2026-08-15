@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -7,26 +7,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const roleId = parseInt(params.id);
 
   try {
-    const data = await prisma.roles.findUnique({
+    const data = mockDb.roles.findUnique({
       where: {
         id: roleId,
       },
-      include: {
-        status: {
-          select: {
-            status: true,
-          },
-        },
-      },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -74,7 +63,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { permissions, roleName } = validatedData.data;
 
   try {
-    const data = await prisma.roles.update({
+    const data = mockDb.roles.update({
       where: {
         id: roleId,
       },
@@ -85,30 +74,47 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const permissionsIdsArray = returnPermissionsIdArray(permissions);
 
-    await prisma.roles_has_permissions.upsert({
+    const existingPerms = mockDb.roles_has_permissions.findFirst({
       where: {
         role_id: roleId,
       },
-      update: {
-        permission_id: {
-          set: permissionsIdsArray,
-        },
-      },
-      create: {
-        role_id: roleId,
-        permission_id: {
-          set: permissionsIdsArray,
-        },
-      },
     });
 
-    //await prisma.$disconnect();
+    if (existingPerms) {
+      mockDb.roles_has_permissions.update({
+        where: {
+          id: existingPerms.id,
+        },
+        data: {
+          permission_id: permissionsIdsArray,
+        },
+      });
+    } else {
+      mockDb.roles_has_permissions.create({
+        data: {
+          role_id: roleId,
+          permission_id: permissionsIdsArray,
+        },
+      });
+    }
+
+    mockDb.roles.update({
+      where: {
+        id: roleId,
+      },
+      data: {
+        roles_has: [
+          {
+            id: existingPerms?.id || roleId,
+            permission_id: permissionsIdsArray,
+          },
+        ],
+      },
+    });
 
     return NextResponse.json({ successMessage: 'Role Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -124,19 +130,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const roleId = parseInt(params.id);
 
   try {
-    const data = await prisma.roles.delete({
+    const data = mockDb.roles.delete({
       where: {
         id: roleId,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Role Successfully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

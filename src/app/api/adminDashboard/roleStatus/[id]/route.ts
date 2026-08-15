@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -27,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { roleStatus } = validatedData.data;
 
   try {
-    const data = await prisma.roles.update({
+    const data = mockDb.roles.update({
       where: {
         id: roleId,
       },
@@ -36,13 +36,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Role Status Sucessfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

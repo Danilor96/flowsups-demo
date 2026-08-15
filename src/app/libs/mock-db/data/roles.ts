@@ -1,4 +1,5 @@
 import { allPermissionIds } from './users';
+import { seedUserStatuses } from './settings';
 
 export const seedRoles = [
   { id: 1, role: 'Superuser', status_id: 1, created_by: 1, created_at: new Date('2025-01-01T09:00:00.000Z') },
@@ -61,3 +62,17 @@ export const seedRolesHasPermissions = [
     permission_id: [2, 4, 5, 7, 8, 9, 10, 12, 14, 16, 17, 18, 19, 20, 23, 25, 26, 29, 31, 44, 45, 46, 47, 48, 49, 50],
   },
 ];
+
+seedRoles.forEach((role: any) => {
+  role.creator = {
+    name: 'Demo',
+    last_name: 'User',
+  };
+  role.status = seedUserStatuses.find((s) => s.id === role.status_id) || null;
+  role.roles_has = seedRolesHasPermissions
+    .filter((rhp) => rhp.role_id === role.id)
+    .map((rhp) => ({
+      id: rhp.id,
+      permission_id: rhp.permission_id,
+    }));
+});

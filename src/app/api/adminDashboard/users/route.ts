@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
   try {
     // check duplicate email and username
 
-    const duplicateUsername = await prisma.users.findUnique({
+    const duplicateUsername = mockDb.users.findUnique({
       where: {
         username: username,
         deleted_at: null,
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     //     OR: [{ email }, { mobile_phone: mobilePhone }],
     //   },
 
-    const existingUser = await prisma?.users.findFirst({
+    const existingUser = mockDb.users.findFirst({
       where: {
         email,
       },
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
       }
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await prisma.users.update({
+      mockDb.users.update({
         where: { id: existingUser.id },
         data: {
           name: firstName,
@@ -121,21 +121,25 @@ export async function POST(request: Request) {
           password: hashedPassword,
           mobile_phone: mobilePhone,
           username: username,
-          user_has: {
-            update: {
-              where: {
-                user_id: existingUser.id,
-              },
-              data: {
-                role_id: parseInt(role),
-              },
-            },
-          },
           status_id: 1,
           deleted_at: null,
           deleted_by_id: null,
         },
       });
+
+      if (existingUser.user_has && existingUser.user_has.length > 0) {
+        mockDb.users.update({
+          where: { id: existingUser.id },
+          data: {
+            user_has: [
+              {
+                ...existingUser.user_has[0],
+                role_id: parseInt(role),
+              },
+            ],
+          },
+        });
+      }
 
       if (userImage) {
         const fileRef = ref(storage, `images/${userImage.name}`);
@@ -143,7 +147,7 @@ export async function POST(request: Request) {
 
         const path = await getDownloadURL(doUpload.ref);
 
-        await prisma.users.update({
+        mockDb.users.update({
           where: {
             id: existingUser.id,
             deleted_at: null,
@@ -163,7 +167,7 @@ export async function POST(request: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const data = await prisma.users.create({
+    const data = mockDb.users.create({
       data: {
         name: firstName,
         last_name: lastName,
@@ -171,12 +175,18 @@ export async function POST(request: Request) {
         password: hashedPassword,
         mobile_phone: mobilePhone,
         username: username,
-        user_has: {
-          create: {
+        user_has: [
+          {
             role_id: parseInt(role),
+            role: {
+              role: 'New Role',
+            },
           },
-        },
+        ],
         status_id: 1,
+        users_status: {
+          status: 'Active',
+        },
       },
     });
 
@@ -186,7 +196,7 @@ export async function POST(request: Request) {
 
       const path = await getDownloadURL(doUpload.ref);
 
-      const userImg = await prisma.users.update({
+      const userImg = mockDb.users.update({
         where: {
           id: data.id,
           deleted_at: null,
@@ -197,8 +207,6 @@ export async function POST(request: Request) {
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'User Successfully Created' });
   } catch (error: any) {
     console.log(error);
@@ -207,64 +215,23 @@ export async function POST(request: Request) {
       return NextResponse.json(error, { status: 422 });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
 }
 
 export async function GET() {
   try {
-    const data = await prisma.users.findMany({
+    const data = mockDb.users.findMany({
       where: {
         deleted_at: null,
       },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        last_name: true,
-        username: true,
-        created_at: true,
-        updated_at: true,
-        mobile_phone: true,
-        img: true,
-        status_id: true,
-        round_robin: true,
-        ready_for_leads: true,
-        round_robin_order: true,
-        monthly_vehicle_sales_goal: true,
-        // sales_points_today_date: true,
-        sales_points_total: true,
-        sales_points_today: true,
-        daily_points_target: true,
-        users_status: {
-          select: {
-            status: true,
-          },
-        },
-        user_has: {
-          select: {
-            role: {
-              select: {
-                role: true,
-                id: true,
-              },
-            },
-          },
-        },
-      },
     });
-
-    //await prisma.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

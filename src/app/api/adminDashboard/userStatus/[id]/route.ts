@@ -1,6 +1,6 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -36,7 +36,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { status } = validatedData.data;
 
   try {
-    const data = await prisma.users.update({
+    const data = mockDb.users.update({
       where: {
         id: userId,
         deleted_at: null,
@@ -61,15 +61,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
-    //await prisma.$disconnect();
-
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json({ successMessage: 'Status Successfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -85,19 +81,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const userId = parseInt(params.id);
 
   try {
-    const data = await prisma.users.delete({
+    const data = mockDb.users.delete({
       where: {
         id: userId,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Status Successfully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

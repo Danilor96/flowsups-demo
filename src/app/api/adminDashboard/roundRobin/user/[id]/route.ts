@@ -1,5 +1,5 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -36,9 +36,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { roundRobin, readyForLeads } = validatedData.data;
 
   try {
-    const newOrder = roundRobin === '1' ? await setCurrentRoundRobinOrder(userId) : null;
+    const newOrder = roundRobin === '1' ? setCurrentRoundRobinOrder(userId) : null;
 
-    const data = await prisma.users.update({
+    const data = mockDb.users.update({
       where: {
         id: userId,
         deleted_at: null,
@@ -52,32 +52,24 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // if a user was kicked from round robin, re-sort the list
 
-    if (roundRobin !== '1') await sortCurrentActiveRoundRobinUsers();
-
-    //await prisma.$disconnect();
+    if (roundRobin !== '1') sortCurrentActiveRoundRobinUsers();
 
     return NextResponse.json({ successMessage: 'Round Robin Successfully Updated' });
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ serverError: 'Server Error ' }, { status: 500 });
   }
 }
 
-const setCurrentRoundRobinOrder = async (userId: number) => {
-  const usersInRoundRobin = await prisma.users.findMany({
+const setCurrentRoundRobinOrder = (userId: number) => {
+  const usersInRoundRobin = mockDb.users.findMany({
     where: {
       round_robin: true,
       round_robin_order: {
         not: null,
       },
       deleted_at: null,
-    },
-    select: {
-      id: true,
-      round_robin_order: true,
     },
     orderBy: {
       round_robin_order: 'asc',
@@ -103,19 +95,15 @@ const setCurrentRoundRobinOrder = async (userId: number) => {
   return userAlreadyExists.round_robin_order;
 };
 
-const sortCurrentActiveRoundRobinUsers = async () => {
+const sortCurrentActiveRoundRobinUsers = () => {
   try {
-    const data = await prisma.users.findMany({
+    const data = mockDb.users.findMany({
       where: {
         round_robin: true,
         round_robin_order: {
           not: null,
         },
         deleted_at: null,
-      },
-      select: {
-        id: true,
-        round_robin_order: true,
       },
       orderBy: {
         round_robin_order: 'asc',
@@ -125,7 +113,7 @@ const sortCurrentActiveRoundRobinUsers = async () => {
     for (let i = 0; i < data.length; i++) {
       const { id, round_robin_order } = data[i];
 
-      await prisma.users.update({
+      mockDb.users.update({
         where: {
           id,
           deleted_at: null,

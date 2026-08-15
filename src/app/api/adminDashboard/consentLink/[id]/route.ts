@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { randomBytes, randomUUID } from 'crypto';
 
@@ -13,21 +13,21 @@ export async function POST(request: Request, { params }: { params: { id: string 
     while (exists) {
       code = randomUUID?.() ?? randomBytes(32).toString('hex');
 
-      const dbCode = await prisma.consent_code.findUnique({
+      const dbCode = mockDb.consent_code.findUnique({
         where: {
           customer_id: customerId,
         },
       });
 
       if (!dbCode) {
-        const codeExists = await prisma.consent_code.findUnique({
+        const codeExists = mockDb.consent_code.findUnique({
           where: {
             token: code,
           },
         });
 
         if (!codeExists) {
-          await prisma.consent_code.create({
+          mockDb.consent_code.create({
             data: {
               code_expired: new Date(actualDate.getTime() + 24 * 60 * 60 * 1000),
               customer_id: customerId,
@@ -41,7 +41,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
       if (dbCode) {
         if (new Date() >= dbCode.code_expired) {
-          await prisma.consent_code.delete({
+          mockDb.consent_code.delete({
             where: {
               id: dbCode.id,
             },
@@ -52,8 +52,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
         }
       }
     }
-
-    //await prisma.$disconnect();
 
     return code;
   };

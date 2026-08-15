@@ -1,422 +1,17 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { startOfDay, endOfDay } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 import { filterNumber } from '@/app/libs/customer/customersFunctions';
 
-// get a single clients logic
-
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const data = await prisma?.clients.findUnique({
+    const data = mockDb.clients.findUnique({
       where: {
         id: parseInt(params.id),
         consent_approved: true,
       },
-      select: {
-        id: true,
-        name_lastname: true,
-        first_name: true,
-        last_name: true,
-        suffix: true,
-        nickname: true,
-        salutation: true,
-        last_activity: true,
-        middle_initials: true,
-        consent_approved: true,
-        email: true,
-        mobile_phone: true,
-        home_phone: true,
-        work_phone: true,
-        born_date: true,
-        created_at: true,
-        gender: {
-          select: {
-            gender: true,
-          },
-        },
-        language: {
-          select: {
-            language: true,
-            id: true,
-          },
-        },
-        current_address: true,
-        current_job: true,
-        previous_address: true,
-        previous_job: true,
-        social_security: true,
-        duplicate: true,
-        contact_method: {
-          select: {
-            id: true,
-            method: true,
-          },
-        },
-        contact_time: {
-          select: {
-            id: true,
-            time: true,
-          },
-        },
-        cash_down: true,
-        file: {
-          select: {
-            file: true,
-          },
-        },
-        inquiry_type: {
-          select: {
-            id: true,
-            type: true,
-          },
-        },
-        lead_source: {
-          select: {
-            id: true,
-            source: true,
-          },
-        },
-        lead_type: {
-          select: {
-            id: true,
-            type: true,
-          },
-        },
-        mailing_address: true,
-        other_income: true,
-        reference: true,
-        referrer_client: {
-          select: {
-            buyer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-                first_name: true,
-                last_name: true,
-              },
-            },
-            referrer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-                first_name: true,
-                last_name: true,
-              },
-            },
-          },
-        },
-        buyer_referrer: {
-          select: {
-            buyer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-                first_name: true,
-                last_name: true,
-                suffix: true,
-                salutation: true,
-                middle_initials: true,
-                nickname: true,
-                client_address: {
-                  select: {
-                    street: true,
-                    city: true,
-                    county_id: true,
-                    state_id: true,
-                    zip: true,
-                    county: true,
-                    id: true,
-                    state: true,
-                  },
-                },
-              },
-            },
-            referrer: {
-              select: {
-                name_lastname: true,
-                email: true,
-                mobile_phone: true,
-                current_address: true,
-                id: true,
-                first_name: true,
-                last_name: true,
-                suffix: true,
-                salutation: true,
-                middle_initials: true,
-                nickname: true,
-                client_address: {
-                  select: {
-                    street: true,
-                    city: true,
-                    county_id: true,
-                    state_id: true,
-                    zip: true,
-                    county: true,
-                    id: true,
-                    state: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        seller: {
-          select: {
-            name: true,
-            last_name: true,
-            id: true,
-            email: true,
-          },
-        },
-        interested_vehicle: {
-          select: {
-            id: true,
-            vehicle_brands: true,
-            vehicle_models: true,
-          },
-        },
-        client_status: {
-          select: {
-            id: true,
-            status: true,
-          },
-        },
-        message: {
-          select: {
-            message: true,
-            date_sent: true,
-            sent_by_user: true,
-          },
-          orderBy: {
-            date_sent: 'asc',
-          },
-        },
-        cobuyer: true,
-        cobuyer_client: {
-          select: {
-            cobuyer: {
-              select: {
-                name_lastname: true,
-                id: true,
-                current_address: true,
-                home_phone: true,
-                mobile_phone: true,
-                work_phone: true,
-                email: true,
-              },
-            },
-            relationship: {
-              select: {
-                id: true,
-                relationship: true,
-              },
-            },
-          },
-        },
-        buyer_client: {
-          select: {
-            cobuyer: {
-              select: {
-                name_lastname: true,
-                id: true,
-                current_address: true,
-                home_phone: true,
-                mobile_phone: true,
-                work_phone: true,
-                email: true,
-              },
-            },
-            relationship: {
-              select: {
-                id: true,
-                relationship: true,
-              },
-            },
-          },
-        },
-        client_lead: {
-          select: {
-            appointment_assigned: {
-              select: {
-                start_date: true,
-                end_date: true,
-                appointments_status: {
-                  select: {
-                    status: true,
-                  },
-                },
-                customers: {
-                  select: {
-                    name_lastname: true,
-                    id: true,
-                  },
-                },
-              },
-            },
-            assigned_seller: {
-              select: {
-                name: true,
-                last_name: true,
-                id: true,
-              },
-            },
-            client_lead: {
-              select: {
-                name_lastname: true,
-                id: true,
-              },
-            },
-            dealdate: true,
-            follow_up_date: true,
-            id: true,
-            incoming: true,
-            client_leads: {
-              select: {
-                lead: true,
-                id: true,
-              },
-            },
-            lost_reason: {
-              select: {
-                reason: true,
-                id: true,
-              },
-            },
-            note_assigned: {
-              select: {
-                note: true,
-                id: true,
-                created_at: true,
-                created_by: {
-                  select: {
-                    name: true,
-                    last_name: true,
-                    id: true,
-                  },
-                },
-              },
-            },
-            outcoming: true,
-            reminder_time: true,
-            lead_created_by: {
-              select: {
-                name: true,
-                last_name: true,
-                id: true,
-              },
-            },
-            created_at: true,
-          },
-        },
-        client_language_id: true,
-        client_lead_temperature: {
-          select: {
-            temperature: true,
-          },
-        },
-        tradein_client: {
-          select: {
-            book_value: true,
-            comment: {
-              select: {
-                comment: true,
-              },
-            },
-            ext_color_id: true,
-            int_color_id: true,
-            id: true,
-            make: true,
-            model: true,
-            trade_allowance: true,
-            mileage_id: true,
-            trade_payoff: true,
-            trim: true,
-            vehicle_type_id: true,
-            vin: true,
-            year: true,
-          },
-        },
-        wishlist_client: {
-          select: {
-            id: true,
-            body_type: true,
-            exterior_color_id: true,
-            max_mileage_id: true,
-            max_price_id: true,
-            year: true,
-            vehicle: {
-              select: {
-                vehicle_type_id: true,
-                vehicle_manufacture_years: {
-                  select: {
-                    year: true,
-                  },
-                },
-                vehicle_brands: {
-                  select: {
-                    brand: true,
-                  },
-                },
-                vehicle_models: {
-                  select: {
-                    model: true,
-                  },
-                },
-                vehicle_prices: {
-                  select: {
-                    price: true,
-                  },
-                },
-                vehicle_identification_numbers: {
-                  select: {
-                    vin: true,
-                  },
-                },
-                vehicle_status: {
-                  select: {
-                    status: true,
-                  },
-                },
-                exterior_vehicle_colors: {
-                  select: {
-                    color: true,
-                  },
-                },
-                vehicle_mileages: {
-                  select: {
-                    mileage: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        appointment: {
-          select: {
-            id: true,
-          },
-          where: {
-            start_date: {
-              gte: startOfDay(new Date()),
-              lte: endOfDay(new Date()),
-            },
-          },
-        },
-      },
     });
-
-    //await prisma?.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
@@ -427,8 +22,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
 }
-
-// update a client
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const data = await request.formData();
@@ -532,7 +125,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   } = validatedData.data;
 
   try {
-    const data = await prisma?.clients.update({
+    const data = mockDb.clients.update({
       where: {
         id: parseInt(params.id),
       },
@@ -576,32 +169,19 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma?.$disconnect();
-
     return NextResponse.json({ successMessage: 'Client Updated' });
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
-
-    if (error.code == 'P2002') {
-      return NextResponse.json(
-        { fieldsErrors: { email: ['Email already registered'] } },
-        { status: 422 },
-      );
-    }
 
     return NextResponse.json({ DataBaseErrors: 'Server Error' }, { status: 500 });
   }
 }
 
-// // delete a client
-
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const id = parseInt(params.id);
 
   try {
-    const data = await prisma?.clients.update({
+    const data = mockDb.clients.update({
       where: {
         id: id,
       },
@@ -611,13 +191,9 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       },
     });
 
-    //await prisma?.$disconnect();
-
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

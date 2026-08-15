@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 
 export async function POST(request: Request) {
@@ -35,25 +35,16 @@ export async function POST(request: Request) {
 
     const { year, make, model, stock_no, vin } = validatedData.data;
 
-    const promiseExistsVin = prisma?.vehicle_identification_numbers.findUnique({
+    const vinExists = mockDb.vehicle_identification_numbers.findUnique({
       where: {
         vin,
       },
     });
-    const existsVehicleStockNoPromise = prisma?.vehicles.findUnique({
+    const existsVehicleStockNo = mockDb.vehicles.findUnique({
       where: {
         stock_no,
       },
-      select: {
-        id: true,
-        stock_no: true,
-      },
     });
-
-    const [existsVehicleStockNo, vinExists] = await Promise.all([
-      existsVehicleStockNoPromise,
-      promiseExistsVin,
-    ]);
 
     if (existsVehicleStockNo) {
       return NextResponse.json(
@@ -66,7 +57,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ fieldErrors: { vin: ['VIN already exists'] } }, { status: 422 });
     }
 
-    const yearData = await prisma?.vehicle_manufacture_years.upsert({
+    const yearData = mockDb.vehicle_manufacture_years.upsert({
       where: {
         year: year,
       },
@@ -76,63 +67,47 @@ export async function POST(request: Request) {
       },
     });
 
-    let makeExists = await prisma.vehicle_make.findFirst({
+    let makeExists = mockDb.vehicle_make.findFirst({
       where: {
         brand: {
           equals: make,
-          mode: 'insensitive',
         },
       },
     });
 
     if (!makeExists) {
-      makeExists = await prisma?.vehicle_make.create({
+      makeExists = mockDb.vehicle_make.create({
         data: {
           brand: make,
         },
       });
     }
 
-    let modelExists = await prisma.vehicle_models.findFirst({
+    let modelExists = mockDb.vehicle_models.findFirst({
       where: {
         model: {
           equals: model,
-          mode: 'insensitive',
         },
       },
     });
 
     if (!modelExists) {
-      modelExists = await prisma.vehicle_models.create({
+      modelExists = mockDb.vehicle_models.create({
         data: {
           model: model,
         },
       });
     }
 
-    const newVehicle = await prisma.vehicles.create({
+    const newVehicle = mockDb.vehicles.create({
       data: {
         stock_no,
         vehicle_identification_numbers: {
-          create: {
-            vin,
-          },
+          vin,
         },
-        vehicle_manufacture_years: {
-          connect: {
-            id: yearData.id,
-          },
-        },
-        vehicle_brands: {
-          connect: {
-            id: makeExists.id,
-          },
-        },
-        vehicle_models: {
-          connect: {
-            id: modelExists.id,
-          },
-        },
+        vehicle_manufacture_years: { id: yearData.id, year: yearData.year },
+        vehicle_brands: { id: makeExists.id, brand: makeExists.brand },
+        vehicle_models: { id: modelExists.id, model: modelExists.model },
       },
     });
 
@@ -157,14 +132,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Vehicle ID is required' }, { status: 400 });
     }
 
-    const vehicle = await prisma.vehicles.findUnique({
+    const vehicle = mockDb.vehicles.findUnique({
       where: { id: Number(id) },
-      include: {
-        vehicle_identification_numbers: true,
-        vehicle_manufacture_years: true,
-        vehicle_brands: true,
-        vehicle_models: true,
-      },
     });
 
     if (!vehicle) {
@@ -220,16 +189,15 @@ export async function PUT(request: Request) {
 
     const { id, year, make, model, stock_no, vin } = validatedData.data;
 
-    const currentVehicle = await prisma.vehicles.findUnique({
+    const currentVehicle = mockDb.vehicles.findUnique({
       where: { id },
-      include: { vehicle_identification_numbers: true },
     });
 
     if (!currentVehicle) {
       return NextResponse.json({ serverError: 'Vehicle not found' }, { status: 404 });
     }
 
-    const existsVehicleStockNo = await prisma.vehicles.findFirst({
+    const existsVehicleStockNo = mockDb.vehicles.findFirst({
       where: {
         stock_no,
         id: { not: id },
@@ -243,8 +211,8 @@ export async function PUT(request: Request) {
       );
     }
 
-    if (vin !== currentVehicle.vehicle_identification_numbers.vin) {
-      const vinExists = await prisma.vehicle_identification_numbers.findUnique({
+    if (vin !== currentVehicle.vehicle_identification_numbers?.vin) {
+      const vinExists = mockDb.vehicle_identification_numbers.findUnique({
         where: { vin },
       });
       if (vinExists) {
@@ -252,7 +220,7 @@ export async function PUT(request: Request) {
       }
     }
 
-    const yearData = await prisma?.vehicle_manufacture_years.upsert({
+    const yearData = mockDb.vehicle_manufacture_years.upsert({
       where: {
         year: year,
       },
@@ -262,64 +230,49 @@ export async function PUT(request: Request) {
       },
     });
 
-    let makeExists = await prisma.vehicle_make.findFirst({
+    let makeExists = mockDb.vehicle_make.findFirst({
       where: {
         brand: {
           equals: make,
-          mode: 'insensitive',
         },
       },
     });
 
     if (!makeExists) {
-      makeExists = await prisma?.vehicle_make.create({
+      makeExists = mockDb.vehicle_make.create({
         data: {
           brand: make,
         },
       });
     }
 
-    let modelExists = await prisma.vehicle_models.findFirst({
+    let modelExists = mockDb.vehicle_models.findFirst({
       where: {
         model: {
           equals: model,
-          mode: 'insensitive',
         },
       },
     });
 
     if (!modelExists) {
-      modelExists = await prisma.vehicle_models.create({
+      modelExists = mockDb.vehicle_models.create({
         data: {
           model: model,
         },
       });
     }
 
-    const updatedVehicle = await prisma.vehicles.update({
+    const updatedVehicle = mockDb.vehicles.update({
       where: { id },
       data: {
         stock_no,
         vehicle_identification_numbers: {
-          update: {
-            vin,
-          },
+          ...currentVehicle.vehicle_identification_numbers,
+          vin,
         },
-        vehicle_manufacture_years: {
-          connect: {
-            id: yearData.id,
-          },
-        },
-        vehicle_brands: {
-          connect: {
-            id: makeExists.id,
-          },
-        },
-        vehicle_models: {
-          connect: {
-            id: modelExists.id,
-          },
-        },
+        vehicle_manufacture_years: { id: yearData.id, year: yearData.year },
+        vehicle_brands: { id: makeExists.id, brand: makeExists.brand },
+        vehicle_models: { id: modelExists.id, model: modelExists.model },
       },
     });
 

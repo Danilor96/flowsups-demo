@@ -1,5 +1,4 @@
-import prisma from '@/app/libs/prisma';
-import { Prisma } from '@prisma/client';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -7,12 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const data = await prisma?.cobuyer_client_relationship.findMany({
-      select: {
-        id: true,
-        relationship: true,
-      },
-    });
+    const data = mockDb.cobuyer_client_relationship.findMany();
 
     return NextResponse.json(data);
   } catch (error) {
@@ -59,25 +53,23 @@ export async function POST(request: Request) {
   const { buyerClientId, cobuyerClientId, relationshipId } = validatedData.data;
 
   try {
-    let leadWhereClause: Prisma.LeadsWhereUniqueInput | null = null;
+    let leadWhereId: number | null = null;
     let cobuyerRelationId: number | null = null;
 
     if (currentLeadId) {
-      const currentLead = await prisma.leads.findUnique({
+      const currentLead = mockDb.leads.findUnique({
         where: {
           id: Number(currentLeadId),
         },
       });
 
-      leadWhereClause = {
-        id: Number(currentLeadId),
-      };
+      leadWhereId = Number(currentLeadId);
 
       if (currentLead?.customer_cobuyer_id) {
         cobuyerRelationId = currentLead.customer_cobuyer_id;
       }
     } else {
-      const activeLead = await prisma.leads.findFirst({
+      const activeLead = mockDb.leads.findFirst({
         where: {
           customer_id: parseInt(buyerClientId),
           is_selected: true,
@@ -85,41 +77,47 @@ export async function POST(request: Request) {
         },
       });
 
-      leadWhereClause = {
-        id: activeLead?.id,
-      };
+      leadWhereId = activeLead?.id ?? null;
 
       if (activeLead?.customer_cobuyer_id) {
         cobuyerRelationId = activeLead.customer_cobuyer_id;
       }
     }
 
-    if (leadWhereClause && leadWhereClause.id) {
-      await prisma.leads.update({
-        where: leadWhereClause,
+    if (leadWhereId) {
+      const existingCobuyer = cobuyerRelationId
+        ? mockDb.client_has_cobuyer.findUnique({
+            where: {
+              id: cobuyerRelationId,
+            },
+          })
+        : null;
+
+      const data = existingCobuyer
+        ? mockDb.client_has_cobuyer.update({
+            where: {
+              id: cobuyerRelationId!,
+            },
+            data: {
+              buyer_client_id: parseInt(buyerClientId),
+              cobuyer_client_id: parseInt(cobuyerClientId),
+              relationship_id: parseInt(relationshipId),
+            },
+          })
+        : mockDb.client_has_cobuyer.create({
+            data: {
+              buyer_client_id: parseInt(buyerClientId),
+              cobuyer_client_id: parseInt(cobuyerClientId),
+              relationship_id: parseInt(relationshipId),
+            },
+          });
+
+      mockDb.leads.update({
+        where: {
+          id: leadWhereId,
+        },
         data: {
-          customer_cobuyer: {
-            ...(cobuyerRelationId
-              ? {
-                  update: {
-                    where: {
-                      id: cobuyerRelationId,
-                    },
-                    data: {
-                      buyer_client_id: parseInt(buyerClientId),
-                      cobuyer_client_id: parseInt(cobuyerClientId),
-                      relationship_id: parseInt(relationshipId),
-                    },
-                  },
-                }
-              : {
-                  create: {
-                    buyer_client_id: parseInt(buyerClientId),
-                    cobuyer_client_id: parseInt(cobuyerClientId),
-                    relationship_id: parseInt(relationshipId),
-                  },
-                }),
-          },
+          customer_cobuyer_id: data.id,
         },
       });
     }
@@ -155,12 +153,6 @@ export async function DELETE(request: Request) {
   const { buyerClientId } = validatedFields.data;
 
   try {
-    // await prisma?.client_has_cobuyer.delete({
-    //   where: {
-    //     buyer_client_id: buyerClientId,
-    //   },
-    // });
-
     return NextResponse.json({ successMessage: 'Cobuyer deleted' });
   } catch (error) {
     console.log(error);

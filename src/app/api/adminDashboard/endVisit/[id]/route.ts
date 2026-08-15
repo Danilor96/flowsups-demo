@@ -11,7 +11,7 @@ import {
 } from '@/app/libs/duplicateValues/duplicateValues';
 import { createEvent } from '@/app/libs/events/events';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import {
   ActivityType,
   sellerActivityEventEmitterAsync,
@@ -281,7 +281,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const managerTrnOver = managerTurnoverYes ? true : managerTurnoverNo ? false : false;
     const isSoldStatus = decision === AvailableChangesStatuses.Sold;
 
-    const clientData = await prisma.clients.update({
+    const clientData = mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -298,18 +298,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
         funding_list_status_id: isSoldStatus ? FundingStatuses.InProcess : null,
         seller_id: sellersArray[0],
       },
-      include: {
-        seller: true,
-        client_address: true,
-      },
     });
 
     if (stateData.stateId) {
       const [street, city, state, zip, county] = address.split(',');
-      if (clientData.client_address) {
-        await prisma.client_address.update({
+      const clientAddress = clientData.client_address;
+      if (clientAddress) {
+        mockDb.client_address.update({
           where: {
-            id: clientData.client_address.id,
+            id: clientAddress.id,
           },
           data: {
             city: city,
@@ -320,8 +317,8 @@ export async function POST(request: Request, { params }: { params: { id: string 
           },
         });
       }
-      if (!clientData.client_address) {
-        const newClientAddress = await prisma.client_address.create({
+      if (!clientAddress) {
+        const newClientAddress = mockDb.client_address.create({
           data: {
             city: city,
             street: street,
@@ -330,7 +327,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
             county_id: null,
           },
         });
-        await prisma.clients.update({
+        mockDb.clients.update({
           where: {
             id: clientData.id,
           },
@@ -342,7 +339,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
 
     if (isSoldStatus) {
-      const lead = await prisma.leads.updateMany({
+      const lead = mockDb.leads.updateMany({
         where: {
           customer_id: customerId,
           is_active: true,
@@ -357,7 +354,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         },
       });
 
-      const soldCustomer = await prisma.clients.update({
+      const soldCustomer = mockDb.clients.update({
         where: {
           id: customerId,
         },
@@ -366,7 +363,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         },
       });
 
-      const vehicle = await prisma.vehicles.update({
+      const vehicle = mockDb.vehicles.update({
         where: {
           id: parseInt(vehicleId),
         },
@@ -413,7 +410,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     if (decision === AvailableChangesStatuses.Delivery && deliveryStartDate && userId) {
       const message = `There is a new delivery in charge of ${clientData.seller?.name} ${clientData.seller?.last_name} for customer ${clientData.first_name} ${clientData.last_name}`;
 
-      await prisma.vehicle_delivery.create({
+      await mockDb.vehicle_delivery.create({
         data: {
           customer_id: customerId,
           created_by: userId,
@@ -447,7 +444,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       }
     }
 
-    const appointment = await prisma.appointments.update({
+    const appointment = mockDb.appointments.update({
       where: {
         id: parseInt(appointmentId),
       },
@@ -456,7 +453,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const noteData = await prisma.notes.create({
+    const noteData = mockDb.notes.create({
       data: {
         created_at: new Date(),
         note: note,
@@ -465,7 +462,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    await prisma.client_has_lead.create({
+    mockDb.client_has_lead.create({
       data: {
         created_at: new Date(),
         client_id: customerId,
@@ -476,7 +473,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const dailyVisitData = await prisma.daily_visit_history.create({
+    const dailyVisitData = mockDb.daily_visit_history.create({
       data: {
         assigned_manager_id: parseInt(assignedManager),
         customer_id: customerId,
@@ -490,20 +487,17 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: customerId,
         is_active: true,
-      },
-      select: {
-        id: true,
       },
     });
 
     const isSoldDecision = Number(decision) === CustomersStatuses.Sold;
 
     if (activeLead && activeLead.id && data) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: activeLead.id,
           customer_id: customerId,
@@ -511,18 +505,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
         },
         data: {
           customer_status_id: parseInt(decision),
-          daily_visit_history: {
-            connect: {
-              id: dailyVisitData.id,
-            },
-          },
+          daily_visit_history: [
+            ...(Array.isArray(activeLead.daily_visit_history) ? activeLead.daily_visit_history : []),
+            dailyVisitData,
+          ],
           sales_rep_id: sellersArray[0],
           isSplitSold: isSoldDecision && sellersArray.length > 1,
           sellersInSplitDeal:
             isSoldDecision && sellersArray.length > 1
-              ? {
-                  connect: sellersArray.map((id) => ({ id: id })),
-                }
+              ? sellersArray.map((id) => ({ id: id }))
               : undefined,
         },
       });
@@ -548,12 +539,8 @@ export async function POST(request: Request, { params }: { params: { id: string 
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Visit Successfully Ended' });
   } catch (error) {
-    //await prisma.$disconnect();
-
     console.log(error);
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
@@ -571,21 +558,21 @@ async function createLeadHistory({
   userId: number;
   categoryId: LeadHistoryCategoriesEnum;
 }) {
-  await prisma.notes.create({
+  mockDb.notes.create({
     data: {
       created_at: new Date(),
       note: description,
       client_id: customerId,
       created_by_id: userId,
-      client_lead_note: {
-        create: {
+      client_lead_note: [
+        {
           created_at: new Date(),
           client_id: customerId,
           status_id: 2,
           created_by_id: userId,
           lead_id: categoryId,
         },
-      },
+      ],
     },
   });
 }

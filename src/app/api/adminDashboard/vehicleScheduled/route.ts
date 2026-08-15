@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
@@ -58,50 +58,45 @@ export async function POST(request: Request) {
   const reminderValue = reminderTime === '1' ? 5 : reminderTime === '2' ? 10 : 15;
 
   try {
-    prisma.$transaction(async (prisma) => {
-      let noteId: number | null = null;
+    let noteId: number | null = null;
 
-      if (note) {
-        const noteData = await prisma?.notes.create({
-          data: {
-            note: note,
-            created_at: todaysDate,
-            created_by_id: parseInt(createdBy),
-            client_id: parseInt(customer),
-          },
-          select: {
-            id: true,
-          },
-        });
-
-        noteId = noteData.id;
-      }
-
-      const data = await prisma.vehicle_delivery.create({
+    if (note) {
+      const noteData = mockDb.notes.create({
         data: {
-          start_date: new Date(startDate),
-          assigned_to: parseInt(assignedTo),
-          created_by: parseInt(createdBy),
-          customer_id: parseInt(customer),
-          vehicle_id: parseInt(vehicle),
-          reminder_time: reminderValue,
-        },
-      });
-
-      const customerLead = await prisma.client_has_lead.create({
-        data: {
+          note: note,
           created_at: todaysDate,
-          assigned_to_id: parseInt(assignedTo),
-          client_id: parseInt(customer),
-          status_id: 2,
           created_by_id: parseInt(createdBy),
-          lead_id: 19,
-          note_id: noteId,
+          client_id: parseInt(customer),
         },
       });
+
+      noteId = noteData.id;
+    }
+
+    const data = mockDb.vehicle_delivery.create({
+      data: {
+        start_date: new Date(startDate),
+        assigned_to: parseInt(assignedTo),
+        created_by: parseInt(createdBy),
+        customer_id: parseInt(customer),
+        vehicle_id: parseInt(vehicle),
+        reminder_time: reminderValue,
+      },
     });
 
-    const customerData = await prisma.clients.update({
+    const customerLead = mockDb.client_has_lead.create({
+      data: {
+        created_at: todaysDate,
+        assigned_to_id: parseInt(assignedTo),
+        client_id: parseInt(customer),
+        status_id: 2,
+        created_by_id: parseInt(createdBy),
+        lead_id: 19,
+        note_id: noteId,
+      },
+    });
+
+    const customerData = mockDb.clients.update({
       where: {
         id: parseInt(customer),
       },
@@ -110,18 +105,15 @@ export async function POST(request: Request) {
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: parseInt(customer),
         is_active: true,
       },
-      select: {
-        id: true,
-      },
     });
 
     if (activeLead) {
-      await prisma.leads.update({
+      mockDb.leads.update({
         where: {
           id: activeLead.id,
           customer_id: parseInt(customer),
@@ -133,8 +125,6 @@ export async function POST(request: Request) {
       });
     }
 
-    //await prisma.$disconnect();
-
     const description = 'New Lead created: Delivery Scheduled';
 
     await createEvent(description, parseInt(createdBy), parseInt(customer));
@@ -142,8 +132,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ successMessage: 'Delivery Successfully Scheduled' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

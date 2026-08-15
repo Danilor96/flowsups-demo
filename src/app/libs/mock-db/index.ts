@@ -64,6 +64,11 @@ import {
   seedMonthlyGoals,
 } from "./data/reports";
 import {
+  seedFiles,
+  seedCobuyerClientRelationship,
+  seedClientHasCobuyer,
+} from "./data/filesAndCobuyers";
+import {
   seedCreditAppNavigations,
   seedCreditApps,
   seedCreditAppAddresses,
@@ -651,6 +656,12 @@ export const mockDb: Record<string, Store<any>> = {
   comission_bonus: createStore(seedComissionBonus),
   comission_salary: createStore(seedComissionSalary),
   clients_has_referrer: createStore(seedClientsHasReferrer),
+  files: createStore(seedFiles),
+  client_file: createStore(
+    seedFiles.flatMap((file: any) => file.client_file || []),
+  ),
+  cobuyer_client_relationship: createStore(seedCobuyerClientRelationship),
+  client_has_cobuyer: createStore(seedClientHasCobuyer),
   dealReceipt: createStore(seedDealReceipts),
   daily_visit_history: createStore(seedDailyVisitHistory),
   vehicle_delivery: createStore(seedVehicleDelivery),

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   try {
     if (!userId) throw new Error('No User Founded');
 
-    const data = await prisma.clients_has_referrer.upsert({
+    const data = mockDb.clients_has_referrer.upsert({
       where: {
         client_buyer_id: parseInt(buyerReferred),
       },
@@ -49,35 +49,17 @@ export async function POST(request: Request) {
         client_referrer_id: parseInt(referrerId),
         created_by: userId,
       },
-      select: {
-        id: true,
-        referrer: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-            email: true,
-            current_address: true,
-            home_phone: true,
-            work_phone: true,
-          },
-        },
-      },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = mockDb.leads.findFirst({
       where: {
         customer_id: parseInt(buyerReferred),
         is_selected: true,
       },
-      select: {
-        id: true,
-      },
     });
 
     if (activeLead && activeLead.id) {
-      const lead = await prisma.leads.update({
+      const lead = mockDb.leads.update({
         where: {
           id: activeLead.id,
           customer_id: parseInt(buyerReferred),
@@ -89,13 +71,9 @@ export async function POST(request: Request) {
       });
     }
 
-    //await prisma?.$disconnect();
-
     return NextResponse.json({ successMessage: 'Referrer Registered' });
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

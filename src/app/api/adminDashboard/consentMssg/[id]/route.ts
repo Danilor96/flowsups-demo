@@ -2,7 +2,7 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import twilio from 'twilio';
 import { createEvent } from '@/app/libs/events/events';
@@ -60,13 +60,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const { mssg, senderId, sentAt, sendToNumber, consentLink } = validatedData.data;
 
   try {
-    const clientData = await prisma.clients.findUnique({
+    const clientData = mockDb.clients.findUnique({
       where: {
         id: customerId,
-      },
-      select: {
-        email: true,
-        mobile_phone: true,
       },
     });
 
@@ -80,7 +76,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     await sendSms(message, sendToNumber, senderId, null, { isConsentMessage: true }, false);
 
-    const customer = await prisma.clients.update({
+    const customer = mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -89,15 +85,11 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    //await prisma.$disconnect();
-
     await createEvent('Consent sent', parseInt(senderId), customerId, new Date(sentAt));
 
     return NextResponse.json({ successMessage: 'Consent Sent' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

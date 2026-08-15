@@ -1,7 +1,6 @@
 import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
-import { Customer_employment, Customer_employment_address } from '@prisma/client';
 import { createEvent } from '@/app/libs/events/events';
 import { EmploymentStatus } from '@/app/api/adminDashboard/creditApp/types';
 import { io } from 'socket.io-client';
@@ -119,8 +118,29 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    type EmploymentData = Customer_employment & {
-      customer_employment_address: Customer_employment_address[];
+    type EmploymentAddress = {
+      id?: number;
+      current_address?: string | null;
+      current_phone_number?: string | null;
+      previous_address?: string | null;
+      previous_phone_number?: string | null;
+    };
+
+    type EmploymentData = {
+      id: number;
+      client_id: number;
+      current_employer_name: string | null;
+      previous_employer_name: string | null;
+      employment_status_id: number | null;
+      income_type_id: number | null;
+      month_id: number | null;
+      occupation_id: number | null;
+      montly_income: string | null;
+      year: string | null;
+      hourlyWage: string | null;
+      yearToDate: string | null;
+      has_bank_account?: boolean;
+      customer_employment_address: EmploymentAddress[];
     };
 
     let currentEmplymentDataUpdated: EmploymentData | undefined;

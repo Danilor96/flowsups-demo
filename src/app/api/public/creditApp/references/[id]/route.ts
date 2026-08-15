@@ -180,7 +180,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

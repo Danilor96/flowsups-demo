@@ -1,3 +1,6 @@
+Email: demo@flowsups.com
+Password: demo1234
+
 # IMPORTTAN PROMPTS:
 
 OK, lets do this, because this task is to heavy. Make a specific plan, in a new file, for the implementation of @src/app/api/settings\ from phase 4 @IMPLEMENTATION_PLAN.md

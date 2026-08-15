@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { mockDb } from '@/app/libs/mock-db';
-import { Credit_app_address_prev } from '@prisma/client';
 import { createEvent } from '@/app/libs/events/events';
 import { AddressData } from '@/app/api/adminDashboard/creditApp/types';
 import { io } from 'socket.io-client';
@@ -188,7 +187,22 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    let prviousAddressData: Credit_app_address_prev[] = [];
+    type CreditAppAddressPrev = {
+      id: number;
+      credit_app_address_id: number;
+      prev_address: string | null;
+      prev_street: string | null;
+      prev_city: string | null;
+      prev_state_id: number | null;
+      prev_zip: string | null;
+      prev_county: string | null;
+      prev_year: string | null;
+      prev_month_id: number | null;
+      prev_address_type_id: number | null;
+      prev_rent_mort: string | null;
+    };
+
+    let prviousAddressData: CreditAppAddressPrev[] = [];
 
     if (previousAddressForms && previousAddressForms.length > 0) {
       const formsCopy = [...previousAddressForms];
@@ -263,7 +277,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
       });
     }
 
-    //await prisma.$disconnect();
 
     const worksWith = [
       'current_address',
@@ -326,7 +339,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

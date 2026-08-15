@@ -11,13 +11,11 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       },
     });
 
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Lead SuccessFully Deleted' });
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

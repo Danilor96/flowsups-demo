@@ -36,13 +36,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Sms Successfully Saved' });
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

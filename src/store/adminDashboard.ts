@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { Event_category } from '@prisma/client';
 import {
   Appointments,
   AppointmentsStatuses,
@@ -232,7 +231,7 @@ interface AdminDashboardStore {
   eventsTypes: EventsTypes | null;
   taskSettings: TaskSettings;
   taskDueTimeLimit: TaskDueTimeLimit;
-  eventCategories: Event_category[];
+  eventCategories: { id: number; category: string }[];
   dailySells: DailySells | undefined;
   depositOpenedFromEndVisit: boolean;
   endVisitWithDeposit: boolean;

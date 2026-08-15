@@ -117,7 +117,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     });
 
     if (!validateCode) {
-      //await prisma.$disconnect();
 
       throw new Error('Consent code not found');
     }
@@ -312,13 +311,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       throw error;
     }
 
-    //await prisma.$disconnect();
 
     return NextResponse.json({ successMessage: 'Data Successfully Submitted' });
   } catch (error) {
     console.log(error);
 
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

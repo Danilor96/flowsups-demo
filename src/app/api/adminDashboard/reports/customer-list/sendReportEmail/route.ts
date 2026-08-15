@@ -64,14 +64,9 @@ export async function POST(request: Request) {
       ]
     });
 
-
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Emails Successfully Sent' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

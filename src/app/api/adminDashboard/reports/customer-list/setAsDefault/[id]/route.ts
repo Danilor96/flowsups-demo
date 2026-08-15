@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,14 +16,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   }
 
   try {
-    const userDb = await prisma.users.findUnique({
+    const userDb = mockDb.users.findUnique({
       where: {
         id: user.id,
         deleted_at: null,
-      },
-      select: {
-        id: true,
-        default_customer_report_id: true,
       },
     });
 
@@ -33,18 +29,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       dataConnect = null;
     }
 
-    const result = await prisma.users.update({
+    const result = mockDb.users.update({
       where: {
         id: user.id,
         deleted_at: null,
       },
       data: {
         default_customer_report_id: dataConnect,
-      },
-      select: {
-        id: true,
-        name: true,
-        default_customer_report_id: true,
       },
     });
 
@@ -55,8 +46,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     });
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

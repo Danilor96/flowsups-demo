@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
@@ -22,46 +22,32 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   const isAsFavorite = body.isAsFavorite;
   console.log('isAsFavorite: ', isAsFavorite);
   try {
-    let dataConnect = null;
-    if (isAsFavorite) {
-      dataConnect = await prisma.users.update({
-        where: {
-          id: user.id,
-          deleted_at: null,
-        },
-        data: {
-          favorite_customer_reports: {
-            connect: {
-              id: customerReportId,
-            },
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-        },
-      });
-    }
+    const userDb = mockDb.users.findUnique({
+      where: {
+        id: user.id,
+        deleted_at: null,
+      },
+    });
 
-    if (!isAsFavorite) {
-      dataConnect = await prisma.users.update({
-        where: {
-          id: user.id,
-          deleted_at: null,
-        },
-        data: {
-          favorite_customer_reports: {
-            disconnect: {
-              id: customerReportId,
-            },
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-        },
-      });
-    }
+    const currentFavorites = Array.isArray(userDb?.favorite_customer_reports)
+      ? userDb.favorite_customer_reports
+      : [];
+
+    const updatedFavorites = isAsFavorite
+      ? currentFavorites.some((report: any) => report.id === customerReportId)
+        ? currentFavorites
+        : [...currentFavorites, { id: customerReportId }]
+      : currentFavorites.filter((report: any) => report.id !== customerReportId);
+
+    const dataConnect = mockDb.users.update({
+      where: {
+        id: user.id,
+        deleted_at: null,
+      },
+      data: {
+        favorite_customer_reports: updatedFavorites,
+      },
+    });
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
     return NextResponse.json({
@@ -70,8 +56,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     });
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

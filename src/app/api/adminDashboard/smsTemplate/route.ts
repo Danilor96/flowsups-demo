@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { checkDuplicateSmsTemplatesNames } from '@/app/libs/duplicateValues/duplicateValues';
 import { checkPermissions } from '@/app/libs/auth-helpers';
@@ -47,14 +47,14 @@ export async function POST(request: Request) {
   let categoryForSmsTemplate: number;
 
   try {
-    const categoryData = await prisma.sms_template_category.findFirst({
+    const categoryData = mockDb.sms_template_category.findFirst({
       where: {
         category: category,
       },
     });
 
     if (!categoryData) {
-      const newCategory = await prisma.sms_template_category.create({
+      const newCategory = mockDb.sms_template_category.create({
         data: {
           category: category,
         },
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
 
     const templateName = await checkDuplicateSmsTemplatesNames(name);
 
-    const data = await prisma.sms_template.create({
+    const data = mockDb.sms_template.create({
       data: {
         name: templateName,
         template: template,
@@ -77,13 +77,9 @@ export async function POST(request: Request) {
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Template Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

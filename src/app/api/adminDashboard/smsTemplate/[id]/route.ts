@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { checkDuplicateSmsTemplatesNames } from '@/app/libs/duplicateValues/duplicateValues';
 import { checkPermissions } from '@/app/libs/auth-helpers';
@@ -45,14 +45,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   let categoryForSmsTemplate: number;
 
   try {
-    const categoryData = await prisma.sms_template_category.findFirst({
+    const categoryData = mockDb.sms_template_category.findFirst({
       where: {
         id: parseInt(category),
       },
     });
 
     if (!categoryData) {
-      const newCategory = await prisma.sms_template_category.create({
+      const newCategory = mockDb.sms_template_category.create({
         data: {
           category: category,
         },
@@ -65,7 +65,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const templateName = await checkDuplicateSmsTemplatesNames(name);
 
-    const data = await prisma.sms_template.update({
+    const data = mockDb.sms_template.update({
       where: {
         id: templateId,
       },

@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
@@ -16,11 +16,11 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 
   try {
-    const data = await prisma.customer_Report.delete({
+    const data = mockDb.customer_Report.delete({
       where: {
         id: Number(id),
-        owner_user_id: user.id
-      }
+        owner_user_id: user.id,
+      },
     });
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
@@ -28,8 +28,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     return NextResponse.json({ successMessage: 'Report Successfully Deleted', data });
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -54,31 +52,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 
   try {
-    const data = await prisma.customer_Report.update({
+    const permissions = userIds.map((userId) => ({ userId }));
+
+    const data = mockDb.customer_Report.update({
       where: {
-        id: id
+        id,
       },
       data: {
-        permissions: {
-          deleteMany: {
-            userId: {
-              notIn: userIds
-            }
-          },
-          upsert: userIds.map(userId => ({
-            where: {
-              customerReportId_userId: {
-                customerReportId: id,
-                userId: userId
-              }
-            },
-            create: {
-              userId: userId
-            },
-            update: {}
-          }))
-        }
-      }
+        permissions,
+      },
     });
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
@@ -86,8 +68,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ successMessage: 'Report permissions updated' });
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -106,22 +86,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 
   try {
-    const data = await prisma.customer_Report.findUnique({
+    const data = mockDb.customer_Report.findUnique({
       where: {
-        id: customerReportId
+        id: customerReportId,
       },
-      include: {
-        // favoriteBy: { where: { id: user.id }, select: { id: true } },
-        // defaultBy: { where: { id: user.id }, select: { id: true } },
-        permissions: { select: { userId: true } }
-      }
     });
 
     return NextResponse.json({ data: data });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,10 +1,9 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { ListViewTypes, SortConfig } from '@/store/customerList/types';
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { reportAllCustomer } from './reportAllCustomer';
-import { Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -28,37 +27,30 @@ export async function POST(req: NextRequest) {
 
     const { name } = body;
     const nameTrimmed = name.trim();
-    const existingReport = await prisma.customer_Report.findFirst({
+    const existingReport = mockDb.customer_Report.findFirst({
       where: {
         name: {
           equals: nameTrimmed,
-          mode: 'insensitive'
-        }, 
-      }
+        },
+      },
     });
 
     if (existingReport) {
       return NextResponse.json({ fieldErrors: { name: 'Report name already exists' } }, { status: 400 });
     }
 
-    const data = await prisma.customer_Report.create({
+    const data = mockDb.customer_Report.create({
       data: {
         owner_user_id,
         name: nameTrimmed,
         filters: JSON.stringify(filters),
         advanced_filters: JSON.stringify(advancedFilters),
         sort_config: JSON.stringify(sortConfig),
-        columns_config: columnsConfig as Prisma.JsonArray,
+        columns_config: columnsConfig as Record<string, any>[],
         view_type: viewType === ListViewTypes.ListView ? 'ListView' : 'DetailView',
         for_company: forCompany,
-        permissions: allowedUserIds
-          ? {
-              create: allowedUserIds.map(userId => ({
-                userId
-              }))
-            }
-          : undefined
-      }
+        permissions: allowedUserIds ? allowedUserIds.map((userId) => ({ userId })) : [],
+      },
     });
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
@@ -66,8 +58,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ successMessage: 'Report created successfully', data });
   } catch (error: any) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -82,22 +72,15 @@ export async function GET() {
   }
 
   try {
-    const data = await prisma.customer_Report.findMany({
+    const data = mockDb.customer_Report.findMany({
       where: {
-        OR: [{ owner_user_id: user.id }, { permissions: { some: { userId: user.id } } }]
+        OR: [{ owner_user_id: user.id }, { permissions: { some: { userId: user.id } } }],
       },
-      include: {
-        favoriteBy: { where: { id: user.id }, select: { id: true } },
-        defaultBy: { where: { id: user.id }, select: { id: true } }
-        // permissions: { select: { userId: true } }
-      }
     });
     const dataWhitReportAllCustomers = [{ ...reportAllCustomer, owner_user_id: user.id }].concat(data as any);
     return NextResponse.json({ data: dataWhitReportAllCustomers });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

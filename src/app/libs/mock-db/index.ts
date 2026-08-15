@@ -89,6 +89,7 @@ import {
   seedCustomerConsentLogs,
 } from "./data/consentTerms";
 import { seedClientSms } from "./data/sms";
+import { seedCustomerReports } from "./data/customerReports";
 import {
   seedSmsTemplates,
   seedSmsTemplateCategories,
@@ -675,6 +676,7 @@ export const mockDb: Record<string, Store<any>> = {
   task_Notes: createStore(seedTaskNotes),
   sms_template: createStore(seedSmsTemplates),
   sms_template_category: createStore(seedSmsTemplateCategories),
+  customer_Report: createStore(seedCustomerReports),
   sms_template_variables: createStore(seedSmsTemplateVariables),
   sms_template_variables_category: createStore(seedSmsTemplateVariablesCategories),
   sms_template_variables_tagged: createStore(seedSmsTemplateVariablesTagged),

@@ -117,6 +117,7 @@ import {
   seedEmailNameDisplayed,
   seedSmsLimitWarningRecipients,
   seedBusiness,
+  seedTimeSpan,
 } from "./data/settingsRoutes";
 
 export { DEMO_EMAIL, DEMO_PASSWORD } from "./data/users";
@@ -691,6 +692,7 @@ export const mockDb: Record<string, Store<any>> = {
   email_name_displayed: createStore(seedEmailNameDisplayed),
   sms_limit_warning_recipients: createStore(seedSmsLimitWarningRecipients),
   business: createStore(seedBusiness),
+  time_span: createStore(seedTimeSpan),
 };
 
 export function resetMockDb(): void {

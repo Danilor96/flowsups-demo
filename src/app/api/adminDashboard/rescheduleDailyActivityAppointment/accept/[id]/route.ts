@@ -1,6 +1,6 @@
 import { createEvent } from '@/app/libs/events/events';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 import { sendSms } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
@@ -22,18 +22,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const userId = session?.user.id;
 
   try {
-    const appointment = await prisma?.appointments.findUnique({
+    const appointment = await mockDb.appointments.findUnique({
       where: {
         id: appointmentId,
-      },
-      select: {
-        prevented_start_date: true,
-        prevented_end_date: true,
-        customers: {
-          select: {
-            mobile_phone: true,
-          },
-        },
       },
     });
 
@@ -43,7 +34,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       appointment?.prevented_end_date &&
       appointment.customers.mobile_phone
     ) {
-      const data = await prisma?.appointments.update({
+      const data = await mockDb.appointments.update({
         where: {
           id: appointmentId,
         },
@@ -54,31 +45,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           prevented_end_date: null,
           waiting_aprove: false,
         },
-        select: {
-          id: true,
-          customer_id: true,
-          user_id: true,
-          customers: true,
-          task: {
-            select: {
-              id: true,
-            },
-          },
-        },
       });
 
-      const customer = await prisma.clients.findUnique({
+      const customer = await mockDb.clients.findUnique({
         where: {
           id: data.customer_id,
         },
       });
 
-      const appointmentTemplate = await prisma.automatic_sms.findFirst({
-        include: {
-          reschedule_onSite_template: true,
-          reschedule_online_template: true,
-        },
-      });
+      const appointmentTemplate = await mockDb.automatic_sms.findFirst();
 
       if (
         customer &&
@@ -141,25 +116,19 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
       userId && (await createEvent(descrciption, userId, data.customer_id));
 
-      if (data && data.task && data.task.length > 0) {
-        const taskData = await prisma.tasks.update({
-          where: {
-            id: data.task[0].id,
-          },
-          data: {
-            status: 2,
-          },
-        });
-      }
+      mockDb.tasks.updateMany({
+        where: {
+          appointment_id: appointmentId,
+        },
+        data: {
+          status: 2,
+        },
+      });
     }
-
-    //await prisma?.$disconnect();
 
     return NextResponse.json({ successMessage: 'Appointment Successfully Rescheduled' });
   } catch (error) {
     console.log(error);
-
-    //await prisma?.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,5 +1,6 @@
 import { seedClients } from './clients';
 import { seedUsers } from './users';
+import { seedClientHasLead } from './leads';
 
 export const seedAppointmentStatuses = [
   { id: 1, status: 'Scheduled' },
@@ -220,3 +221,24 @@ export const seedAppointments = [
     creator: { ...demo },
   },
 ];
+
+const seedLeadAppointmentMap: Record<number, any> = {
+  [seedAppointments[0].id]: [
+    { id: seedClientHasLead[0].id, note_id: null, client_id: client1.id, note_assigned: null },
+  ],
+  [seedAppointments[2].id]: [
+    { id: seedClientHasLead[2].id, note_id: null, client_id: client3.id, note_assigned: null },
+  ],
+};
+
+seedAppointments.forEach((appointment: any) => {
+  appointment.task = [];
+  appointment.lead_appointment = seedLeadAppointmentMap[appointment.id] || [];
+});
+
+const appointment4 = seedAppointments.find((appointment: any) => appointment.id === 4);
+if (appointment4) {
+  (appointment4 as any).prevented_start_date = at(2, 12, 0);
+  (appointment4 as any).prevented_end_date = at(2, 13, 0);
+  (appointment4 as any).waiting_aprove = true;
+}

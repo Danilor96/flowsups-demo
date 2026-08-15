@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       Roles.FinanceManager,
     ];
 
-    const data = await prisma.appointments.findMany({
+    const data = await mockDb.appointments.findMany({
       where: {
         start_date: {
           gte: startOfTodayUTC,
@@ -40,51 +40,16 @@ export async function GET(request: NextRequest) {
             }
           : null),
       },
-      include: {
-        customers: {
-          select: {
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-            email: true,
-            id: true,
-            interested_vehicle: {
-              select: {
-                vehicle_brands: {
-                  select: {
-                    brand: true,
-                  },
-                },
-                vehicle_models: {
-                  select: {
-                    model: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        users: {
-          select: {
-            name: true,
-            last_name: true,
-          },
-        },
-      },
       orderBy: {
         start_date: 'asc',
       },
     });
-
-    //await prisma.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

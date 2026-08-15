@@ -1,7 +1,7 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { getCustomerSmsTemplateVariablesValues } from '@/app/libs/data';
 import { createEvent } from '@/app/libs/events/events';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { dataObject, replaceVariables, sendSms } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
@@ -50,19 +50,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
   try {
     // send appointment confirmation message to customer
 
-    const customerMobileNumberAndSellerId = await prisma.clients.findUnique({
+    const customerMobileNumberAndSellerId = await mockDb.clients.findUnique({
       where: {
         id: parseInt(customerId),
       },
-      select: {
-        mobile_phone: true,
-        home_phone: true,
-        home_default: true,
-        seller_id: true,
-      },
     });
 
-    const appointmentData = await prisma.appointments.findUnique({
+    const appointmentData = await mockDb.appointments.findUnique({
       where: {
         id: appointmentId,
       },
@@ -90,12 +84,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     const endDate = appointmentData?.end_date.toISOString();
 
-    const automaticSmsSettings = await prisma.automatic_sms.findFirst({
-      select: {
-        appointment_confirmation: true,
-        appointment_confirmation_template: true,
-      },
-    });
+    const automaticSmsSettings = await mockDb.automatic_sms.findFirst();
 
     if (
       automaticSmsSettings &&
@@ -117,7 +106,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     sendSms(sms, phoneNumber || '', sellerId?.toString() || '', undefined, undefined, false);
 
-    const confirmationSent = await prisma.clients.update({
+    const confirmationSent = await mockDb.clients.update({
       where: {
         id: parseInt(customerId),
       },
@@ -126,7 +115,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const appointment = await prisma.appointments.update({
+    const appointment = await mockDb.appointments.update({
       where: {
         id: appointmentId,
       },
@@ -139,13 +128,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     if (userId) await createEvent(description, userId, parseInt(customerId));
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Message Successfully Sended' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

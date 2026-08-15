@@ -5,7 +5,7 @@ const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 import { NextResponse } from 'next/server';
 import twilio from 'twilio';
 import { TemplateVariablesValues } from '@/app/libs/definitions';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { parseISO } from 'date-fns';
 import { uploadImageForSms } from '@/app/libs/uploadImages.services';
 
@@ -178,82 +178,44 @@ export const sendSms = async (
     const sentSms = res.body;
     const createdAt = res.dateCreated;
 
-    const customerId = await prisma.clients.findFirst({
+    const customerId = await mockDb.clients.findFirst({
       where: {
         OR: [{ mobile_phone: to }, { home_phone: to }],
-      },
-      select: {
-        id: true,
       },
     });
 
     if (customerId && customerId.id) {
-      const data = await prisma?.client_sms.create({
+      await mockDb.client_sms.create({
         data: {
           message: sentSms,
           message_sid: res.sid,
           sent_by_user: true,
-          fileAttachment: file ? { name: file.name, url: smsMediaUrl } : undefined,
+          fileAttachment: file ? { name: file.name, url: smsMediaUrl } : null,
           client_phone_number: to,
-          is_consent_message: options?.isConsentMessage,
+          is_consent_message: options?.isConsentMessage ?? undefined,
           manual_sent: manual,
-          status: {
-            connect: {
-              id: 1,
-            },
-          },
-          client_message: {
-            connect: {
-              id: customerId.id,
-            },
-          },
-          ...(senderId
-            ? {
-                user: {
-                  connect: {
-                    id: parseInt(senderId),
-                  },
-                },
-              }
-            : {}),
+          status_id: 1,
+          client_id: customerId.id,
+          sender_user_id: senderId ? parseInt(senderId) : null,
           date_sent: new Date(),
-        },
-        include: {
-          user: {
-            select: {
-              name: true,
-              last_name: true,
-              id: true,
-            },
-          },
         },
       });
     } else {
-      await prisma?.client_sms.create({
+      await mockDb.client_sms.create({
         data: {
           message: sms,
           message_sid: res.sid,
           sent_by_user: true,
-          is_consent_message: options?.isConsentMessage,
-          status: {
-            connect: {
-              id: 1,
-            },
-          },
-          unregistered_customer: {
-            connect: {
-              mobile_phone_number: to,
-            },
-          },
-          user: {
-            connect: {
-              id: parseInt(senderId),
-            },
-          },
+          is_consent_message: options?.isConsentMessage ?? undefined,
+          status_id: 1,
+          client_id: null,
+          client_phone_number: to,
+          sender_user_id: senderId ? parseInt(senderId) : null,
+          date_sent: new Date(),
         },
       });
 
-      await prisma.awaiting_unknow_client.update({
+      await mockDb.awaiting_unknow_client.update({
         where: {
           mobile_phone_number: to,
         },
@@ -262,46 +224,6 @@ export const sendSms = async (
         },
       });
     }
-
-    // check if sms configuration is setted to active lost customers after send them a message
-
-    // get the customer status
-
-    // const customerStatus = await prisma.clients.findUnique({
-    //   where: {
-    //     mobile_phone: to,
-    //   },
-    //   include: {
-    //     client_status: {
-    //       select: {
-    //         id: true,
-    //       },
-    //     },
-    //   },
-    // });
-
-    // get customer configuration
-
-    // const configSms = await prisma.customer_settings.findFirst();
-
-    // check if the status of the customer is lost --> 12
-
-    // if (customerStatus?.client_status?.id === 12) {
-    //   // check if the customer config is setted to active lost customers
-
-    //   if (configSms?.active_lost_customer) {
-    //     const activatingStatusStablished = configSms.set_active_lost_customer_status_to;
-
-    //     await prisma.clients.update({
-    //       where: {
-    //         id: customerStatus.id,
-    //       },
-    //       data: {
-    //         client_status_id: activatingStatusStablished ? activatingStatusStablished : 2,
-    //       },
-    //     });
-    //   }
-    // }
 
     return res;
   } catch (error) {
@@ -360,76 +282,42 @@ export const saveSmsForBulkActions = async ({
     const sentSms = smsInstance.body;
     const createdAt = smsInstance.dateCreated;
 
-    const customerId = await prisma.clients.findFirst({
+    const customerId = await mockDb.clients.findFirst({
       where: {
         OR: [{ mobile_phone: to }, { home_phone: to }],
-      },
-      select: {
-        id: true,
       },
     });
 
     if (customerId && customerId.id) {
-      const data = await prisma?.client_sms.create({
+      await mockDb.client_sms.create({
         data: {
           manual_sent: false,
           message: sentSms,
           message_sid: smsInstance.sid,
           sent_by_user: true,
-          fileAttachment: file ? [{ name: file.name, url: smsMediaUrl }] : undefined,
+          fileAttachment: file ? [{ name: file.name, url: smsMediaUrl }] : null,
           client_phone_number: to,
-          status: {
-            connect: {
-              id: 1,
-            },
-          },
-          client_message: {
-            connect: {
-              id: customerId.id,
-            },
-          },
-          user: {
-            connect: {
-              id: parseInt(senderId),
-            },
-          },
+          status_id: 1,
+          client_id: customerId.id,
+          sender_user_id: parseInt(senderId),
           date_sent: new Date(),
-        },
-        include: {
-          user: {
-            select: {
-              name: true,
-              last_name: true,
-              id: true,
-            },
-          },
         },
       });
     } else {
-      await prisma?.client_sms.create({
+      await mockDb.client_sms.create({
         data: {
           message: sentSms,
           message_sid: smsInstance.sid,
           sent_by_user: true,
-          status: {
-            connect: {
-              id: 1,
-            },
-          },
-          unregistered_customer: {
-            connect: {
-              mobile_phone_number: to,
-            },
-          },
-          user: {
-            connect: {
-              id: parseInt(senderId),
-            },
-          },
+          status_id: 1,
+          client_id: null,
+          client_phone_number: to,
+          sender_user_id: parseInt(senderId),
+          date_sent: new Date(),
         },
       });
 
-      await prisma.awaiting_unknow_client.update({
+      await mockDb.awaiting_unknow_client.update({
         where: {
           mobile_phone_number: to,
         },
@@ -438,46 +326,6 @@ export const saveSmsForBulkActions = async ({
         },
       });
     }
-
-    // check if sms configuration is setted to active lost customers after send them a message
-
-    // get the customer status
-
-    // const customerStatus = await prisma.clients.findUnique({
-    //   where: {
-    //     mobile_phone: to,
-    //   },
-    //   include: {
-    //     client_status: {
-    //       select: {
-    //         id: true,
-    //       },
-    //     },
-    //   },
-    // });
-
-    // get customer configuration
-
-    // const configSms = await prisma.customer_settings.findFirst();
-
-    // check if the status of the customer is lost --> 12
-
-    // if (customerStatus?.client_status?.id === 12) {
-    //   // check if the customer config is setted to active lost customers
-
-    //   if (configSms?.active_lost_customer) {
-    //     const activatingStatusStablished = configSms.set_active_lost_customer_status_to;
-
-    //     await prisma.clients.update({
-    //       where: {
-    //         id: customerStatus.id,
-    //       },
-    //       data: {
-    //         client_status_id: activatingStatusStablished ? activatingStatusStablished : 2,
-    //       },
-    //     });
-    //   }
-    // }
 
     return { success: true };
   } catch (error) {
@@ -508,16 +356,13 @@ YES (Y/SI/S) to confirm and proceed. NO (N) if this wasn't you.`;
       statusCallback: statusCallbackUrl,
     });
 
-    const customerId = await prisma.clients.findFirst({
+    const customerId = await mockDb.clients.findFirst({
       where: {
         OR: [{ mobile_phone: to }, { home_phone: to }],
       },
-      select: {
-        id: true,
-      },
     });
 
-    const message = await prisma.client_sms.create({
+    const message = await mockDb.client_sms.create({
       data: {
         message: sms,
         sent_by_user: true,
@@ -525,23 +370,14 @@ YES (Y/SI/S) to confirm and proceed. NO (N) if this wasn't you.`;
         message_sid: res.sid,
         client_phone_number: to,
         is_consent_message: true,
-        status: {
-          connect: {
-            id: 1,
-          },
-        },
-        client_message: {
-          connect: {
-            id: customerId?.id,
-          },
-        },
-      },
-      select: {
-        id: true,
+        status_id: 1,
+        client_id: customerId?.id ?? null,
+        sender_user_id: null,
+        date_sent: new Date(),
       },
     });
 
-    await prisma.customer_consent_logs.update({
+    await mockDb.customer_consent_logs.update({
       where: {
         id: consentLogId,
       },

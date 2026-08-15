@@ -1,5 +1,5 @@
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { startOfDay, endOfDay, addHours } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
@@ -50,7 +50,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       Roles.FinanceManager,
     ];
 
-    const data = await prisma.appointments.findMany({
+    const data = await mockDb.appointments.findMany({
       where: {
         start_date: {
           gte: startDate,
@@ -89,98 +89,16 @@ export async function GET(request: Request, { params }: { params: { id: string }
         //   },
         // },
       },
-      include: {
-        customers: {
-          select: {
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-            home_phone: true,
-            home_default: true,
-            work_phone: true,
-            client_address: {
-              select: {
-                street: true,
-                city: true,
-                state: true,
-                zip: true,
-                county: true,
-              },
-            },
-            appointment_confirmation_sms_sent: true,
-            email: true,
-            id: true,
-            client_status_id: true,
-            interested_vehicle: {
-              select: {
-                id: true,
-                vehicle_brands: true,
-                vehicle_models: true,
-                vehicle_manufacture_years: true,
-                vehicle_identification_numbers: true,
-              },
-            },
-            bdc: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-            finance_manager: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-            sales_manager: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-            daily_visit_history: {
-              select: {
-                id: true,
-                decision: true,
-              },
-            },
-            lead_type: {
-              select: {
-                id: true,
-                type: true,
-              },
-            },
-          },
-        },
-        users: {
-          select: {
-            name: true,
-            last_name: true,
-          },
-        },
-        appointments_status: {
-          select: {
-            status: true,
-          },
-        },
-      },
       orderBy: {
         start_date: 'asc',
       },
     });
-
-    //await prisma.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -222,15 +140,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
   try {
     if (action === '2') {
-      const data = await prisma.appointments.update({
+      const data = await mockDb.appointments.update({
         where: {
           id: appointmentId,
         },
         data: {
           status_id: 5,
-        },
-        include: {
-          customers: true,
         },
       });
 
@@ -252,15 +167,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       const customerId = data.customers.id;
 
       userId && (await createEvent(description, userId, customerId));
-
-      //await prisma.$disconnect();
     }
 
     return NextResponse.json({ successMessage: 'Appointment Successfully Changed' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -302,7 +213,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
   try {
     if (userId) {
-      const data = await prisma.appointments.create({
+      const data = await mockDb.appointments.create({
         data: {
           start_date: now,
           end_date: addHours(now, 2),
@@ -312,51 +223,48 @@ export async function POST(request: Request, { params }: { params: { id: string 
           user_id: userId,
           client_accept_appointment: true,
         },
-        select: {
-          id: true,
-          customers: {
-            select: {
-              first_name: true,
-              last_name: true,
-              seller_id: true,
-            },
-          },
+      });
+
+      const customer = mockDb.clients.findUnique({
+        where: {
+          id: customerId,
         },
       });
 
-      const activeLead = await prisma.leads.findFirst({
+      const activeLead = await mockDb.leads.findFirst({
         where: {
           is_active: true,
           customer_id: customerId,
         },
-        select: {
-          id: true,
-        },
       });
 
       if (activeLead && activeLead.id) {
-        const lead = await prisma.leads.update({
+        const lead = mockDb.leads.findFirst({
           where: {
             id: activeLead.id,
-            is_active: true,
-            customer_id: customerId,
-          },
-          data: {
-            appointment_id: {
-              push: data.id,
-            },
           },
         });
+
+        if (lead) {
+          mockDb.leads.update({
+            where: {
+              id: lead.id,
+            },
+            data: {
+              appointment_id: [...(lead.appointment_id || []), data.id],
+            },
+          });
+        }
       }
 
-      const message = `The customer ${data.customers.first_name} ${data.customers.last_name} has arrived`;
+      const message = `The customer ${customer.first_name} ${customer.last_name} has arrived`;
 
       await createNotification({
         message: message,
         notificationType: {
           general: true,
         },
-        assignedToId: data.customers.seller_id,
+        assignedToId: customer.seller_id,
         customerId: customerId,
         notificationsForManagers: true,
         eventTypeId: 3,
@@ -367,13 +275,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
       userId && (await createEvent(description, userId, customerId));
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Visit Successfully Updated' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

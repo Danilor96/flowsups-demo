@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { sendSms } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
@@ -11,69 +11,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const appointmentId = parseInt(params.id);
 
   try {
-    const data = await prisma.appointments.findUnique({
+    const data = await mockDb.appointments.findUnique({
       where: {
         id: appointmentId,
-      },
-      select: {
-        id: true,
-        start_date: true,
-        end_date: true,
-        customer_id: true,
-        waiting_aprove: true,
-        change_reason: true,
-        prevented_start_date: true,
-        prevented_end_date: true,
-        confirmation_sent: true,
-        client_accept_appointment: true,
-        users: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-          },
-        },
-        appointments_status: {
-          select: {
-            id: true,
-            status: true,
-          },
-        },
-        customers: {
-          select: {
-            id: true,
-            name_lastname: true,
-            first_name: true,
-            last_name: true,
-            email: true,
-            mobile_phone: true,
-            home_phone: true,
-            home_default: true,
-            bdc: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-            seller: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-          },
-        },
-        lead_appointment: {
-          select: {
-            note_assigned: {
-              select: {
-                note: true,
-              },
-            },
-          },
-        },
       },
     });
 
@@ -119,16 +59,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { endDate, startDate } = validatedData.data;
 
   try {
-    const appointment = await prisma.appointments.findUnique({
+    const appointment = await mockDb.appointments.findUnique({
       where: {
         id: appointmentId,
       },
-      select: {
-        id: true,
-        customer_id: true,
-      },
     });
-    const existingAppointment = await prisma.appointments.findFirst({
+    const existingAppointment = await mockDb.appointments.findFirst({
       where: {
         id: {
           not: appointmentId,
@@ -160,16 +96,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       );
     }
 
-    const customerPhoneNumber = await prisma.appointments.findUnique({
+    const customerPhoneNumber = await mockDb.appointments.findUnique({
       where: { id: appointmentId },
-      select: {
-        customers: {
-          select: {
-            mobile_phone: true,
-            home_phone: true,
-          },
-        },
-      },
     });
 
     const phoneNumberExists =
@@ -178,7 +106,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     if (!phoneNumberExists) throw new Error('No customer phone number found');
 
-    const data = await prisma.appointments.update({
+    const data = await mockDb.appointments.update({
       where: {
         id: appointmentId,
       },
@@ -188,14 +116,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const appointmentTemplate = await prisma.automatic_sms.findFirst({
-      include: {
-        reschedule_onSite_template: true,
-        reschedule_online_template: true,
-      },
-    });
+    const appointmentTemplate = await mockDb.automatic_sms.findFirst();
 
-    const customer = await prisma.clients.findUnique({
+    const customer = await mockDb.clients.findUnique({
       where: {
         id: data.customer_id,
       },
@@ -256,8 +179,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       appointmentId: data.id,
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Appointement SuccessFully Rescheduled' });
   } catch (error: any) {
     console.log(error);
@@ -281,19 +202,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const appointmentId = parseInt(params.id);
 
   try {
-    const data = await prisma.appointments.delete({
+    const data = await mockDb.appointments.delete({
       where: {
         id: appointmentId,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Appointment Successfully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

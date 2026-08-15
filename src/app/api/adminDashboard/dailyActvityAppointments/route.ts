@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   try {
     const adminRoles = [Roles.Superuser, Roles.Administrator, Roles.SalesManager, Roles.FinanceManager];
 
-    const data = await prisma.appointments.findMany({
+    const data = await mockDb.appointments.findMany({
       where: {
         start_date: {
           gte: startOfTodayUTC,
@@ -59,65 +59,10 @@ export async function GET(request: NextRequest) {
         //   },
         // },
       },
-      include: {
-        customers: {
-          select: {
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-            appointment_confirmation_sms_sent: true,
-            email: true,
-            id: true,
-            client_status_id: true,
-            interested_vehicle: {
-              select: {
-                id: true,
-                vehicle_brands: true,
-                vehicle_models: true,
-                vehicle_manufacture_years: true,
-                vehicle_identification_numbers: true,
-              },
-            },
-            bdc: {
-              select: {
-                name: true,
-                last_name: true,
-              },
-            },
-            finance_manager: {
-              select: {
-                name: true,
-                last_name: true,
-              },
-            },
-            sales_manager: {
-              select: {
-                name: true,
-                last_name: true,
-              },
-            },
-            daily_visit_history: {
-              select: {
-                id: true,
-                decision: true,
-              },
-            },
-          },
-        },
-        users: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-          },
-        },
-      },
       orderBy: {
         start_date: 'asc',
       },
     });
-
-    //await prisma.$disconnect();
 
     console.log(data);
 
@@ -126,8 +71,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

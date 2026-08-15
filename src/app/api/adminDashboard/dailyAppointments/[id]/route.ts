@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const appointmentId = params.id;
@@ -24,7 +24,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { action } = validatedData.data;
 
   try {
-    const data = await prisma?.appointments.update({
+    const data = await mockDb.appointments.update({
       where: {
         id: parseInt(appointmentId),
       },
@@ -32,8 +32,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         status_id: parseInt(action),
       },
     });
-
-    //await prisma?.$disconnect();
 
     return NextResponse.json({ successMessage: 'Status Successfully Changed' }, { status: 200 });
   } catch (error) {

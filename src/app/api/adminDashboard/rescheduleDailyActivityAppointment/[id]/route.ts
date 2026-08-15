@@ -1,7 +1,7 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { createEvent } from '@/app/libs/events/events';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -64,7 +64,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const taskTitle = 'Appointment Reschedule';
 
   try {
-    const existingAppointment = await prisma.appointments.findFirst({
+    const existingAppointment = await mockDb.appointments.findFirst({
       where: {
         customer_id: parseInt(customerId),
         id: {
@@ -96,7 +96,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       );
     }
 
-    const data = await prisma.appointments.update({
+    const data = await mockDb.appointments.update({
       where: {
         id: appointmentId,
       },
@@ -108,7 +108,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const task = await prisma.tasks.create({
+    const task = await mockDb.tasks.create({
       data: {
         deadline: new Date(deadline),
         description: 'Reschedule requested',
@@ -136,13 +136,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     await createEvent(description, parseInt(userId), parseInt(customerId));
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Request seccessfully sended to the managers' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

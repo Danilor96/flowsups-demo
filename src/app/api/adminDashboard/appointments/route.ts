@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { sendSms } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
 import { getCustomerSmsTemplateVariablesValues } from '@/app/libs/data';
@@ -35,67 +35,7 @@ export async function GET(request: NextRequest) {
       Roles.FinanceManager,
     ];
 
-    const data = await prisma?.appointments.findMany({
-      select: {
-        id: true,
-        start_date: true,
-        end_date: true,
-        customer_id: true,
-        waiting_aprove: true,
-        change_reason: true,
-        prevented_start_date: true,
-        prevented_end_date: true,
-        confirmation_sent: true,
-        client_accept_appointment: true,
-        users: {
-          select: {
-            id: true,
-            name: true,
-            last_name: true,
-          },
-        },
-        appointments_status: {
-          select: {
-            id: true,
-            status: true,
-          },
-        },
-        customers: {
-          select: {
-            id: true,
-            name_lastname: true,
-            first_name: true,
-            last_name: true,
-            email: true,
-            mobile_phone: true,
-            home_phone: true,
-            home_default: true,
-            bdc: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-            seller: {
-              select: {
-                id: true,
-                name: true,
-                last_name: true,
-              },
-            },
-          },
-        },
-        lead_appointment: {
-          select: {
-            note_assigned: {
-              select: {
-                note: true,
-              },
-            },
-          },
-        },
-      },
+    const data = await mockDb.appointments.findMany({
       where: {
         // user_id: userIdParam ? parseInt(userIdParam) : undefined,
         status_id: status ? parseInt(status) : undefined,
@@ -113,8 +53,6 @@ export async function GET(request: NextRequest) {
           : null),
       },
     });
-
-    //await prisma?.$disconnect();
 
     revalidatePath(`${process.env.NEXTAUTH_URL}/dashboard`);
 
@@ -213,13 +151,9 @@ export async function POST(request: Request) {
   } = validatedData.data;
 
   try {
-    const customerPhoneNumber = await prisma.clients.findUnique({
+    const customerPhoneNumber = await mockDb.clients.findUnique({
       where: {
         id: parseInt(customer_id),
-      },
-      select: {
-        mobile_phone: true,
-        home_phone: true,
       },
     });
 
@@ -227,7 +161,7 @@ export async function POST(request: Request) {
 
     if (!exists) throw new Error('No customer phone number found');
 
-    const existingAppointment = await prisma.appointments.findFirst({
+    const existingAppointment = await mockDb.appointments.findFirst({
       where: {
         customer_id: parseInt(customer_id),
         NOT: {
@@ -258,7 +192,7 @@ export async function POST(request: Request) {
 
     // create appointment
 
-    const data = await prisma.appointments.create({
+    const data = await mockDb.appointments.create({
       data: {
         start_date: new Date(initial_date).toISOString(),
         end_date: new Date(final_date).toISOString(),
@@ -268,46 +202,46 @@ export async function POST(request: Request) {
         created_at: now,
         created_by: parseInt(creator),
       },
-      include: {
-        customers: {
-          select: {
-            first_name: true,
-            last_name: true,
-            mobile_phone: true,
-          },
-        },
+    });
+
+    const createdCustomer = mockDb.clients.findUnique({
+      where: {
+        id: parseInt(customer_id),
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = await mockDb.leads.findFirst({
       where: {
         is_active: true,
         customer_id: parseInt(customer_id),
       },
-      select: {
-        id: true,
-      },
     });
 
     if (activeLead && activeLead.id) {
-      const lead = await prisma.leads.update({
+      const lead = mockDb.leads.findFirst({
         where: {
           id: activeLead.id,
           is_active: true,
           customer_id: parseInt(customer_id),
         },
-        data: {
-          appointment_id: {
-            push: data.id,
-          },
-          customer_status_id: 6,
-          vehicle_id: interested_vehicle ? parseInt(interested_vehicle) : undefined,
-        },
       });
+
+      if (lead) {
+        mockDb.leads.update({
+          where: {
+            id: lead.id,
+          },
+          data: {
+            appointment_id: [...(lead.appointment_id || []), data.id],
+            customer_status_id: 6,
+            vehicle_id: interested_vehicle ? parseInt(interested_vehicle) : undefined,
+          },
+        });
+      }
     }
 
     // update customer status to 'Appointment Scheduled'
-    const customer = await prisma.clients.update({
+    const customer = await mockDb.clients.update({
       where: {
         id: parseInt(customer_id),
       },
@@ -320,7 +254,7 @@ export async function POST(request: Request) {
 
     // create appointment notification
     //
-    const message = `There is a new appointment scheduled with customer ${data.customers.first_name} ${data.customers.last_name} at date.start{${initialDateInZone}}`;
+    const message = `There is a new appointment scheduled with customer ${createdCustomer.first_name} ${createdCustomer.last_name} at date.start{${initialDateInZone}}`;
 
     await createNotification({
       message: message,
@@ -335,12 +269,7 @@ export async function POST(request: Request) {
 
     // send appointment confirmation message to customer
 
-    const appointmentTemplate = await prisma.automatic_sms.findFirst({
-      include: {
-        schedule_on_site_template: true,
-        schedule_online_template: true,
-      },
-    });
+    const appointmentTemplate = await mockDb.automatic_sms.findFirst();
 
     if (
       customer.consent_approved &&
@@ -370,22 +299,19 @@ export async function POST(request: Request) {
     let noteId: number | null = null;
 
     if (note) {
-      const noteData = await prisma?.notes.create({
+      const noteData = await mockDb.notes.create({
         data: {
           note: note,
           created_at: now,
           created_by_id: parseInt(creator),
           client_id: parseInt(customer_id),
         },
-        select: {
-          id: true,
-        },
       });
 
       noteId = noteData.id;
     }
 
-    await prisma.client_has_lead.create({
+    await mockDb.client_has_lead.create({
       data: {
         created_at: now,
         assigned_to_id: parseInt(seller_id),
@@ -411,8 +337,6 @@ export async function POST(request: Request) {
       });
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Appointment Successfully Scheduled' });
   } catch (error: any) {
     console.log(error);
@@ -430,13 +354,11 @@ export async function DELETE(request: Request) {
   const appId = await request.json();
 
   try {
-    const data = await prisma.appointments.delete({
+    const data = await mockDb.appointments.delete({
       where: {
         id: parseInt(appId),
       },
     });
-
-    //await prisma.$disconnect();
 
     return NextResponse.json(
       { successMessage: 'Appointment Deleted Successfully' },

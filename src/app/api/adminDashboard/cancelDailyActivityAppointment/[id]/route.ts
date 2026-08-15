@@ -1,7 +1,7 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { createEvent } from '@/app/libs/events/events';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -48,7 +48,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const taskTitle = 'Appointment Cancellation';
 
   try {
-    const data = await prisma.appointments.update({
+    const data = await mockDb.appointments.update({
       where: {
         id: appointmentId,
       },
@@ -59,7 +59,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     });
 
-    const task = await prisma.tasks.create({
+    const task = await mockDb.tasks.create({
       data: {
         deadline: new Date(deadline),
         description: cancelReason,
@@ -87,16 +87,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     await createEvent(description, parseInt(cancelBy), parseInt(customerId));
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({
       successMessage: 'Request seccessfully sended to the managers',
       task: task,
     });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

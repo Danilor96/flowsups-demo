@@ -1,3 +1,5 @@
+import { seedSmsTemplates } from './smsTemplates';
+
 export const seedAutomatedReviews = [
   {
     id: 1,
@@ -51,17 +53,22 @@ export const seedAutomaticSms = [
     appointment_reschedule_online: true,
     stipulation_request: true,
     consent_sms: false,
-    appointment_confirmation: false,
+    appointment_confirmation: true,
     credit_app: false,
     appointment_reminder_template_id: null,
-    appointment_schedule_on_site_template_id: null,
-    appointment_schedule_online_template_id: null,
-    appointment_reschedule_onSite_template_id: null,
-    appointment_reschedule_online_template_id: null,
+    appointment_schedule_on_site_template_id: 1,
+    appointment_schedule_online_template_id: 1,
+    appointment_reschedule_onSite_template_id: 1,
+    appointment_reschedule_online_template_id: 1,
     stipulation_request_template_id: null,
     consent_sms_template_id: null,
-    appointment_confirmation_template_id: null,
+    appointment_confirmation_template_id: 1,
     credit_app_template_id: null,
+    appointment_confirmation_template: seedSmsTemplates[0],
+    schedule_on_site_template: seedSmsTemplates[0],
+    schedule_online_template: seedSmsTemplates[0],
+    reschedule_onSite_template: seedSmsTemplates[0],
+    reschedule_online_template: seedSmsTemplates[0],
   },
 ];
 
@@ -170,4 +177,14 @@ export const seedBusiness = [
     appointment_reminder_time_id: 1,
     task_reminder_time_id: 1,
   },
+];
+
+export const seedTimeSpan = [
+  { id: 1, time_span: '5 minutes' },
+  { id: 2, time_span: '10 minutes' },
+  { id: 3, time_span: '15 minutes' },
+  { id: 4, time_span: '30 minutes' },
+  { id: 5, time_span: '60 minutes' },
+  { id: 6, time_span: '90 minutes' },
+  { id: 7, time_span: '120 minutes' },
 ];

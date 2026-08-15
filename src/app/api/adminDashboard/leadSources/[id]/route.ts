@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
@@ -12,7 +12,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ fieldError: 'Source name is required' }, { status: 400 });
     }
 
-    const updated = await prisma.lead_sources.update({
+    const updated = await mockDb.lead_sources.update({
       where: { id: leadSourceId },
       data: { source: source.trim() },
     });
@@ -28,19 +28,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const leadSourceId = parseInt(params.id);
 
   try {
-    const data = await prisma.lead_sources.delete({
+    const data = await mockDb.lead_sources.delete({
       where: {
         id: leadSourceId,
       },
     });
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Lead SuccessFully Deleted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

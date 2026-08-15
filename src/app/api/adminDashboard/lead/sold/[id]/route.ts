@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
 import { ActivityType, sellerActivityEventEmitterAsync } from '@/app/libs/services/salesPointsService';
@@ -64,22 +64,19 @@ export async function POST(request: Request, { params }: { params: { id: string 
     let noteId: number | null = null;
 
     if (note) {
-      const noteData = await prisma?.notes.create({
+      const noteData = await mockDb.notes.create({
         data: {
           note: note,
           created_at: todaysDate,
           created_by_id: parseInt(createdBy),
           client_id: customerId,
         },
-        select: {
-          id: true,
-        },
       });
 
       noteId = noteData.id;
     }
 
-    await prisma.client_has_lead.create({
+    await mockDb.client_has_lead.create({
       data: {
         created_at: todaysDate,
         assigned_to_id: parseInt(assignedTo[0]),
@@ -92,7 +89,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const lead = await prisma.leads.updateMany({
+    const lead = await mockDb.leads.updateMany({
       where: {
         customer_id: customerId,
         is_active: true,
@@ -108,7 +105,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const soldCustomer = await prisma.clients.update({
+    const soldCustomer = await mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -121,7 +118,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     });
 
     if(soldCustomer.intereseted_vehicle_id) {
-      await prisma.vehicles.update({
+      await mockDb.vehicles.update({
         where: {
           id: soldCustomer.intereseted_vehicle_id,
         },
@@ -163,8 +160,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
       });
     }
 
-    //await prisma.$disconnect();
-
     const description = 'New Lead created: Sold';
 
     await createEvent(descriptionEvent, createdByUserId, customerId);
@@ -177,8 +172,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ successMessage: 'Lead Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }
@@ -195,7 +188,7 @@ async function createLeadHistory({
   userId: number;
   categoryId: LeadHistoryCategoriesEnum;
 }) {
-  await prisma.notes.create({
+  await mockDb.notes.create({
     data: {
       created_at: new Date(),
       note: description,

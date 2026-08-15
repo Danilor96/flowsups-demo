@@ -1,9 +1,8 @@
 import { checkPermissions } from '@/app/libs/auth-helpers';
 import { createEvent } from '@/app/libs/events/events';
 import { createNotification } from '@/app/libs/notifications/notifications';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { auth } from '@/auth';
-import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -47,14 +46,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { lead_temperature } = validatedData.data;
 
   try {
-    let leadWhereClause: Prisma.LeadsWhereUniqueInput | null = null;
+    let leadWhereClause: Record<string, any> | null = null;
 
     if (currentLeadId) {
       leadWhereClause = {
         id: Number(currentLeadId),
       };
     } else {
-      const activeLead = await prisma.leads.findFirst({
+      const activeLead = await mockDb.leads.findFirst({
         where: {
           customer_id: Number(id),
           is_selected: true,
@@ -68,7 +67,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (leadWhereClause && leadWhereClause.id) {
-      await prisma.leads.update({
+      await mockDb.leads.update({
         where: leadWhereClause,
         data: {
           lead_temperature_id: parseInt(lead_temperature),
@@ -77,15 +76,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     if (!currentLeadId) {
-      const data = await prisma?.clients.update({
+      const data = await mockDb.clients.update({
         where: {
           id: parseInt(id),
         },
         data: {
           lead_temperature_id: parseInt(lead_temperature),
-        },
-        include: {
-          client_lead_temperature: true,
         },
       });
 
@@ -107,13 +103,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       await createEvent(description, userId, parseInt(id));
     }
 
-    //await prisma.$disconnect();
-
     return NextResponse.json({ successMessage: 'Lead Temperature Successfully Setted' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

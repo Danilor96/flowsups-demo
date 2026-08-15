@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
 import { createNotification } from '@/app/libs/notifications/notifications';
@@ -57,13 +57,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
   try {
     const usersEmails: string[] = [];
 
-    const customer = await prisma.clients.findUnique({
+    const customer = await mockDb.clients.findUnique({
       where: {
         id: customerId,
-      },
-      select: {
-        first_name: true,
-        last_name: true,
       },
     });
 
@@ -73,7 +69,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       const assignedIdNum = parseInt(assignedTo[i]);
       const assignedId = await ensureActiveUserOrGetReplacement(assignedIdNum, customerId);
 
-      const data = await prisma.tasks.create({
+      const data = await mockDb.tasks.create({
         data: {
           deadline: new Date(dueDate).toISOString(),
           description: note
@@ -87,44 +83,47 @@ export async function POST(request: Request, { params }: { params: { id: string 
           customer_id: customerId,
           reminder_time_id: reminderTime && reminderTime !== '1' ? parseInt(reminderTime) : null,
         },
-        select: {
-          id: true,
-          assigned: {
-            select: {
-              email: true,
-            },
-          },
-        },
       });
 
       if (i === 0) {
         taskId = data.id;
       }
 
-      const activeLead = await prisma.leads.findFirst({
+      const activeLead = await mockDb.leads.findFirst({
         where: {
           is_selected: true,
           customer_id: customerId,
         },
-        select: {
-          id: true,
-        },
       });
 
       if (activeLead && activeLead.id) {
-        await prisma.leads.update({
+        const lead = mockDb.leads.findFirst({
           where: {
             id: activeLead.id,
             is_selected: true,
             customer_id: customerId,
           },
-          data: {
-            task_id: {
-              push: data.id,
-            },
-          },
         });
+
+        if (lead) {
+          mockDb.leads.update({
+            where: {
+              id: lead.id,
+            },
+            data: {
+              task_id: [...(lead.task_id || []), data.id],
+            },
+          });
+        }
       }
+
+      const assignedUser = mockDb.users.findUnique({
+        where: {
+          id: assignedId,
+        },
+      });
+
+      if (assignedUser?.email) usersEmails.push(assignedUser.email);
 
       const notiMessage = `You have a new task`;
 
@@ -137,15 +136,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
         eventTypeId: 4,
         taskId: data.id,
       });
-
-      if (data.assigned?.email) usersEmails.push(data.assigned.email);
     }
 
     const eventDescription = 'Task created';
 
     await createEvent(eventDescription, parseInt(userId), customerId, new Date(todayDate));
 
-    const noteData = await prisma.notes.create({
+    const noteData = await mockDb.notes.create({
       data: {
         note: note
           ? note
@@ -156,7 +153,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    await prisma.client_has_lead.create({
+    await mockDb.client_has_lead.create({
       data: {
         client_id: customerId,
         created_by_id: parseInt(userId),

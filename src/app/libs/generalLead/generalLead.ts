@@ -1,4 +1,4 @@
-import prisma from '../prisma';
+import { mockDb } from '../mock-db';
 
 export async function createGeneralLead(
   createdBy: string,
@@ -17,7 +17,7 @@ export async function createGeneralLead(
   appointmentId?: number,
 ) {
   try {
-    const generalLead = await prisma.client_has_lead.create({
+    const generalLead = await mockDb.client_has_lead.create({
       data: {
         client_id: customerId,
         created_by_id: parseInt(createdBy),

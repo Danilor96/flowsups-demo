@@ -1,4 +1,4 @@
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
@@ -36,19 +36,16 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const { createdBy, todaysDate, note } = validatedData.data;
 
   try {
-    const noteData = await prisma?.notes.create({
+    const noteData = await mockDb.notes.create({
       data: {
         note: note,
         created_at: todaysDate,
         created_by_id: parseInt(createdBy),
         client_id: customerId,
       },
-      select: {
-        id: true,
-      },
     });
 
-    await prisma.client_has_lead.create({
+    await mockDb.client_has_lead.create({
       data: {
         created_at: todaysDate,
         client_id: customerId,
@@ -59,8 +56,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    //await prisma.$disconnect();
-
     const description = 'New Lead created: Prospect Requested Dnc';
 
     await createEvent(description, parseInt(createdBy), customerId);
@@ -68,8 +63,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ successMessage: 'Lead Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
 
@@ -79,7 +79,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     let noteId: number | null = null;
 
     if (status === '12') {
-      const lostNote = await prisma?.notes.create({
+      const lostNote = await mockDb.notes.create({
         data: {
           note: lostReasonDescription || '',
           created_at: todaysDate,
@@ -87,14 +87,11 @@ export async function POST(request: Request, { params }: { params: { id: string 
           client_id: customerId,
           from_id: 3,
         },
-        select: {
-          id: true,
-        },
       });
     }
 
     if (note) {
-      const noteData = await prisma?.notes.create({
+      const noteData = await mockDb.notes.create({
         data: {
           note: note,
           created_at: todaysDate,
@@ -102,15 +99,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
           client_id: customerId,
           from_id: status === '12' ? 3 : null,
         },
-        select: {
-          id: true,
-        },
       });
 
       noteId = noteData.id;
     }
 
-    await prisma.clients.update({
+    await mockDb.clients.update({
       where: {
         id: customerId,
       },
@@ -122,18 +116,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    const activeLead = await prisma.leads.findFirst({
+    const activeLead = await mockDb.leads.findFirst({
       where: {
         customer_id: customerId,
         is_selected: true,
       },
-      select: {
-        id: true,
-      },
     });
 
     if (activeLead) {
-      await prisma.leads.update({
+      await mockDb.leads.update({
         where: {
           id: activeLead.id,
           customer_id: customerId,
@@ -145,7 +136,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       });
     }
 
-    await prisma.client_has_lead.create({
+    await mockDb.client_has_lead.create({
       data: {
         created_at: todaysDate,
         assigned_to_id: assignedTo && assignedTo.length > 0 ? parseInt(assignedTo[0]) : null,
@@ -158,8 +149,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    //await prisma.$disconnect();
-
     const description = 'New Lead created: Set Status';
 
     await createEvent(description, parseInt(createdBy), customerId);
@@ -167,8 +156,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ successMessage: 'Lead Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

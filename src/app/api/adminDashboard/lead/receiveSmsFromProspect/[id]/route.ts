@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import prisma from '@/app/libs/prisma';
+import { mockDb } from '@/app/libs/mock-db';
 import { NextResponse } from 'next/server';
 import { createEvent } from '@/app/libs/events/events';
 import { auth } from '@/auth';
@@ -82,22 +82,19 @@ export async function POST(request: Request, { params }: { params: { id: string 
     let noteId: number | null = null;
 
     if (note) {
-      const noteData = await prisma?.notes.create({
+      const noteData = await mockDb.notes.create({
         data: {
           note: note,
           created_at: todaysDate,
           created_by_id: parseInt(createdBy),
           client_id: customerId,
         },
-        select: {
-          id: true,
-        },
       });
 
       noteId = noteData.id;
     }
 
-    const sms = await prisma.client_sms.create({
+    const sms = await mockDb.client_sms.create({
       data: {
         message: 'Receive Sms From Prospect',
         sent_by_user: false,
@@ -106,11 +103,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         manual_sent: true,
         date_sent: new Date().toISOString(),
         sent: true,
-        user: {
-          connect: {
-            id: userId,
-          },
-        },
+        sender_user_id: userId,
       },
     });
 
@@ -121,7 +114,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         const assignedIdNum = parseInt(assignedTo[i]);
         const assignedId = await ensureActiveUserOrGetReplacement(assignedIdNum, customerId);
 
-        const task = await prisma.tasks.create({
+        const task = await mockDb.tasks.create({
           data: {
             deadline: new Date(followUpDate).toISOString(),
             description: note,
@@ -138,7 +131,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
           taskId = task.id;
         }
 
-        await prisma.task_Notes.create({
+        await mockDb.task_Notes.create({
           data: {
             note: note,
             created_by_id: userId,
@@ -151,7 +144,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
         const leadAssignedToId = await ensureActiveUserOrGetReplacement(parseInt(assignedTo[0]), customerId);
 
-      await prisma.client_has_lead.create({
+      await mockDb.client_has_lead.create({
         data: {
           created_at: todaysDate,
           assigned_to_id: leadAssignedToId,
@@ -166,8 +159,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
       },
     });
 
-    //await prisma.$disconnect();
-
     const description = 'New Lead created: Received Sms From Prospect';
 
     await createEvent(description, parseInt(createdBy), customerId);
@@ -175,8 +166,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ successMessage: 'Lead Successfully Created' });
   } catch (error) {
     console.log(error);
-
-    //await prisma.$disconnect();
 
     return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
   }

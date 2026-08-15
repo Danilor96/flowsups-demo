@@ -1,21 +1,21 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
-import bcrypt from 'bcryptjs';
-import { mockDb } from '@/app/libs/mock-db';
-import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
-import { getAnUser, getAnUserActivationCode } from './data';
-import { randomBytes, randomUUID } from 'crypto';
-import { Resend } from 'resend';
-import { NextResponse } from 'next/server';
-import { EmailTemplate } from '&/email/EmailTemplate';
-import { loginSchema } from './zod';
-import { signIn } from '@/auth';
-import { AuthError } from 'next-auth';
-import jwt from 'jsonwebtoken';
+import { z } from "zod";
+import bcrypt from "bcryptjs";
+import { mockDb } from "@/app/libs/mock-db";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { getAnUser, getAnUserActivationCode } from "./data";
+import { randomBytes, randomUUID } from "crypto";
+import { Resend } from "resend";
+import { NextResponse } from "next/server";
+import { EmailTemplate } from "&/email/EmailTemplate";
+import { loginSchema } from "./zod";
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
+import jwt from "jsonwebtoken";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const resend = new Resend(process.env.RESEND_API_KEY);
 
 /* -------------------- user registation logic -------------------- */
 
@@ -26,43 +26,45 @@ export async function userRegister(prevState: any, formData: FormData) {
 
   const userSquema = z
     .object({
-      name: z.string({ invalid_type_error: 'Please, enter a name' }).min(1, 'Please, enter a name'),
+      name: z
+        .string({ invalid_type_error: "Please, enter a name" })
+        .min(1, "Please, enter a name"),
       lastName: z
-        .string({ invalid_type_error: 'Please, enter a name' })
-        .min(1, 'Please, enter a last name'),
+        .string({ invalid_type_error: "Please, enter a name" })
+        .min(1, "Please, enter a last name"),
       email: z
-        .string({ invalid_type_error: 'Please, enter a email' })
-        .min(1, 'Please, enter a email'),
+        .string({ invalid_type_error: "Please, enter a email" })
+        .min(1, "Please, enter a email"),
       password: z
-        .string({ invalid_type_error: 'Please, enter a password' })
+        .string({ invalid_type_error: "Please, enter a password" })
         .regex(
           passwordValidation,
-          'The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number',
+          "The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number",
         ),
       confirmPassword: z
-        .string({ invalid_type_error: 'Please, enter a password' })
+        .string({ invalid_type_error: "Please, enter a password" })
         .regex(
           passwordValidation,
-          'The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number',
+          "The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number",
         ),
     })
     .refine((fields: any) => fields.password === fields.confirmPassword, {
-      path: ['confirmPassword'],
+      path: ["confirmPassword"],
       message: "Passwords don't match",
     });
 
   const validatedFields = userSquema.safeParse({
-    name: formData.get('name'),
-    lastName: formData.get('lastName'),
-    email: formData.get('email'),
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
+    name: formData.get("name"),
+    lastName: formData.get("lastName"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
   });
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing fields. Failed to sign up',
+      message: "Missing fields. Failed to sign up",
     };
   }
 
@@ -100,13 +102,13 @@ export async function userRegister(prevState: any, formData: FormData) {
     }
   } catch (error: any) {
     console.log(error);
-    if (error.code == 'P2002') {
+    if (error.code == "P2002") {
       return { message: `The ${error.meta.target[0]} is already registered` };
     }
-    return { message: 'Server problem' };
+    return { message: "Server problem" };
   }
 
-  redirect('/');
+  redirect("/");
 }
 
 /* -------------------- generate unic code logic -------------------- */
@@ -116,13 +118,13 @@ export async function generateUnicCode() {
     codeExist = true;
   while (codeExist) {
     if (!code) {
-      code = randomUUID?.() ?? randomBytes(32).toString('hex');
+      code = randomUUID?.() ?? randomBytes(32).toString("hex");
     }
 
     const consultedCode = await getAnUserActivationCode(code);
 
     if (consultedCode) {
-      code = randomUUID?.() ?? randomBytes(32).toString('hex');
+      code = randomUUID?.() ?? randomBytes(32).toString("hex");
     } else {
       codeExist = false;
     }
@@ -132,20 +134,23 @@ export async function generateUnicCode() {
 
 /* -------------------- send user registration logic -------------------- */
 
-export async function storeUserRegistrationCode(prevState: any, formData: FormData) {
+export async function storeUserRegistrationCode(
+  prevState: any,
+  formData: FormData,
+) {
   const storeUserCodeSchema = z.object({
     email: z
-      .string({ invalid_type_error: 'Please enter a valid value' })
-      .email('Please, enter a valid email format')
-      .min(1, 'Please, enter a email'),
+      .string({ invalid_type_error: "Please enter a valid value" })
+      .email("Please, enter a valid email format")
+      .min(1, "Please, enter a email"),
     role: z
-      .string({ invalid_type_error: 'Please, enter a valid option' })
-      .min(1, 'Please, enter a role'),
+      .string({ invalid_type_error: "Please, enter a valid option" })
+      .min(1, "Please, enter a role"),
   });
 
   const validatedFields = storeUserCodeSchema.safeParse({
-    email: formData.get('email'),
-    role: formData.get('role'),
+    email: formData.get("email"),
+    role: formData.get("role"),
   });
 
   if (!validatedFields.success) {
@@ -163,16 +168,18 @@ export async function storeUserRegistrationCode(prevState: any, formData: FormDa
   if (userExist) {
     return {
       errors: {
-        email: 'User already exist in database',
-        role: '',
+        email: "User already exist in database",
+        role: "",
       },
     };
   }
 
-  const code = (await generateUnicCode()) || '';
+  const code = (await generateUnicCode()) || "";
 
   const actualDate = new Date();
-  const activation_code_expired = new Date(actualDate.getTime() + 24 * 60 * 60 * 1000);
+  const activation_code_expired = new Date(
+    actualDate.getTime() + 24 * 60 * 60 * 1000,
+  );
 
   const role_id = parseInt(role);
 
@@ -206,32 +213,35 @@ export async function storeUserRegistrationCode(prevState: any, formData: FormDa
 
     const path = process.env.NEXTAUTH_URL;
 
-    await resend.emails.send({
-      from: 'Flowsup <onboarding@resend.dev>',
-      to: [email],
-      subject: 'Registration link',
-      html: `<strong>Hello! Your registration link is: ${path}/sign_up/${code}</strong>`,
-    });
+    // await resend.emails.send({
+    //   from: 'Flowsup <onboarding@resend.dev>',
+    //   to: [email],
+    //   subject: 'Registration link',
+    //   html: `<strong>Hello! Your registration link is: ${path}/sign_up/${code}</strong>`,
+    // });
   } catch (error: any) {
     console.log(error?.message);
     return false;
   }
 
-  revalidatePath('/dashboard/users');
+  revalidatePath("/dashboard/users");
 }
 
 /* -------------------- send user forgotted password logic -------------------- */
 
-export async function sendForgottedPasswordUserCode(prevState: any, formData: FormData) {
+export async function sendForgottedPasswordUserCode(
+  prevState: any,
+  formData: FormData,
+) {
   const forgottedPasswordUserSchema = z.object({
     email: z
-      .string({ invalid_type_error: 'Please enter a valid value' })
-      .email('Please, enter a valid email format')
-      .min(1, 'Please, enter a email'),
+      .string({ invalid_type_error: "Please enter a valid value" })
+      .email("Please, enter a valid email format")
+      .min(1, "Please, enter a email"),
   });
 
   const validatedData = forgottedPasswordUserSchema.safeParse({
-    email: formData.get('email'),
+    email: formData.get("email"),
   });
 
   if (!validatedData.success) {
@@ -269,21 +279,25 @@ export async function sendForgottedPasswordUserCode(prevState: any, formData: Fo
     curretnUserCode.user_code[0].code.code
   ) {
     const currentDate = new Date();
-    const expDate = new Date(curretnUserCode?.user_code[0].code.activation_code_expired);
+    const expDate = new Date(
+      curretnUserCode?.user_code[0].code.activation_code_expired,
+    );
 
     if (currentDate > expDate) {
       await deleteActivationCode(curretnUserCode.user_code[0].code.code);
     } else {
-      return { message: 'Reset link already sended' };
+      return { message: "Reset link already sended" };
     }
   }
 
   // end verify the current exp date of reset link code
 
-  const code = (await generateUnicCode()) || '';
+  const code = (await generateUnicCode()) || "";
 
   const actualDate = new Date();
-  const activation_code_expired = new Date(actualDate.getTime() + 24 * 60 * 60 * 1000);
+  const activation_code_expired = new Date(
+    actualDate.getTime() + 24 * 60 * 60 * 1000,
+  );
 
   try {
     const path = process.env.NEXTAUTH_URL;
@@ -317,24 +331,28 @@ export async function sendForgottedPasswordUserCode(prevState: any, formData: Fo
 
     // send email
 
-    const emailData = await resend.emails.send({
-      from: 'Flowsups <onboarding@resend.dev>',
-      to: [email],
-      subject: 'Password Reset',
-      react: EmailTemplate({ resetLink }),
-    });
+    // const emailData = await resend.emails.send({
+    //   from: 'Flowsups <onboarding@resend.dev>',
+    //   to: [email],
+    //   subject: 'Password Reset',
+    //   react: EmailTemplate({ resetLink }),
+    // });
 
-    return { message: 'Reset link sended' };
+    return { message: "Reset link sended" };
   } catch (error) {
     console.log(error);
 
-    return { serverError: 'Server Error' };
+    return { serverError: "Server Error" };
   }
 }
 
 /* -------------------- send user forgotted password logic -------------------- */
 
-export async function changePassword(email: string, prevState: any, formData: FormData) {
+export async function changePassword(
+  email: string,
+  prevState: any,
+  formData: FormData,
+) {
   const passwordValidation = new RegExp(
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,}$/,
   );
@@ -342,26 +360,26 @@ export async function changePassword(email: string, prevState: any, formData: Fo
   const changePasswordSchema = z
     .object({
       password: z
-        .string({ invalid_type_error: 'Please enter a valid value' })
+        .string({ invalid_type_error: "Please enter a valid value" })
         .regex(
           passwordValidation,
-          'The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number',
+          "The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number",
         ),
       confirmPassword: z
-        .string({ invalid_type_error: 'Please enter a valid value' })
+        .string({ invalid_type_error: "Please enter a valid value" })
         .regex(
           passwordValidation,
-          'The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number',
+          "The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number",
         ),
     })
     .refine((data) => data.confirmPassword === data.password, {
-      path: ['confirmPassword'],
+      path: ["confirmPassword"],
       message: "Passwords doesn't match",
     });
 
   const validatedData = changePasswordSchema.safeParse({
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
   });
 
   if (!validatedData.success) {
@@ -397,11 +415,11 @@ export async function changePassword(email: string, prevState: any, formData: Fo
       });
     }
 
-    return { successMessage: 'Password Successfully Updated' };
+    return { successMessage: "Password Successfully Updated" };
   } catch (error) {
     console.log(error);
 
-    return { serverError: 'Server Error' };
+    return { serverError: "Server Error" };
   }
 }
 
@@ -418,27 +436,29 @@ export async function changePasswordByTokenAction(
   formData: FormData,
 ) {
   if (!JWT_SECRET || !token) {
-    return { serverError: 'Server Error' };
+    return { serverError: "Server Error" };
   }
 
   const dataSchema = z
     .object({
       newPassword: z
-        .string({ invalid_type_error: 'Please enter a valid value' })
+        .string({ invalid_type_error: "Please enter a valid value" })
         .regex(
           passwordValidation,
-          'The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number',
+          "The password must contain at least 8 characters, 1 capital letter, 1 special character and 1 number",
         ),
-      confirmPassword: z.string({ invalid_type_error: 'Please enter a valid value' }).min(8),
+      confirmPassword: z
+        .string({ invalid_type_error: "Please enter a valid value" })
+        .min(8),
     })
     .refine((data) => data.confirmPassword === data.newPassword, {
-      path: ['confirmPassword'],
+      path: ["confirmPassword"],
       message: "Passwords doesn't match",
     });
 
   const validatedData = dataSchema.safeParse({
-    newPassword: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
+    newPassword: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
   });
 
   if (!validatedData.success) {
@@ -462,10 +482,10 @@ export async function changePasswordByTokenAction(
       data: { session_version: { increment: 1 } },
     });
 
-    return { successMessage: 'Password Successfully Updated' };
+    return { successMessage: "Password Successfully Updated" };
   } catch (error) {
     console.log(error);
-    return { serverError: 'Server Error' };
+    return { serverError: "Server Error" };
   }
 }
 
@@ -497,7 +517,7 @@ export async function deleteConsentCode(code: string) {
   } catch (error) {
     console.log(error);
 
-    return NextResponse.json({ serverError: 'Server Error' }, { status: 500 });
+    return NextResponse.json({ serverError: "Server Error" }, { status: 500 });
   }
 }
 
@@ -506,11 +526,11 @@ export async function deleteConsentCode(code: string) {
 export async function loginAction(state: any, formData: FormData) {
   try {
     const { email, password } = await loginSchema.parseAsync({
-      email: formData.get('email'),
-      password: formData.get('password'),
+      email: formData.get("email"),
+      password: formData.get("password"),
     });
 
-    await signIn('credentials', {
+    await signIn("credentials", {
       email,
       password,
       redirect: false,
@@ -524,7 +544,7 @@ export async function loginAction(state: any, formData: FormData) {
       return { error: error.cause?.err?.message };
     }
 
-    return { serverError: 'Server Error' };
+    return { serverError: "Server Error" };
   }
 }
 
@@ -532,7 +552,7 @@ export async function loginAction(state: any, formData: FormData) {
 
 export async function loginRedirect(logged: boolean) {
   if (logged) {
-    redirect('/dashboard');
+    redirect("/dashboard");
   }
 }
 

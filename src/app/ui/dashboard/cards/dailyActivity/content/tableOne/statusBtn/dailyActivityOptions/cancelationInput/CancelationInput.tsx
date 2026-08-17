@@ -8,7 +8,7 @@ import { useSocketStore } from '@/store/socketIo';
 import { ConfirmNotification } from '&/notifications/Notification';
 import { useAsyncFetching } from '@/hooks/asyncFetchingHandler';
 import { adminDashboardStore } from '@/store/adminDashboard';
-import { DashboardPagesIndex } from '@/app/ui/dashboard/admin/AdminDashboard';
+import { DashboardPagesIndex } from '@/app/ui/dashboard/dashboardPagesIndex';
 
 export function CancelationInput({
   appointmentId,

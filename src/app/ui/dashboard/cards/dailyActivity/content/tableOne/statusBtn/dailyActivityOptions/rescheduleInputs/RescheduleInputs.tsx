@@ -1,6 +1,6 @@
 import { ToFromDateTimePicker } from '&/dateTimePicker/ToFromDateTimePicker';
 import { ConfirmNotification } from '&/notifications/Notification';
-import { DashboardPagesIndex } from '@/app/ui/dashboard/admin/AdminDashboard';
+import { DashboardPagesIndex } from '@/app/ui/dashboard/dashboardPagesIndex';
 import { useAsyncFetching } from '@/hooks/asyncFetchingHandler';
 import { adminDashboardStore } from '@/store/adminDashboard';
 import inputTypeDateFormatStore from '@/store/inputTypeDateFormat';

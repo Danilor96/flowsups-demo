@@ -12,7 +12,7 @@ import { AdderSelect } from '&/select/adderSelect/AdderSelect';
 import { useLoadingGetData } from '@/hooks/loadingGetData';
 import { FieldErrorMessage } from '&/miscellaneous/fieldErrorMessage/FieldErrorMessage';
 import { useCan } from '@/hooks/permissions';
-import { DashboardPagesIndex } from '@/app/ui/dashboard/admin/AdminDashboard';
+import { DashboardPagesIndex } from '@/app/ui/dashboard/dashboardPagesIndex';
 
 export function SpecialBtn({
   waitingAprove,

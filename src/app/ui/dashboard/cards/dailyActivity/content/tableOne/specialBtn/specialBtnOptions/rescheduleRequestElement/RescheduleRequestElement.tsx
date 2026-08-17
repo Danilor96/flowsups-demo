@@ -2,7 +2,7 @@ import { Button } from '&/buttons/Button';
 import { ButtonContainer } from '&/buttons/ButtonContainer';
 import { ToFromDateTimePicker } from '&/dateTimePicker/ToFromDateTimePicker';
 import { ConfirmNotification } from '&/notifications/Notification';
-import { DashboardPagesIndex } from '@/app/ui/dashboard/admin/AdminDashboard';
+import { DashboardPagesIndex } from '@/app/ui/dashboard/dashboardPagesIndex';
 import { useAsyncFetching } from '@/hooks/asyncFetchingHandler';
 import { adminDashboardStore, messagesStore } from '@/store/adminDashboard';
 import { dateFormatsStore } from '@/store/dateFormats';

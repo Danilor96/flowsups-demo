@@ -8,7 +8,7 @@ import { useCan } from '@/hooks/permissions';
 import { useAsyncFetching } from '@/hooks/asyncFetchingHandler';
 import { Can } from '&/auth/Can';
 import { useSession } from 'next-auth/react';
-import { DashboardPagesIndex } from '@/app/ui/dashboard/admin/AdminDashboard';
+import { DashboardPagesIndex } from '@/app/ui/dashboard/dashboardPagesIndex';
 
 export function DailyActivityOptions({
   appointmentId,

@@ -89,13 +89,7 @@ const variants = {
   },
 };
 
-export enum DashboardPagesIndex {
-  DailyActivity = 0,
-  Tasks = 1,
-  Inventory = 2,
-  Flowsups = 3,
-  SmsAndEmails = 4,
-}
+export { DashboardPagesIndex } from '../dashboardPagesIndex';
 
 export function AdminDashboard({ newTabUrl }: { newTabUrl?: string }) {
   const { data: session, update } = useSession();

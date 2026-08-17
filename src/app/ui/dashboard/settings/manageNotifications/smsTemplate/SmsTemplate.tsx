@@ -360,7 +360,7 @@ export function SmsTemplate() {
   return (
     <ModalContent>
       <BorderedContent title="Sms Templates" positionRelative loading={loading || loadingFetch}>
-        <section className="w-full flex flex-row justify-between items-baseline mb-[4vh]">
+        <section className="w-full flex flex-row justify-between items-baseline mb-[4vh] max-lg:flex-col max-lg:items-start max-lg:gap-2">
           <ContentRow cols={5} gap={4} marginTop={3} alignItems="center">
             {dataInfo1.map((el, index) =>
               el.onChange ? (

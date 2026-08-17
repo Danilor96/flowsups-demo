@@ -26,7 +26,7 @@ export function Content({
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ duration: 0.3 }}
-      className="relative w-full border-b-[0.15625vw] border-l-[0.15625vw] border-r-[0.15625vw] border-[#C9EBE6] rounded-b-[1.041667vw] px-[2.083333vw] py-[1vh]"
+      className="relative w-full border-b-[0.15625vw] border-l-[0.15625vw] border-r-[0.15625vw] border-[#C9EBE6] rounded-b-[1.041667vw] px-[2.083333vw] py-[1vh] max-lg:px-3"
       style={{
         minHeight: height ? `${height}vh` : '100%',
         display: itemsCenter ? 'flex' : 'block',

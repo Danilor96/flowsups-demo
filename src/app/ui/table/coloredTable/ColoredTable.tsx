@@ -412,7 +412,7 @@ export function ColoredTable({
   return (
     <>
       <aside
-        className="relative border-[0.2vw]"
+        className="relative border-[0.2vw] max-lg:overflow-x-auto"
         style={{
           width: `${width ? `${width}vw` : '100%'}`,
           height: `${heightFitContent ? 'fit-content' : height}vh`,
@@ -425,7 +425,7 @@ export function ColoredTable({
           <Loader />
         ) : (
           <table
-            className="h-fit font-medium"
+            className="h-fit font-medium !max-lg:min-w-[720px]"
             style={{
               fontSize: `${fontSize ? `${fontSize}vh` : '1.8vh'}`,
               color: `${textColor}`,

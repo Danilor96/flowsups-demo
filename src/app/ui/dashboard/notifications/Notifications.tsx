@@ -45,12 +45,12 @@ export function Notifications() {
         onClick={toggleOpen}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className={`relative w-[2.864583vw] h-[2.864583vw] flex items-center justify-center rounded-full shadow-crmFormShadow ${
+        className={`relative w-[2.864583vw] h-[2.864583vw] flex items-center justify-center rounded-full shadow-crmFormShadow max-lg:w-9 max-lg:h-9 ${
           totalNotifications && 'border-[0.1vw] border-red-500'
         }`}
       >
         {totalNotifications && (
-          <p className="absolute bottom-[-1.8vh] right-0 w-[1.5vw] h-[1.5vw] flex justify-center items-center text-[1.8vh] font-medium text-[#FFF] rounded-full bg-red-500">
+          <p className="absolute bottom-[-1.8vh] right-0 w-[1.5vw] h-[1.5vw] flex justify-center items-center text-[1.8vh] font-medium text-[#FFF] rounded-full bg-red-500 max-lg:w-5 max-lg:h-5 max-lg:text-xs">
             {handleTotalNumber(totalNotifications)}
           </p>
         )}

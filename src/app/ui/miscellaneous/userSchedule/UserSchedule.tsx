@@ -21,7 +21,7 @@ export function UserSchedule() {
   return (
     <div className="flex flex-col gap-[1.5vh]">
       <Paragraph>Hours</Paragraph>
-      <aside className="w-[25vw] h-[37vh] flex flex-col justify-center items-center gap-[1vh] bg-[#F4F4F4] px-[1.25vw] py-[1.944444vh] rounded-[0.520833vw]">
+      <aside className="w-[25vw] h-[37vh] flex flex-col justify-center items-center gap-[1vh] bg-[#F4F4F4] px-[1.25vw] py-[1.944444vh] rounded-[0.520833vw] max-lg:w-full max-lg:h-auto max-lg:py-3">
         {dayweeks &&
           dayweeks.length > 0 &&
           dayweeks.map((el, index) => (

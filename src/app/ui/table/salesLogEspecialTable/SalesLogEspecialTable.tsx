@@ -98,7 +98,7 @@ export function SalesLogEspecialTable({
       }}
     >
       <table
-        className="w-full h-fit font-medium"
+        className="w-full h-fit font-medium max-lg:text-sm"
         style={{
           fontSize: `${fontSize ? `${fontSize}vh` : '1.8vh'}`,
           color: `${textColor}`,

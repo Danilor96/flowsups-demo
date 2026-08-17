@@ -16,11 +16,11 @@ export function Header({
   return (
     <aside
       onClick={onClick}
-      className={`w-full flex flex-row justify-between py-[2.314815vh] px-[2.083333vw] bg-[#C9EBE6] group rounded-t-[1.041667vw] ${
+      className={`w-full flex flex-row justify-between py-[2.314815vh] px-[2.083333vw] bg-[#C9EBE6] group rounded-t-[1.041667vw] max-lg:px-3 max-lg:py-3 ${
         !showContent && 'rounded-b-[1.041667vw]'
       }`}
     >
-      <p className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B]">
+      <p className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B] max-lg:text-base max-lg:leading-normal">
         {children}
       </p>
       <p

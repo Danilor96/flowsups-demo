@@ -255,7 +255,7 @@ export function RoundRobinSettings() {
               setReadyForLeadsInput(!readyForLeadsInput);
             }}
           />
-          <div className="flex flex-row gap-2 justify-center items-center pr-3 rounded-[1.041667vw]">
+          <div className="flex flex-row gap-2 justify-center items-center pr-3 rounded-[1.041667vw] max-lg:flex-col max-lg:items-stretch max-lg:pr-0">
             <CustomerSettingsCheckbox
               checkboxText={
                 'Automatically reassign internet leads to another rep if lead has not been dispositioned in'
@@ -270,6 +270,7 @@ export function RoundRobinSettings() {
               name="time"
               value={autoReassignLeadsInput.optionId}
               onChange={(e) => handleAutoReassignLeads({ optionId: Number(e.target.value) })}
+              className="max-lg:h-9 max-lg:px-2"
             >
               {timeSpanData?.map((el) => (
                 <option key={el.id} value={el.id}>
@@ -278,8 +279,8 @@ export function RoundRobinSettings() {
               ))}
             </select>
           </div>
-          <div className="flex flex-row gap-2 justify-center items-center">
-            <span className="text-[2vh] text-[#999999] font-medium peer-checked:text-[#FFFFFF] transition-colors ease-in-out">
+          <div className="flex flex-row gap-2 justify-center items-center max-lg:flex-col max-lg:items-stretch">
+            <span className="text-[2vh] text-[#999999] font-medium peer-checked:text-[#FFFFFF] transition-colors ease-in-out max-lg:text-sm">
               Do not automatically assign/reassign leads older than
             </span>
             <Input
@@ -291,11 +292,11 @@ export function RoundRobinSettings() {
               onChange={(e) => setNotAssignLeadsOlderThanInput(Number(e.target.value))}
               fieldErrors={fieldErrors}
             />
-            <span className="text-[2vh] text-[#999999] font-medium transition-colors ease-in-out">
+            <span className="text-[2vh] text-[#999999] font-medium transition-colors ease-in-out max-lg:text-sm">
               days
             </span>
           </div>
-          <div className="flex flex-row gap-2 justify-center items-center pr-3 rounded-[1.041667vw]">
+          <div className="flex flex-row gap-2 justify-center items-center pr-3 rounded-[1.041667vw] max-lg:flex-col max-lg:items-stretch max-lg:pr-0">
             <CustomerSettingsCheckbox
               checkboxText={'Assign leads to reps during'}
               name={'assignLeadsToRepsDuring'}
@@ -316,6 +317,7 @@ export function RoundRobinSettings() {
                   optionId: Number(e.target.value),
                 })
               }
+              className="max-lg:h-9 max-lg:px-2"
             >
               <option value="1">Store hours</option>
               <option value="2">Shift hours</option>
@@ -351,8 +353,8 @@ export function RoundRobinSettings() {
             onSelect={handleUserSelected}
           />
         </ButtonContainer>
-        <div className="mt-4 w-full">
-          <table className="relative w-full h-fit border-[0.130208vw] border-[#92CEC3] rounded-[0.520833vw]">
+        <div className="mt-4 w-full max-lg:overflow-x-auto">
+          <table className="relative w-full h-fit border-[0.130208vw] border-[#92CEC3] rounded-[0.520833vw] max-lg:min-w-[480px] max-lg:text-sm">
             {tableIsLoading && <Loader zIndex={2} />}
             <thead>
               <tr className="h-[4.907407vh] text-[2vh] font-bold text-[#00A78B] text-center bg-gray-100 *:min-w-[7vw]">

@@ -72,16 +72,18 @@ export function TaskProcessor({
             </Can>
           ))}
           <Can requiredPermission={[12, 13]}>
-            <aside className="w-[14.21875vw] h-[5.462963vh] flex flex-row items-center justify-center border-[0.104167vw] border-[#00A78B] bg-[#FFF] rounded-[0.653646vw]">
-              <div className="w-[10.9375vw] flex justify-between items-center">
+            <aside className="w-[14.21875vw] h-[5.462963vh] flex flex-row items-center justify-center border-[0.104167vw] border-[#00A78B] bg-[#FFF] rounded-[0.653646vw] max-lg:w-full max-lg:h-auto max-lg:py-3 max-lg:px-3 max-lg:rounded-lg">
+              <div className="w-[10.9375vw] flex justify-between items-center max-lg:w-full max-lg:gap-2">
                 <input
                   type="checkbox"
                   name=""
                   id=""
-                  className="accent-[#00A78B]"
+                  className="accent-[#00A78B] max-lg:w-4 max-lg:h-4"
                   onChange={onChange}
                 />
-                <p className="text-[1.626851vh] font-medium text-[#00A78B]">Process To Next Task</p>
+                <p className="text-[1.626851vh] font-medium text-[#00A78B] max-lg:text-sm">
+                  Process To Next Task
+                </p>
               </div>
             </aside>
           </Can>

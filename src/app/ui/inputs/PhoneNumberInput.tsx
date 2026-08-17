@@ -40,7 +40,7 @@ export function PhoneNumberInput({
         {label}
       </label>
       <div
-        className={`relative h-[5.277778vh] flex flex-row`}
+        className={`relative h-[5.277778vh] flex flex-row !max-lg:w-full max-lg:h-11`}
         style={{
           width: `${width}vw`,
         }}
@@ -96,7 +96,7 @@ export function PhoneNumberInput({
           maxLength={14}
           autoComplete="off"
           pattern="\d*"
-          className={`h-full rounded-r-[0.520833vw] bg-[#F4F4F4] outline-none px-[0.6vw] text-[1.666667vh] font-medium text-[#959595]`}
+          className={`h-full rounded-r-[0.520833vw] bg-[#F4F4F4] outline-none px-[0.6vw] text-[1.666667vh] font-medium text-[#959595] !max-lg:text-sm`}
           style={{
             width: `${numberWidth}%`,
           }}

@@ -47,9 +47,9 @@ export function Calculator({
   }, [yearToDate, monthlyIncome]);
 
   return (
-    <article className="absolute bottom-[6vh] left-0 w-full flex flex-col justify-center items-center gap-[0.5vh] px-[0.5vw] py-[0.5vh] rounded-md shadow-crmFormShadow bg-white">
+    <article className="absolute bottom-[6vh] left-0 w-full flex flex-col justify-center items-center gap-[0.5vh] px-[0.5vw] py-[0.5vh] rounded-md shadow-crmFormShadow bg-white max-lg:static max-lg:mt-3">
       <aside className="flex flex-col gap-[0.1vh]">
-        <label htmlFor="hourlyWage" className="text-[1.8vh] text-primaryColor font-semibold">
+        <label htmlFor="hourlyWage" className="text-[1.8vh] text-primaryColor font-semibold max-lg:text-sm">
           Hourly Wage
         </label>
         <input
@@ -60,11 +60,11 @@ export function Calculator({
           value={numberFilter(hourlyWage || '0', 1)}
           onChange={onChange}
           data-index={index}
-          className="w-full h-[3vh] border border-primaryColor rounded-md outline-none px-[0.2vw] py-[0.2vh] text-[1.8vh] text-primaryColor"
+          className="w-full h-[3vh] border border-primaryColor rounded-md outline-none px-[0.2vw] py-[0.2vh] text-[1.8vh] text-primaryColor !max-lg:text-sm"
         />
       </aside>
       <aside className="flex flex-col gap-[0.1vh]">
-        <label htmlFor="yearToDate" className="text-[1.8vh] text-primaryColor font-semibold">
+        <label htmlFor="yearToDate" className="text-[1.8vh] text-primaryColor font-semibold max-lg:text-sm">
           Year To Date
         </label>
         <input
@@ -75,11 +75,11 @@ export function Calculator({
           value={numberFilter(yearToDate || '0', 1)}
           onChange={onChange}
           data-index={index}
-          className="w-full h-[3vh] border border-primaryColor rounded-md outline-none px-[0.2vw] py-[0.2vh] text-[1.8vh] text-primaryColor"
+          className="w-full h-[3vh] border border-primaryColor rounded-md outline-none px-[0.2vw] py-[0.2vh] text-[1.8vh] text-primaryColor !max-lg:text-sm"
         />
       </aside>
       <HorizontalLine marginBottom={0.25} marginTop={0.1} />
-      <aside className="w-full h-[3vh] flex flex-row justify-between items-center gap-[0.3vw] border border-primaryColor rounded-md outline-none px-[0.2vw] py-[0.2vh] text-[1.8vh] text-primaryColor overflow-hidden">
+      <aside className="w-full h-[3vh] flex flex-row justify-between items-center gap-[0.3vw] border border-primaryColor rounded-md outline-none px-[0.2vw] py-[0.2vh] text-[1.8vh] text-primaryColor overflow-hidden !max-lg:text-sm max-lg:h-auto">
         <p className="font-bold pt-[0.1vh]">$/mo:</p>
         <input
           type="text"
@@ -90,7 +90,7 @@ export function Calculator({
           value={numberFilter(monthlyIncome, 1)}
         />
       </aside>
-      <aside className="w-full h-[3vh] flex flex-row justify-between items-center gap-[0.3vw] border border-primaryColor rounded-md outline-none px-[0.2vw] py-[0.2vh] text-[1.8vh] text-primaryColor overflow-hidden">
+      <aside className="w-full h-[3vh] flex flex-row justify-between items-center gap-[0.3vw] border border-primaryColor rounded-md outline-none px-[0.2vw] py-[0.2vh] text-[1.8vh] text-primaryColor overflow-hidden !max-lg:text-sm max-lg:h-auto">
         <p className="font-bold">mo:</p>
         <input
           type="text"

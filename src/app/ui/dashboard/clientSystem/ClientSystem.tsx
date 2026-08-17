@@ -794,7 +794,7 @@ export function ClientSystem() {
     >
       {/* modal window main body block */}
       <article
-        className={`relative w-[82.916667vw] h-[84.351852vh] bg-[#FFFFFF] rounded-[0.520833vw] mt-[7.592592vh] ml-[8.28125vw] pb-[3.240741vh] ${
+        className={`relative w-[82.916667vw] h-[84.351852vh] bg-[#FFFFFF] rounded-[0.520833vw] mt-[7.592592vh] ml-[8.28125vw] pb-[3.240741vh] !max-lg:w-full !max-lg:h-auto !max-lg:mt-0 !max-lg:ml-0 max-lg:rounded-none max-lg:min-h-screen ${
           isCobuyerReferrer ? 'mt-[50vh]' : ''
         }`}
       >
@@ -804,8 +804,8 @@ export function ClientSystem() {
           {serverErrorMessage && <FailNotification apiMessage={serverErrorMessage} />}
         </AnimatePresence>
         {/* modal window header block */}
-        <aside className="w-full h-[9.259259vh] shadow-crmFormShadow flex items-center justify-center pt-[2.037037vh] pb-[1.6vh]">
-          <div className="w-[79.6875vw] flex flex-row items-center justify-between">
+        <aside className="w-full h-[9.259259vh] shadow-crmFormShadow flex items-center justify-center pt-[2.037037vh] pb-[1.6vh] max-lg:h-auto max-lg:py-3 max-lg:px-2">
+          <div className="w-[79.6875vw] flex flex-row items-center justify-between !max-lg:w-full">
             <p className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B]">
               Add new Prospect
             </p>
@@ -821,7 +821,7 @@ export function ClientSystem() {
         </aside>
         {/* modal window content block */}
         <aside>
-          <section className="relative w-fit h-fit mt-[5.277778vh] ml-[4.322917vw] flex flex-row items-center">
+          <section className="relative w-fit h-fit mt-[5.277778vh] ml-[4.322917vw] flex flex-row items-center max-lg:mt-4 max-lg:ml-2 max-lg:flex-wrap max-lg:gap-2">
             <p className="text-[2.222222vh] font-semibold text-[#00A78B] leading-[1.805556vh] mr-[0.5vw]">
               Type of client
             </p>
@@ -861,7 +861,7 @@ export function ClientSystem() {
             </AnimatePresence>
           </section>
           {/* modal window inputs header block */}
-          <div className="w-[78.020833vw] h-[47.685185vh] mt-[3.425926vh] ml-[2.447917vw]">
+          <div className="w-[78.020833vw] h-[47.685185vh] mt-[3.425926vh] ml-[2.447917vw] !max-lg:w-full max-lg:h-auto max-lg:mt-2 max-lg:ml-0 max-lg:px-2">
             <article className="w-full flex flex-row justify-between items-center py-[2.314815vh] px-[2.083333vw] bg-[#C9EBE6] rounded-t-[1.041667vw]">
               <p className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B]">
                 General Information
@@ -870,10 +870,10 @@ export function ClientSystem() {
             </article>
             {/* modal window inputs block */}
             <article className="w-full h-fit border-b-[0.15625vw] border-l-[0.15625vw] border-r-[0.15625vw] border-[#C9EBE6] rounded-b-[1.041667vw] pt-[2.685185vh] pl-[2.03125vw] pb-[5.833333vh]">
-              <aside className="w-[70.260417vw] h-[32.685185vh]">
+              <aside className="w-[70.260417vw] h-[32.685185vh] !max-lg:w-full max-lg:h-auto">
                 {/* first inputs row */}
-                <section className="flex flex-row">
-                  <div className="relative flex flex-col w-[28.020833vw] mr-[1.302083vw]">
+                <section className="flex flex-row max-lg:flex-col max-lg:gap-4">
+                  <div className="relative flex flex-col w-[28.020833vw] mr-[1.302083vw] max-lg:w-full max-lg:mr-0">
                     <label
                       htmlFor="nameAndLastname"
                       className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
@@ -1131,7 +1131,7 @@ export function ClientSystem() {
                     </AnimatePresence>
                     {/* -------------- end modal client options -------------- */}
                   </div>
-                  <div className="relative flex flex-col w-[40.9375vw]">
+                  <div className="relative flex flex-col w-[40.9375vw] max-lg:w-full max-lg:mt-3">
                     <label
                       htmlFor="currentAddress"
                       className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
@@ -1357,7 +1357,7 @@ export function ClientSystem() {
                   </div>
                 </section>
                 {/* second inputs row */}
-                <section className="flex flex-row mt-[1.302083vw]">
+                <section className="flex flex-row mt-[1.302083vw] max-lg:flex-col max-lg:gap-4 max-lg:mt-0">
                   <div className="relative flex flex-col w-[16.458333vw]">
                     <label
                       htmlFor="clientPhoneNumber"
@@ -1390,7 +1390,7 @@ export function ClientSystem() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw]">
+                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw] max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="clientHomePhoneNumber"
                       className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
@@ -1420,7 +1420,7 @@ export function ClientSystem() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw]">
+                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw] max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="clientWorkPhoneNumber"
                       className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
@@ -1450,7 +1450,7 @@ export function ClientSystem() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw]">
+                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw] max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="clientEmail"
                       className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
@@ -1483,7 +1483,7 @@ export function ClientSystem() {
                   </div>
                 </section>
                 {/* third inputs row */}
-                <section className="flex flex-row mt-[1.602083vw]">
+                <section className="flex flex-row mt-[1.602083vw] max-lg:flex-col max-lg:gap-4 max-lg:mt-0">
                   <div className="relative flex flex-col w-[16.458333vw]">
                     <label
                       htmlFor="clientSocialSecurity"
@@ -1541,7 +1541,7 @@ export function ClientSystem() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw]">
+                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw] max-lg:w-full max-lg:ml-0">
                     {/* <label
                       htmlFor="clientBornDate"
                       className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
@@ -1590,7 +1590,7 @@ export function ClientSystem() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw]">
+                  <div className="relative flex flex-col w-[16.458333vw] ml-[1.302083vw] max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="clientLeadType"
                       className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
@@ -1626,7 +1626,7 @@ export function ClientSystem() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative h-fit flex items-start justify-start w-[16.458333vw] ml-[1.302083vw]">
+                  <div className="relative h-fit flex items-start justify-start w-[16.458333vw] ml-[1.302083vw] max-lg:w-full max-lg:ml-0">
                     <GenericSelector
                       width={`w-full`}
                       moveSelectedToTop={true}
@@ -1814,14 +1814,14 @@ export function ClientSystem() {
             </article>
           </div>
           {/* modal window process buttons block */}
-          <article className="w-[26vw] flex flex-row justify-between mt-[5.925926vh] ml-[54.15625vw]">
+          <article className="w-[26vw] flex flex-row justify-between mt-[5.925926vh] ml-[54.15625vw] !max-lg:w-full max-lg:ml-0 max-lg:mt-4 max-lg:px-2 max-lg:flex-col max-lg:gap-2">
             {!isCobuyerReferrer && (
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 type="button"
                 onClick={handleSaveClientAndNew}
-                className="w-[13vw] h-[5.462963vh] flex justify-center items-center text-[1.626852vh] font-semibold leading-[2.440741vh] rounded-[0.653646vw] border-[0.15625vw] border-[#00A78B] bg-[#FFFFFF] text-[#00A78B] hover:bg-[#C9EBE6] transition-colors ease-in-out"
+                className="w-[13vw] h-[5.462963vh] flex justify-center items-center text-[1.626852vh] font-semibold leading-[2.440741vh] rounded-[0.653646vw] border-[0.15625vw] border-[#00A78B] bg-[#FFFFFF] text-[#00A78B] hover:bg-[#C9EBE6] transition-colors ease-in-out !max-lg:w-full max-lg:h-11 !max-lg:text-sm"
               >
                 Save and Add Another Prospect
               </motion.button>
@@ -1831,7 +1831,7 @@ export function ClientSystem() {
               whileTap={{ scale: 0.9 }}
               type="button"
               onClick={handleSaveClient}
-              className={`w-[11.875vw] h-[5.462963vh] flex justify-center items-center text-[1.626852vh] font-semibold leading-[2.440741vh] rounded-[0.653646vw] bg-[#00A78B] text-[#FFFFFF] hover:bg-opacity-70 transition-opacity ease-in-out ${
+              className={`w-[11.875vw] h-[5.462963vh] flex justify-center items-center text-[1.626852vh] font-semibold leading-[2.440741vh] rounded-[0.653646vw] bg-[#00A78B] text-[#FFFFFF] hover:bg-opacity-70 transition-opacity ease-in-out !max-lg:w-full max-lg:h-11 !max-lg:text-sm ${
                 isCobuyerReferrer && 'ml-[13.7vw]'
               }`}
             >

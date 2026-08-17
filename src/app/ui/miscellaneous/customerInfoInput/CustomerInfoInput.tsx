@@ -45,14 +45,14 @@ export function CustomerInfoInput({
 
   return (
     <div
-      className="relative flex flex-col"
+      className="relative flex flex-col !max-lg:w-full"
       style={{
         width: `${width}vw`,
       }}
     >
       <label
         htmlFor={name}
-        className="w-fit mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+        className="w-fit mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm max-lg:mb-2"
       >
         Name and Last Name
       </label>
@@ -64,14 +64,14 @@ export function CustomerInfoInput({
           value={handlingCapitalWords(nameLastname)}
           onChange={onChange}
           disabled={disabled}
-          className={`w-[90%] h-[5.277778vh] rounded-l-[0.520833vw] text-[1.666667vh] text-[#585858] font-medium leading-[1.805555vh] pl-[1.041666vw] outline-none ${
+          className={`w-[90%] h-[5.277778vh] rounded-l-[0.520833vw] text-[1.666667vh] text-[#585858] font-medium leading-[1.805555vh] pl-[1.041666vw] outline-none max-lg:h-11 max-lg:text-sm ${
             disabled && !noDisabledBgColor ? 'bg-[#C9EBE6]' : 'bg-[#F4F4F4]'
           }`}
         />
         <button
           onClick={toggleOpen}
           type="button"
-          className={`w-[10%] h-[5.277778vh] flex justify-center items-center rounded-r-[0.520833vw] ${
+          className={`w-[10%] h-[5.277778vh] flex justify-center items-center rounded-r-[0.520833vw] max-lg:h-11 ${
             disabled ? 'bg-[#C9EBE6]' : 'bg-[#F4F4F4]'
           }`}
         >

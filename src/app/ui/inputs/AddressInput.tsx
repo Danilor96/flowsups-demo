@@ -234,7 +234,7 @@ const AddressInput = ({ label, inputsAddress, fieldErrors, setInputsAddress }: p
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="absolute top-[100%]/ bottom-[70%] mt-1 z-40 w-full min-w-[30rem] bg-[#FFF] rounded-[0.520833vw] border-[0.2vw] border-[#C9EBE6]"
+            className="absolute top-[100%]/ bottom-[70%] mt-1 z-40 w-full min-w-[30rem] bg-[#FFF] rounded-[0.520833vw] border-[0.2vw] border-[#C9EBE6] max-lg:min-w-0"
           >
             <article className="flex flex-col gap-y-4 pb-3">
               {/* first row */}
@@ -302,7 +302,7 @@ const AddressInput = ({ label, inputsAddress, fieldErrors, setInputsAddress }: p
                 </div>
               </section>
               {/* third row */}
-              <section className="flex flex-row justify-around mt-[1vh] mb-[1vh]">
+              <section className="flex flex-row justify-around mt-[1vh] mb-[1vh] max-lg:flex-col max-lg:items-center max-lg:gap-3">
                 <div className="relative flex flex-col w-[28%]">
                   <label
                     htmlFor="state"

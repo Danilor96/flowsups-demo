@@ -509,8 +509,8 @@ export function CustomerSettings() {
         </ButtonContainer>
       </BorderedContent>
       <BorderedContent marginTop={3.703704} title="Task Settings">
-        <div className="flex flex-row mb-[1vh]">
-          <aside className="w-[15vw]">
+        <div className="flex flex-row mb-[1vh] max-lg:flex-col max-lg:gap-2">
+          <aside className="w-[15vw] max-lg:w-full">
             <Paragraph fontSize={2} color="#00a78b" fontWeight={600}>
               Time Span
             </Paragraph>
@@ -522,7 +522,7 @@ export function CustomerSettings() {
         <ContentRow cols={1} gap={3}>
           {inputData.map((el, index) => (
             <ContentRow key={`${el.id}ssssstasksettings;;${index + 183}`} cols={3} gap={3}>
-              <aside className="w-[13.5vw]">
+              <aside className="w-[13.5vw] max-lg:w-full">
                 <Input
                   label=""
                   name={el.name}

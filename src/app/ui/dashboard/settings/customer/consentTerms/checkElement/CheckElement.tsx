@@ -35,16 +35,16 @@ export function CheckElement({
         onChange={onChange}
         spellCheck="false"
         data-id={id}
-        className="w-[84.5%] h-full outline-primaryColor text-[2vh] px-[0.5vw] py-[0.6vh] resize-none"
+        className="w-[84.5%] h-full outline-primaryColor text-[2vh] px-[0.5vw] py-[0.6vh] resize-none max-lg:text-sm max-lg:px-2"
       >
         {description}
       </textarea>
-      <aside className="w-[15.5%] h-full flex flex-row gap-[1vw] items-center border-l-2 border-primaryColor text-[2vh] pl-[0.1vw]">
+      <aside className="w-[15.5%] h-full flex flex-row gap-[1vw] items-center border-l-2 border-primaryColor text-[2vh] pl-[0.1vw] max-lg:gap-1 max-lg:text-xs">
         <button
           onClick={onClick}
           data-id={id}
           data-identity="requered"
-          className={`w-[50%] h-[50%] rounded-md font-semibold transition-colors ${
+          className={`w-[50%] h-[50%] rounded-md font-semibold transition-colors max-lg:h-8 ${
             required
               ? 'border-2 border-primaryColor text-primaryColor hover:bg-primaryColor hover:text-white'
               : 'border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'
@@ -59,7 +59,7 @@ export function CheckElement({
             data-identity="delete"
             onMouseEnter={() => setTrashColor('#FFF')}
             onMouseLeave={() => setTrashColor('#ef4444')}
-            className="w-[50%] h-[50%] flex justify-center items-center border-2 border-red-500 rounded-md hover:bg-red-500 transition-colors"
+            className="w-[50%] h-[50%] flex justify-center items-center border-2 border-red-500 rounded-md hover:bg-red-500 transition-colors max-lg:h-8"
           >
             <TrashDeleteIcon color={trashColor} />
           </button>

@@ -39,15 +39,15 @@ export function PaginationControl({
   const pages = getPaginationNumbers(totalPages, currentPage);
 
   return (
-    <div className="mx-auto flex flex-row justify-center items-center gap-[1vw] mt-[1.8vh] px-[1vw] py-[0.5vh] bg-[#92CEC3] rounded-[1.01vw]"
+    <div className="mx-auto flex flex-row justify-center items-center gap-[1vw] mt-[1.8vh] px-[1vw] py-[0.5vh] bg-[#92CEC3] rounded-[1.01vw] !max-lg:w-[min(92vw,26rem)] max-lg:gap-1 max-lg:px-1 max-lg:flex-wrap max-lg:[&_svg]:!w-4 max-lg:[&_svg]:!h-4"
       style={{ width: `${paginationControlWidth}vw` }}
     >
-      <aside className="w-[9vw] flex flex-row justify-center items-center">
+      <aside className="w-[9vw] flex flex-row justify-center items-center max-lg:w-fit">
         <button
           onClick={onClick}
           disabled={currentPage === 1}
           data-jumpprev={true}
-          className="w-[2vw] h-[2vw] rounded-full flex justify-center items-center"
+          className="w-[2vw] h-[2vw] rounded-full flex justify-center items-center !max-lg:w-9 !max-lg:h-9"
         >
           <FullPrevPagIcon />
         </button>
@@ -57,7 +57,7 @@ export function PaginationControl({
             onClick={onClick}
             disabled={currentPage === 1}
             data-prev={true}
-            className="w-[2vw] h-[2vw] rounded-full flex justify-center items-center"
+            className="w-[2vw] h-[2vw] rounded-full flex justify-center items-center !max-lg:w-9 !max-lg:h-9"
           >
             <PrevPagIcon />
           </button>
@@ -67,7 +67,7 @@ export function PaginationControl({
         </article>
       </aside>
 
-      <aside className="w-[15vw] flex flex-row justify-center items-center">
+      <aside className="w-[15vw] flex flex-row justify-center items-center max-lg:w-fit">
         {pages.map((page, index) =>
           typeof page === 'number' ? (
             <button
@@ -97,7 +97,7 @@ export function PaginationControl({
             onClick={onClick}
             data-next={true}
             disabled={currentPage === totalPages}
-            className="w-[2vw] h-[2vw] rounded-full flex justify-center items-center"
+            className="w-[2vw] h-[2vw] rounded-full flex justify-center items-center !max-lg:w-9 !max-lg:h-9"
           >
             <NextPagIcon />
           </button>
@@ -107,7 +107,7 @@ export function PaginationControl({
           onClick={onClick}
           data-jumpnext={true}
           disabled={currentPage === totalPages}
-          className="w-[2vw] h-[2vw] rounded-full flex justify-center items-center"
+          className="w-[2vw] h-[2vw] rounded-full flex justify-center items-center !max-lg:w-9 !max-lg:h-9"
         >
           <FullNextPagIcon />
         </button>

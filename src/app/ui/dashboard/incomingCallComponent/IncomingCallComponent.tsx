@@ -125,7 +125,7 @@ export function IncomingCallComponent() {
     >
       <DraggableWrapper>
         <div
-          className={`relative w-[24vw] h-fit flex flex-col justify-center items-center gap-[1.5vh] px-[2vw] py-[2.5vh] rounded-[0.4vw] bg-white pointer-events-auto shadow-[0_10px_40px_-10px_rgba(0,0,0,0.20)] ${isMinimized ? 'hidden' : ''}`}
+          className={`relative w-[24vw] h-fit flex flex-col justify-center items-center gap-[1.5vh] px-[2vw] py-[2.5vh] rounded-[0.4vw] bg-white pointer-events-auto shadow-[0_10px_40px_-10px_rgba(0,0,0,0.20)] ${isMinimized ? 'hidden' : ''} !max-lg:w-[min(90vw,24rem)] max-lg:gap-2 max-lg:px-4 max-lg:rounded-xl`}
         >
           <button
             className="absolute top-[1.5vh] right-[1vw] text-slate-400 hover:text-[#0a646f] transition-colors"
@@ -168,7 +168,7 @@ export function IncomingCallComponent() {
           </section>
           <section>
             {transferInProgressOrCompleted && (
-              <p className="w-fit h-fit mx-auto text-[2vh] text-[#00A78B]">Transfer in progress</p>
+              <p className="w-fit h-fit mx-auto text-[2vh] text-[#00A78B] max-lg:text-sm">Transfer in progress</p>
             )}
           </section>
           <Buttons
@@ -183,9 +183,9 @@ export function IncomingCallComponent() {
           <TotalIncomingCallsIndicator />
         </div>
         <div
-          className={`relative pointer-events-auto  flex flex-row items-center justify-between w-[25vw] h-[10vh] bg-white rounded-[1.2vw] overflow-hidden shadow-[0_10px_40px_-10px_rgba(0,0,0,0.20)] border-l-[0.6vw] border-[#0a646f] px-[1.5vw] ${isMinimized ? '' : 'hidden'}`}
+          className={`relative pointer-events-auto  flex flex-row items-center justify-between w-[25vw] h-[10vh] bg-white rounded-[1.2vw] overflow-hidden shadow-[0_10px_40px_-10px_rgba(0,0,0,0.20)] border-l-[0.6vw] border-[#0a646f] px-[1.5vw] ${isMinimized ? '' : 'hidden'} !max-lg:w-[min(90vw,24rem)] max-lg:h-14 max-lg:px-3 max-lg:border-l-4 max-lg:rounded-xl`}
         >
-          <div className="flex flex-col justify-center gap-[0.2vh] max-w-[12vw]">
+          <div className="flex flex-col justify-center gap-[0.2vh] max-w-[12vw] max-lg:max-w-[60vw]">
             <div className="overflow-hidden text-ellipsis whitespace-nowrap">
               <Paragraph fontSize={2} fontWeight={600} color="#0a646f">{`${
                 customerInfo?.firstName || 'Unknown'
@@ -196,7 +196,7 @@ export function IncomingCallComponent() {
             </Paragraph>
           </div>
 
-          <div className="flex flex-row items-center gap-[1.5vw]">
+          <div className="flex flex-row items-center gap-[1.5vw] max-lg:gap-2">
             {/* Mute/Speaker Toggle simulated icons */}
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -220,7 +220,7 @@ export function IncomingCallComponent() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => call?.disconnect()}
-              className="w-[3vw] h-[3vw] flex items-center justify-center bg-[#ED0000] rounded-full text-white  transition-all"
+              className="w-[3vw] h-[3vw] flex items-center justify-center bg-[#ED0000] rounded-full text-white  transition-all max-lg:w-10 max-lg:h-10"
             >
               <div className="">
                 <HangUpCallIcon height="1.2vh" width="2vw" />

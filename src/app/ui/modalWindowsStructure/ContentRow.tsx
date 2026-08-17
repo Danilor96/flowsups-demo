@@ -37,7 +37,7 @@ export function ContentRow({
 }) {
   return (
     <section
-      className="grid items-end grid-col"
+      className="grid items-end grid-col !max-lg:grid-cols-1 !max-lg:gap-3"
       style={{
         width: widthFull ? '100%' : 'fit-content',
         marginLeft: `${marginLeft}vw`,

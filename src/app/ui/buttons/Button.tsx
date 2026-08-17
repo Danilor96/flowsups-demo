@@ -85,7 +85,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       name={name}
       whileHover={!disabled ? { scale: 1.1 } : undefined}
       whileTap={!disabled ? { scale: 0.9 } : undefined}
-      className={`flex items-center px-[0.5vw] transition-colors ease-in-out outline-none leading-none ${
+      className={`flex items-center px-[0.5vw] transition-colors ease-in-out outline-none leading-none !max-lg:min-w-[5rem] max-lg:min-h-9 !max-lg:text-sm max-lg:px-3 ${
         dropShadow && 'shadow-crmFormShadow'
       }`}
       style={{

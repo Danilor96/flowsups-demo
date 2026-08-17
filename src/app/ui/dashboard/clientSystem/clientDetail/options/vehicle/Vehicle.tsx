@@ -686,11 +686,11 @@ export function Vehicle() {
       positionFixed
     >
       {/* modal window main body block */}
-      <article className="relative w-[82.8125vw] h-fit mt-[7.5vh] ml-[8.4375vw] bg-[#FFFFFF] rounded-[0.520833vw] pb-[3.055555vh]">
+      <article className="relative w-[82.8125vw] h-fit mt-[7.5vh] ml-[8.4375vw] bg-[#FFFFFF] rounded-[0.520833vw] pb-[3.055555vh] !max-lg:w-full !max-lg:h-auto !max-lg:mt-0 !max-lg:ml-0 max-lg:rounded-none max-lg:min-h-screen">
         {/* modal window header block */}
-        <aside className="w-full h-[9.259259vh] shadow-crmFormShadow flex items-center justify-center pt-[2.037037vh] pb-[1.6vh]">
-          <div className="w-[79.6875vw] flex flex-row items-center justify-between">
-            <p className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B]">
+        <aside className="w-full h-[9.259259vh] shadow-crmFormShadow flex items-center justify-center pt-[2.037037vh] pb-[1.6vh] max-lg:h-auto max-lg:py-3 max-lg:px-2">
+          <div className="w-[79.6875vw] flex flex-row items-center justify-between !max-lg:w-full">
+            <p className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B] max-lg:text-base max-lg:leading-normal">
               Vehicle
             </p>
             <motion.button
@@ -706,14 +706,14 @@ export function Vehicle() {
         {/* modal window content block */}
 
         {/* 2 */}
-        <div className="w-[78.020833vw] ml-[2.5vw] mt-[2.777778vh]">
-          <article className="w-full flex flex-row justify-between items-center py-[2.314815vh] px-[2.083333vw] bg-[#C9EBE6] rounded-t-[1.041667vw]">
-            <p className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B]">
+        <div className="w-[78.020833vw] ml-[2.5vw] mt-[2.777778vh] !max-lg:w-full max-lg:ml-0 max-lg:mt-2 max-lg:px-2">
+          <article className="w-full flex flex-row justify-between items-center py-[2.314815vh] px-[2.083333vw] bg-[#C9EBE6] rounded-t-[1.041667vw] max-lg:px-2 max-lg:rounded-none">
+            <p className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B] max-lg:text-base max-lg:leading-normal">
               Trade-in
             </p>
             <ShowInfo />
           </article>
-          <article className="w-full h-fit border-b-[0.15625vw] border-l-[0.15625vw] border-r-[0.15625vw] border-[#C9EBE6] rounded-b-[1.041667vw] pt-[3.333333vh] pl-[2.03125vw] pb-[3.611111vh]">
+          <article className="w-full h-fit border-b-[0.15625vw] border-l-[0.15625vw] border-r-[0.15625vw] border-[#C9EBE6] rounded-b-[1.041667vw] pt-[3.333333vh] pl-[2.03125vw] pb-[3.611111vh] max-lg:pt-3 max-lg:pb-3 max-lg:pl-2 max-lg:pr-2 max-lg:rounded-b-none">
             {/* first inputs row */}
             <section className="">
               <div className="relative w-[27.634375vw]">
@@ -724,7 +724,7 @@ export function Vehicle() {
                     id="tradeinFirstInput"
                     onChange={handleChangeTradeinVehicle}
                     value={tradeinSelectedVehicleInput}
-                    className="w-[90%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] outline-none"
+                    className="w-[90%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm outline-none"
                   />
                   <button
                     type="button"
@@ -737,11 +737,11 @@ export function Vehicle() {
               </div>
             </section>
             {/* second inputs row */}
-            <section className="mt-[3.703704vh] flex flex-row">
-              <div className="relative w-[10.9375vw] flex flex-col">
+            <section className="mt-[3.703704vh] flex flex-row max-lg:mt-0 max-lg:flex-col max-lg:gap-3">
+              <div className="relative w-[10.9375vw] flex flex-col !max-lg:w-full">
                 <label
                   htmlFor="vehicleVin"
-                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                 >
                   VIN
                 </label>
@@ -751,7 +751,7 @@ export function Vehicle() {
                   name="vehicleVin"
                   value={vinInput}
                   id="vehicleVin"
-                  className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                  className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                 />
                 <AnimatePresence>
                   {fieldErrors && fieldErrors.vinInput && (
@@ -767,10 +767,10 @@ export function Vehicle() {
                   )}
                 </AnimatePresence>
               </div>
-              <div className="relative flex flex-col w-[10.208333vw] ml-[0.9375vw]">
+              <div className="relative flex flex-col w-[10.208333vw] ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                 <label
                   htmlFor="tradeinVehicleTypeInput"
-                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                 >
                   Vehicle Type
                 </label>
@@ -779,7 +779,7 @@ export function Vehicle() {
                   name="tradeinVehicleTypeInput"
                   id="tradeinVehicleTypeInput"
                   value={tradeinVehicleTypeInput}
-                  className="w-full h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                  className="w-full h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                 >
                   <option value="">Select a Type</option>
                   {vehicleTypesData &&
@@ -809,10 +809,10 @@ export function Vehicle() {
                   Auto-build Vehicle
                 </p>
               </div> */}
-              <div className="relative flex flex-col w-[16.041667vw] ml-[0.9375vw]">
+              <div className="relative flex flex-col w-[16.041667vw] ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                 <label
                   htmlFor="tradeinBookInputValue"
-                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                 >
                   Book Value
                 </label>
@@ -823,11 +823,11 @@ export function Vehicle() {
                     name="tradeinBookInputValue"
                     id="tradeinBookInputValue"
                     value={tradeinBookInput}
-                    className="w-[80%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                    className="w-[80%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                   />
                   <button
                     type="button"
-                    className="w-[20%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805556vh] text-[#00A78B]"
+                    className="w-[20%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805556vh] text-[#00A78B] !max-lg:text-sm"
                   >
                     Book
                   </button>
@@ -846,10 +846,10 @@ export function Vehicle() {
                   )}
                 </AnimatePresence>
               </div>
-              <div className="relative w-[10.052083vw] flex flex-col ml-[0.9375vw]">
+              <div className="relative w-[10.052083vw] flex flex-col ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                 <label
                   htmlFor="tradeinInteriorColor"
-                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                 >
                   Trade Allowance
                 </label>
@@ -859,7 +859,7 @@ export function Vehicle() {
                   type="text"
                   name="tradeinInteriorColor"
                   id="tradeinInteriorColor"
-                  className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                  className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                 />
                 <AnimatePresence>
                   {fieldErrors && fieldErrors.tradeinAllowanceInput && (
@@ -875,10 +875,10 @@ export function Vehicle() {
                   )}
                 </AnimatePresence>
               </div>
-              <div className="relative w-[10.052083vw] flex flex-col ml-[0.9375vw]">
+              <div className="relative w-[10.052083vw] flex flex-col ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                 <label
                   htmlFor="tradeinInteriorColor"
-                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                  className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                 >
                   Trade Payoff
                 </label>
@@ -888,7 +888,7 @@ export function Vehicle() {
                   value={tradeinPayoffInput}
                   name="tradeinInteriorColor"
                   id="tradeinInteriorColor"
-                  className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                  className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                 />
                 <AnimatePresence>
                   {fieldErrors && fieldErrors.tradeinPayoffInput && (
@@ -906,14 +906,14 @@ export function Vehicle() {
               </div>
             </section>
             {/* third inputs row */}
-            <section className="mt-[3.703704vh] flex flex-row">
+            <section className="mt-[3.703704vh] flex flex-row max-lg:mt-0 max-lg:flex-col max-lg:gap-3">
               <article className="flex flex-col gap-[3.703704vh]">
                 {/* col 1 */}
-                <aside className="flex flex-row">
-                  <div className="relative w-[7.291667vw] flex flex-col">
+                <aside className="flex flex-row max-lg:flex-col max-lg:gap-3">
+                  <div className="relative w-[7.291667vw] flex flex-col !max-lg:w-full">
                     <label
                       htmlFor="tradeinYear"
-                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                     >
                       Year
                     </label>
@@ -924,7 +924,7 @@ export function Vehicle() {
                       name="tradeinYear"
                       id="tradeinYear"
                       maxLength={4}
-                      className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                      className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                     />
                     <AnimatePresence>
                       {fieldErrors && fieldErrors.tradeinVehicleYearInput && (
@@ -940,10 +940,10 @@ export function Vehicle() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative w-[7.291667vw] flex flex-col ml-[0.9375vw]">
+                  <div className="relative w-[7.291667vw] flex flex-col ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="tradeinMake"
-                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                     >
                       Make
                     </label>
@@ -953,7 +953,7 @@ export function Vehicle() {
                       name="tradeinMake"
                       value={tradeinVehicleMakeInput}
                       id="tradeinMake"
-                      className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                      className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                     />
                     <AnimatePresence>
                       {fieldErrors && fieldErrors.tradeinVehicleMakeInput && (
@@ -969,10 +969,10 @@ export function Vehicle() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative w-[7.291667vw] flex flex-col ml-[0.9375vw]">
+                  <div className="relative w-[7.291667vw] flex flex-col ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="tradeinModel"
-                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                     >
                       Model
                     </label>
@@ -982,7 +982,7 @@ export function Vehicle() {
                       name="tradeinModel"
                       value={tradeinVehicleModelInput}
                       id="tradeinModel"
-                      className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                      className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                     />
                     <AnimatePresence>
                       {fieldErrors && fieldErrors.tradeinVehicleModelInput && (
@@ -998,10 +998,10 @@ export function Vehicle() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative w-[7.291667vw] flex flex-col ml-[0.9375vw]">
+                  <div className="relative w-[7.291667vw] flex flex-col ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="tradeinTrim"
-                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                     >
                       Trim
                     </label>
@@ -1011,7 +1011,7 @@ export function Vehicle() {
                       name="tradeinTrim"
                       value={tradeinVehicleTrimInput}
                       id="tradeinTrim"
-                      className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                      className="h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                     />
                     <AnimatePresence>
                       {fieldErrors && fieldErrors.tradeinVehicleTrimInput && (
@@ -1029,11 +1029,11 @@ export function Vehicle() {
                   </div>
                 </aside>
                 {/* col 2 */}
-                <aside className="flex flex-row">
-                  <div className="relative flex flex-col w-[10.46875vw]">
+                <aside className="flex flex-row max-lg:flex-col max-lg:gap-3">
+                  <div className="relative flex flex-col w-[10.46875vw] !max-lg:w-full">
                     <label
                       htmlFor="tradeinMileage"
-                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                     >
                       Mileage
                     </label>
@@ -1042,7 +1042,7 @@ export function Vehicle() {
                       name="tradeinMileage"
                       id="tradeinMileage"
                       value={vehicleTradeinMileageInput}
-                      className="w-full h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                      className="w-full h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                     >
                       <option value="">Select a Mileage</option>
                       <option value="add">New Value</option>
@@ -1062,12 +1062,12 @@ export function Vehicle() {
                           name="vehicleNewTradeinMileage"
                           id="vehicleNewTradeinMileage"
                           placeholder="New Tradein Mileage Here"
-                          className="w-[80%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] placeholder:text-[#00A78B]"
+                          className="w-[80%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm placeholder:text-[#00A78B]"
                         />
                         <button
                           type="button"
                           onClick={handleSetNewTradeinMileageValue}
-                          className="w-[20%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805556vh] text-[#00A78B]"
+                          className="w-[20%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805556vh] text-[#00A78B] !max-lg:text-sm"
                         >
                           Done
                         </button>
@@ -1087,10 +1087,10 @@ export function Vehicle() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative flex flex-col w-[10.46875vw] ml-[0.9375vw]">
+                  <div className="relative flex flex-col w-[10.46875vw] ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="tradeinInteriorColorSelect"
-                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                     >
                       Interior Color
                     </label>
@@ -1099,7 +1099,7 @@ export function Vehicle() {
                       name="tradeinInteriorColorSelect"
                       id="tradeinInteriorColorSelect"
                       value={vehicleTradeinInteriorColorInput}
-                      className="w-full h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                      className="w-full h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                     >
                       <option value="">Select a Color</option>
                       <option value="add">New Value</option>
@@ -1119,12 +1119,12 @@ export function Vehicle() {
                           name="vehicleNewMaxMileage"
                           id="vehicleNewMaxMileage"
                           placeholder="New Color Here"
-                          className="w-[80%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] placeholder:text-[#00A78B]"
+                          className="w-[80%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm placeholder:text-[#00A78B]"
                         />
                         <button
                           type="button"
                           onClick={handleSetNewTradeinInteriorColorValue}
-                          className="w-[20%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805556vh] text-[#00A78B]"
+                          className="w-[20%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805556vh] text-[#00A78B] !max-lg:text-sm"
                         >
                           Done
                         </button>
@@ -1144,10 +1144,10 @@ export function Vehicle() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="relative flex flex-col w-[10.46875vw] ml-[0.9375vw]">
+                  <div className="relative flex flex-col w-[10.46875vw] ml-[0.9375vw] !max-lg:w-full max-lg:ml-0">
                     <label
                       htmlFor="tradeinExteriorColorSelect"
-                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                      className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                     >
                       Exterior Color
                     </label>
@@ -1156,7 +1156,7 @@ export function Vehicle() {
                       name="tradeinExteriorColorSelect"
                       id="tradeinExteriorColorSelect"
                       value={vehicleTradeinExteriorColorInput}
-                      className="w-full h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+                      className="w-full h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm"
                     >
                       <option value="">Select a Color</option>
                       <option value="add">New Value</option>
@@ -1176,12 +1176,12 @@ export function Vehicle() {
                           name="vehicleNewMaxMileage"
                           id="vehicleNewMaxMileage"
                           placeholder="New Color Here"
-                          className="w-[80%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] placeholder:text-[#00A78B]"
+                          className="w-[80%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm placeholder:text-[#00A78B]"
                         />
                         <button
                           type="button"
                           onClick={handleSetNewTradeinExteriorColorValue}
-                          className="w-[20%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805556vh] text-[#00A78B]"
+                          className="w-[20%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805556vh] text-[#00A78B] !max-lg:text-sm"
                         >
                           Done
                         </button>
@@ -1203,11 +1203,11 @@ export function Vehicle() {
                   </div>
                 </aside>
               </article>
-              <article className="ml-[2.8125vw] h-full">
-                <div className="relative w-[38.072916vw] flex flex-col">
+              <article className="ml-[2.8125vw] h-full max-lg:ml-0 max-lg:w-full">
+                <div className="relative w-[38.072916vw] flex flex-col !max-lg:w-full">
                   <label
                     htmlFor="tradeinYear"
-                    className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+                    className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm"
                   >
                     Comment
                   </label>
@@ -1216,7 +1216,7 @@ export function Vehicle() {
                     value={tradeinCommentInput}
                     name="tradeinYear"
                     id="tradeinYear"
-                    className="h-[17.962962vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] resize-none outline-none px-[0.3vw] py-[0.7vh]"
+                    className="h-[17.962962vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] !max-lg:text-sm resize-none outline-none px-[0.3vw] py-[0.7vh]"
                   />
                 </div>
               </article>
@@ -1227,7 +1227,7 @@ export function Vehicle() {
           onClick={handleSaveInfo}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="w-[11.875vw] h-[5.462963vh] flex justify-center items-center mt-[6.018519vh] ml-[68.385417vw] text-[1.626852vh] font-semibold leading-[2.440741vh] rounded-[0.653646vw] bg-[#00A78B] text-[#FFFFFF]"
+          className="w-[11.875vw] h-[5.462963vh] flex justify-center items-center mt-[6.018519vh] ml-[68.385417vw] text-[1.626852vh] font-semibold leading-[2.440741vh] rounded-[0.653646vw] bg-[#00A78B] text-[#FFFFFF] !max-lg:w-[calc(100%-1rem)] max-lg:mx-2 max-lg:mt-4 max-lg:h-11 !max-lg:text-sm"
         >
           Save
         </motion.button>

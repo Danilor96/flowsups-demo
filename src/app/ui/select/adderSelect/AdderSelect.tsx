@@ -205,7 +205,7 @@ export function AdderSelect({
       )}
       <div
         ref={ref}
-        className="relative w-fit h-fit"
+        className="relative w-fit h-fit !max-lg:w-full"
         style={{
           width: widthFull ? '100%' : `${width}vw`,
           height: heightFull ? '100%' : height ? `${height}vh` : '5.277778vh',
@@ -231,7 +231,7 @@ export function AdderSelect({
             name={name}
             disabled={disabledInput}
             placeholder={defaultText}
-            className="flex flex-row justify-between items-center px-[0.6vw] outline-none rounded-l-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805555vh] placeholder:text-[#959595]"
+            className="flex flex-row justify-between items-center px-[0.6vw] outline-none rounded-l-[0.520833vw] text-[1.666667vh] font-medium leading-[1.805555vh] placeholder:text-[#959595] !max-lg:text-sm !max-lg:px-2"
             style={{
               width: inputWidth ? `${inputWidth}%` : '80%',
               borderRadius: `${borderRadius}vw`,

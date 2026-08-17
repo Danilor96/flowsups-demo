@@ -214,7 +214,7 @@ const NumberAndRegistration = ({ inputs, setInputs }: NumberAndRegistrationProps
   return (
     <>
       <ContentRow cols={4} gap={1.09375} alignItems="flex-start" marginTop={3}>
-        <div className="mr-10 flex flex-col items-start ">
+        <div className="mr-10 flex flex-col items-start max-lg:mr-0 max-lg:w-full">
           <label
             htmlFor=""
             className="w-fit font-medium"
@@ -226,7 +226,7 @@ const NumberAndRegistration = ({ inputs, setInputs }: NumberAndRegistrationProps
           >
             System Phone # for Publishing
           </label>
-          <div className="flex items-center mb-[2vh] gap-[3.7vh]">
+          <div className="flex items-center mb-[2vh] gap-[3.7vh] max-lg:flex-wrap max-lg:gap-2">
             <span className="font-bold text-[2vh]">
               {formatPhoneNumber(extractDigits(inputs.systemPhonePublishing.replace('+1', '')))}
             </span>

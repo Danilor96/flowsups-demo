@@ -225,6 +225,7 @@ export function TableTwo({
         width: visitAppt ? '41.75vw' : 0,
         opacity: visitAppt ? 1 : 0,
       }}
+      className={`!max-lg:w-full ${!visitAppt ? 'max-lg:hidden' : ''}`}
     >
       <Paragraph marginBottom={2.5} fontSize={2.314815} color="#FFF">
         Showroom

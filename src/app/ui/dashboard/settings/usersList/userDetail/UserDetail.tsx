@@ -768,6 +768,7 @@ export function UserDetail() {
             gap={1}
             widthFull
             justify="space-between"
+            className="max-lg:flex-col max-lg:items-stretch max-lg:gap-3"
           >
             <SystemAccesses />
             <ButtonContainer marginTop={0} gap={1}>

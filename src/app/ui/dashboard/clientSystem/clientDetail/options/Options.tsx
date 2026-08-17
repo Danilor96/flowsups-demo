@@ -282,7 +282,7 @@ export function Options() {
                   Is this the correct vehicle they are interested in?
                 </Paragraph>
               </div>
-              <div className="flex w-full items-center gap-4 mt-2">
+              <div className="flex w-full items-center gap-4 mt-2 max-lg:flex-col max-lg:items-stretch">
                 <div className="w-full">
                   <EndVisitVehiclePicker
                     vehicleId={selectedDeliveryVehicle?.id?.toString()}
@@ -311,11 +311,11 @@ export function Options() {
                 )}
               </div>
               <HorizontalLine marginTop={1.5} marginBottom={1.5} />
-              <div className=" w-full flex flex-row justify-between items-center gap-3">
+              <div className=" w-full flex flex-row justify-between items-center gap-3 max-lg:flex-col max-lg:items-stretch">
                 <Paragraph color="#41B4A0" fontSize={1.8}>
                   <b>Delivery Date</b>
                 </Paragraph>
-                <div className="w-[20vw]">
+                <div className="w-[20vw] max-lg:w-full">
                   <Input
                     label=""
                     name="deliveryStartDate"
@@ -337,11 +337,11 @@ export function Options() {
                   />
                 </div>
               </div>
-              <div className=" w-full flex flex-row justify-between items-center gap-3 mb-4">
+              <div className=" w-full flex flex-row justify-between items-center gap-3 mb-4 max-lg:flex-col max-lg:items-stretch">
                 <Paragraph color="#41B4A0" fontSize={1.8}>
                   <b>Seller Asigned</b>
                 </Paragraph>
-                <div className="w-[20vw]">
+                <div className="w-[20vw] max-lg:w-full">
                   <UserAssignmentSelect
                     users={(sellersData as unknown as User[]) || []}
                     defaultValue={selectedDeliverySellerIds}

@@ -129,7 +129,7 @@ const RegisteredNumbersModal = ({ openCloseModal }: { openCloseModal: () => void
                 <div className="flex flex-col gap-3">
                   {registeredNumbers.map(num => (
                     <BorderedContent key={num.id + '-bc'}>
-                      <div key={num.id} className="flex w-[35rem] items-center justify-between hover:cursor-pointer">
+                      <div key={num.id} className="flex w-[35rem] items-center justify-between hover:cursor-pointer max-lg:w-full max-lg:flex-col max-lg:items-start max-lg:gap-3">
                         <div className="flex flex-col gap-2">
                           <div className="flex gap-4">
                             <span className="font-semibold text-gray-800">{num.phone_number}</span>

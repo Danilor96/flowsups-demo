@@ -49,12 +49,12 @@ export function NavbarItem({ title, count, event, onOpen, openInNewTab }: Navbar
           onOpen(String(e.currentTarget.dataset.event));
         }
       }}
-      className="flex px-[0.650521vw] gap-[0.5vw] justify-between max-w-[13vw] h-[6.185185vh] grid/ grid-cols-[auto_1fr_auto]/ items-center bg-[#FFFFFF] rounded-[2.083333vw] pl-[0.7vw]/ border-2 border-transparent"
+      className="flex px-[0.650521vw] gap-[0.5vw] justify-between max-w-[13vw] h-[6.185185vh] grid/ grid-cols-[auto_1fr_auto]/ items-center bg-[#FFFFFF] rounded-[2.083333vw] pl-[0.7vw]/ border-2 border-transparent max-lg:w-full max-lg:max-w-none max-lg:justify-between max-lg:px-3 max-lg:py-2 max-lg:h-auto"
     >
-      <div className='ml-[0.650521vw]'>
-        <p className="text-[#00A78B] text-center col-start-2/ ml-[0.792708vw]/ w-fit/ text-[1.87vh]">{title}</p>
+      <div className='ml-[0.650521vw] max-lg:ml-0'>
+        <p className="text-[#00A78B] text-center col-start-2/ ml-[0.792708vw]/ w-fit/ text-[1.87vh] max-lg:text-sm">{title}</p>
       </div>
-      <span className="px-[0.65vw] py-[0.25vw] col-start-3/ justify-self-end/ text-[1.981481vh] rounded-full bg-[#C9EBE6] text-[#00A78B] flex/ justify-center/ items-center/ ml-[0.650521vw]/ mr-[0.650521vw]/">
+      <span className="px-[0.65vw] py-[0.25vw] col-start-3/ justify-self-end/ text-[1.981481vh] rounded-full bg-[#C9EBE6] text-[#00A78B] flex/ justify-center/ items-center/ ml-[0.650521vw]/ mr-[0.650521vw]/ max-lg:text-xs max-lg:px-2 max-lg:py-1">
         <AnimatedCounter value={count || 0} />
       </span>
     </motion.button>

@@ -55,7 +55,7 @@ const DecimalInput = ({
         </p>
       </label>
       <div
-        className="relative w-full h-[5.277778vh]"
+        className="relative w-full h-[5.277778vh] !max-lg:w-full max-lg:h-11"
         style={{
           width: width !== 0 ? `${width}vw` : '100%',
         }}
@@ -66,7 +66,7 @@ const DecimalInput = ({
           id={name}
           value={value ? value : ''}
           onChange={onChange}
-          className={`w-full h-full bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-gray-600 font-medium leading-[1.805555vh] pl-[1.041666vw] outline-none 
+          className={`w-full h-full bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-gray-600 font-medium leading-[1.805555vh] pl-[1.041666vw] outline-none !max-lg:text-sm 
             ${type === 'percent' ? 'text-right pr-8' : 'text-left pl-[1.8rem]'}
             `}
           data-identity={identity}

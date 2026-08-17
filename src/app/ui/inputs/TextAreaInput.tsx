@@ -55,7 +55,7 @@ export function TextAreaInput({
         placeholder={placeholder}
         data-index={index}
         disabled={disabled}
-        className="rounded-[0.520833vw] bg-[#F4F4F4] outline-none px-[0.6vw] py-[0.8vh] text-[1.666667vh] text-[#585858] font-medium placeholder:text-[#959595] resize-none"
+        className="rounded-[0.520833vw] bg-[#F4F4F4] outline-none px-[0.6vw] py-[0.8vh] text-[1.666667vh] text-[#585858] font-medium placeholder:text-[#959595] resize-none !max-lg:w-full !max-lg:text-sm max-lg:px-3"
         style={{
           width: width
             ? width !== 0

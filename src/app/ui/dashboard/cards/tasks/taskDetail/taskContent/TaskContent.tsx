@@ -356,17 +356,17 @@ export function TaskContent({
           return (
             <section
               key={`;;;;${el.id}taskcontent'''''${index}`}
-              className={`relative flex flex-row justify-between items-center px-[2vw] ${
+              className={`relative flex flex-row justify-between items-center px-[2vw] max-lg:flex-col max-lg:items-stretch max-lg:gap-2 max-lg:px-3 ${
                 index ? 'mt-[2.314815vh]' : ''
               }`}
             >
               <label
                 htmlFor="clientName"
-                className="h-[5.277778vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] flex justify-center items-center"
+                className="h-[5.277778vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] flex justify-center items-center max-lg:h-auto max-lg:text-sm max-lg:leading-normal max-lg:justify-start"
               >
                 <p>{el.label}</p>
               </label>
-              <div className="flex flex-row gap-[1vw] items-center">
+              <div className="flex flex-row gap-[1vw] items-center max-lg:w-full max-lg:gap-2">
                 {el.detail && el.detailId && !singleCLientData?.id && (
                   <button
                     onClick={() => {
@@ -375,7 +375,7 @@ export function TaskContent({
                       openClientDetail();
                     }}
                     type="button"
-                    className="w-[2vw] h-[2vw] flex justify-center items-center border border-primaryColor rounded-lg shadow-crmFormShadow"
+                    className="w-[2vw] h-[2vw] flex justify-center items-center border border-primaryColor rounded-lg shadow-crmFormShadow max-lg:w-8 max-lg:h-8 max-lg:shrink-0"
                   >
                     <SearchLensGreen />
                   </button>
@@ -403,7 +403,7 @@ export function TaskContent({
               {index === 3 && inputs.interestedVehicleId && can(17) && (
                 <button
                   type="button"
-                  className="absolute left-[67vw] w-fit h-fit"
+                  className="absolute left-[67vw] w-fit h-fit max-lg:left-auto max-lg:right-0 max-lg:top-0"
                   onClick={can(el.can) ? onClickRemoveVehicle : undefined}
                 >
                   <CancelIcon />
@@ -415,13 +415,13 @@ export function TaskContent({
           return (
             <section
               key={`'''''${el.id}taskcontent;;;;${index}`}
-              className={`flex flex-row justify-between items-center px-[2vw] ${
+              className={`flex flex-row justify-between items-center px-[2vw] max-lg:flex-col max-lg:items-stretch max-lg:gap-2 max-lg:px-3 ${
                 index > 0 ? 'mt-[2.314815vh]' : ''
               }`}
             >
               <label
                 htmlFor="clientName"
-                className="h-[5.277778vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] flex justify-center items-center"
+                className="h-[5.277778vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] flex justify-center items-center max-lg:h-auto max-lg:text-sm max-lg:leading-normal max-lg:justify-start"
               >
                 <p>{el.label}</p>
               </label>
@@ -432,7 +432,7 @@ export function TaskContent({
                   value={el.value}
                   onChange={can(el.can) ? el.onChange : () => {}}
                   rows={4}
-                  className="h-[7.277778vh] py-[1vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#585858] font-medium leading-[1.805555vh] pl-[1.041666vw] resize-none outline-none"
+                  className="h-[7.277778vh] py-[1vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#585858] font-medium leading-[1.805555vh] pl-[1.041666vw] resize-none outline-none !max-lg:w-full max-lg:h-24 max-lg:text-sm max-lg:pl-2"
                   style={{
                     width: `${el.width}vw`,
                   }}
@@ -466,11 +466,11 @@ export function TaskContent({
             return (
               <section
                 key={`;;;;${el.id}taskcontent'''''${index}`}
-                className={`flex flex-row justify-between items-center gap-[5vw]`}
+                className={`flex flex-row justify-between items-center gap-[5vw] max-lg:flex-col max-lg:items-stretch max-lg:gap-2`}
               >
                 <label
                   htmlFor="clientName"
-                  className="text-[1.626852vh] font-medium text-[#B3B3B3] flex justify-center items-center"
+                  className="text-[1.626852vh] font-medium text-[#B3B3B3] flex justify-center items-center max-lg:text-sm max-lg:justify-start"
                 >
                   <p>{el.label}</p>
                 </label>
@@ -501,11 +501,11 @@ export function TaskContent({
             return (
               <section
                 key={`;;;;${el.id}taskcontent'''''${index}`}
-                className={`flex flex-row justify-between items-center gap-[5vw]`}
+                className={`flex flex-row justify-between items-center gap-[5vw] max-lg:flex-col max-lg:items-stretch max-lg:gap-2`}
               >
                 <label
                   htmlFor="clientName"
-                  className="text-[1.626852vh] font-medium text-[#B3B3B3] flex justify-center items-center"
+                  className="text-[1.626852vh] font-medium text-[#B3B3B3] flex justify-center items-center max-lg:text-sm max-lg:justify-start"
                 >
                   <p>{el.label}</p>
                 </label>
@@ -530,11 +530,11 @@ export function TaskContent({
             return (
               <section
                 key={`'''''${el.id}taskcontent;;;;${index}`}
-                className={`flex flex-row justify-between items-center gap-[3vw]`}
+                className={`flex flex-row justify-between items-center gap-[3vw] max-lg:flex-col max-lg:items-stretch max-lg:gap-2`}
               >
                 <label
                   htmlFor="clientName"
-                  className="text-[1.626852vh] font-medium text-[#B3B3B3] flex justify-center items-center"
+                  className="text-[1.626852vh] font-medium text-[#B3B3B3] flex justify-center items-center max-lg:text-sm max-lg:justify-start"
                 >
                   <p>{el.label}</p>
                 </label>
@@ -567,11 +567,11 @@ export function TaskContent({
             return (
               <section
                 key={`;;;;${el.id}taskcontent'''''${index}`}
-                className={`flex flex-row justify-between items-center gap-[5vw]`}
+                className={`flex flex-row justify-between items-center gap-[5vw] max-lg:flex-col max-lg:items-stretch max-lg:gap-2`}
               >
                 <label
                   htmlFor="clientName"
-                  className="w-[8.25vw] h-[5.277778vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] flex justify-center items-center text-wrap"
+                  className="w-[8.25vw] h-[5.277778vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] flex justify-center items-center text-wrap max-lg:w-auto max-lg:h-auto max-lg:text-sm max-lg:leading-normal max-lg:justify-start"
                 >
                   <p>{el.label}</p>
                 </label>
@@ -599,11 +599,11 @@ export function TaskContent({
             return (
               <section
                 key={`'''''${el.id}taskcontent;;;;${index}`}
-                className={`flex flex-row justify-between items-center`}
+                className={`flex flex-row justify-between items-center max-lg:flex-col max-lg:items-stretch max-lg:gap-2`}
               >
                 <label
                   htmlFor="clientName"
-                  className="h-[5.277778vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] flex justify-center items-center"
+                  className="h-[5.277778vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] flex justify-center items-center max-lg:h-auto max-lg:text-sm max-lg:leading-normal max-lg:justify-start"
                 >
                   <p>{el.label}</p>
                 </label>

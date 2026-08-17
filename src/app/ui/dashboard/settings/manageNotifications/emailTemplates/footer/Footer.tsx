@@ -39,7 +39,7 @@ export function Footer({
             <motion.aside
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="w-[6.25vw] h-[5.277778vh] flex justify-center items-center text-[#00A78B] bg-[#FFF] border-[0.02vw] border-[#00A78B] font-semibold transition-colors ease-in-out rounded-[0.653646vw] text-[1.626852vh] cursor-pointer"
+              className="w-[6.25vw] h-[5.277778vh] flex justify-center items-center text-[#00A78B] bg-[#FFF] border-[0.02vw] border-[#00A78B] font-semibold transition-colors ease-in-out rounded-[0.653646vw] text-[1.626852vh] cursor-pointer !max-lg:w-32 max-lg:h-11 !max-lg:text-sm"
               data-identity={'footer'}
             >
               {img ? 'Clear image' : 'Select image'}

@@ -29,19 +29,19 @@ export function VehicleCard({
 }) {
   return (
     <aside
-      className="w-full relative py-[1.8vh] px-[0.9vw] "
+      className="w-full relative py-[1.8vh] px-[0.9vw] max-lg:px-3 max-lg:py-3"
       style={{
         boxShadow: 'soft: "0 4px 20px rgba(0, 0, 0, 0.08)"',
       }}
     >
-      <section className="w-full flex flex-row justify-between items-start mb-[2vh]">
-        <div className="flex flex-col gap-1 pr-12">
-          <h2 className="text-[2.2vh] font-bold text-[#0f2b3f] leading-tight capitalize">{`${year} ${brand} ${model}`}</h2>
-          <p className="text-[2vh] font-bold text-[#00A78B]">{`$${price || 0}`}</p>
+      <section className="w-full flex flex-row justify-between items-start mb-[2vh] max-lg:flex-col max-lg:gap-2 max-lg:mb-3">
+        <div className="flex flex-col gap-1 pr-12 max-lg:pr-0">
+          <h2 className="text-[2.2vh] font-bold text-[#0f2b3f] leading-tight capitalize max-lg:text-base">{`${year} ${brand} ${model}`}</h2>
+          <p className="text-[2vh] font-bold text-[#00A78B] max-lg:text-sm">{`$${price || 0}`}</p>
         </div>
-        {options && <div className="absolute top-[1.8vh] right-[1.5vh] h-[1vh]">{options}</div>}
+        {options && <div className="absolute top-[1.8vh] right-[1.5vh] h-[1vh] max-lg:top-2 max-lg:right-2">{options}</div>}
       </section>
-      <section className="w-full grid grid-cols-2 gap-y-[1vh] gap-x-[2vh] text-[1.7vh] font-medium text-[#2D3748]">
+      <section className="w-full grid grid-cols-2 gap-y-[1vh] gap-x-[2vh] text-[1.7vh] font-medium text-[#2D3748] max-lg:grid-cols-2 max-lg:gap-y-2 max-lg:text-xs">
         <div className="flex items-center gap-[1.2vh]">
           <InventoryNotiIcon />
           <p className="truncate">

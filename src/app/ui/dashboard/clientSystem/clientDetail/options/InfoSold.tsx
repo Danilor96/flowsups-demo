@@ -632,7 +632,7 @@ export function InfoSold({
     <>
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`z-[5]/ w-[30vw] bg-white rounded-[0.2vw] px-[1vw] py-[1.5vh] shadow-addNewReportHeadShadow ${
+        className={`z-[5]/ w-[30vw] bg-white rounded-[0.2vw] px-[1vw] py-[1.5vh] shadow-addNewReportHeadShadow !max-lg:w-full max-lg:px-2 ${
           fromCustomerDetail
             ? 'absolute/ top-[-45vh]/ left-[30vw]/'
             : 'fixed/ top-[23vh]/ right-[16vw]/'
@@ -641,7 +641,7 @@ export function InfoSold({
         <Paragraph color="#41B4A0" fontSize={1.8} marginTop={2} fontWeight={600}>
           Is this the correct vehicle they are interested in?
         </Paragraph>
-        <div className="flex mt-[1.5vh] w-full items-center gap-4">
+        <div className="flex mt-[1.5vh] w-full items-center gap-4 max-lg:flex-col max-lg:items-stretch max-lg:gap-3">
           <div className="w-full">
             <EndVisitVehiclePicker
               vehicleId={selectedOtherVehicle?.id.toString()}
@@ -691,7 +691,7 @@ export function InfoSold({
             <Paragraph color="#41B4A0" fontSize={1.5}>
               <b>{splitInput.name}</b>
             </Paragraph>
-            <div className="w-[12vw] flex justify-center gap-[1.5vw]">
+            <div className="w-[12vw] flex justify-center gap-[1.5vw] !max-lg:w-full">
               {splitInput.inputs.map((el) => (
                 <Input
                   key={el.id}
@@ -711,11 +711,11 @@ export function InfoSold({
               ))}
             </div>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center max-lg:flex-col max-lg:items-start max-lg:gap-2">
             <Paragraph color="#41B4A0" fontSize={1.5}>
               <b>Sold Date</b>
             </Paragraph>
-            <div className="w-[18vw]">
+            <div className="w-[18vw] !max-lg:w-full">
               <Input
                 label=""
                 name="soldDate"
@@ -737,11 +737,11 @@ export function InfoSold({
               />
             </div>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center max-lg:flex-col max-lg:items-start max-lg:gap-2">
             <Paragraph color="#41B4A0" fontSize={1.5}>
               <b>Seller Asigned</b>
             </Paragraph>
-            <div className="w-[18vw]">
+            <div className="w-[18vw] !max-lg:w-full">
               <UserAssignmentSelect
                 users={(sellersData as unknown as User[]) || []}
                 defaultValue={sellerIds}
@@ -755,11 +755,11 @@ export function InfoSold({
               />
             </div>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center max-lg:flex-col max-lg:items-start max-lg:gap-2">
             <Paragraph color="#41B4A0" fontSize={1.5}>
               <b>Assigned Manager</b>
             </Paragraph>
-            <div className="w-[18vw]">
+            <div className="w-[18vw] !max-lg:w-full">
               <UserAssignmentSelect
                 users={(salesManagers as unknown as User[]) || []}
                 defaultValue={inputs.assignedManager ? [inputs.assignedManager] : []}
@@ -779,7 +779,7 @@ export function InfoSold({
               <Paragraph color="#41B4A0" fontSize={1.5}>
                 <b>Cobuyer (optional)</b>
               </Paragraph>
-              <aside className="w-[18vw]">
+              <aside className="w-[18vw] !max-lg:w-full">
                 <InfiniteSelector
                   hasMore={hasMore}
                   loading={loading}
@@ -863,7 +863,7 @@ export function InfoSold({
                 />
               </aside>
             </aside>
-            <div className="w-[18vw] ml-auto">
+            <div className="w-[18vw] ml-auto !max-lg:w-full max-lg:ml-0">
               {cobuyerSelected && (
                 <InfiniteSelector
                   hasMore={false}

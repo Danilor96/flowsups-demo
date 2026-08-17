@@ -28,7 +28,7 @@ export function UserImage({
   return (
     <section className="relative w-fit h-fit">
       <article
-        className="rounded-[0.78125vw] overflow-hidden"
+        className="rounded-[0.78125vw] overflow-hidden !max-lg:w-32 !max-lg:h-44"
         style={{
           width: width ? `${width}vw` : '19.166667vw',
           height: height ? `${height}vh` : '31.666667vh',

@@ -31,8 +31,8 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
 
   return (
     <main>
-      <section className="flex flex-row h-[100vh]">
-        <div className="w-full lg:w-[42.5vw] flex flex-col max-lg:px-[2rem] ">
+      <section className="flex flex-col lg:flex-row lg:h-[100vh] min-h-screen">
+        <div className="w-full lg:w-[42.5vw] flex flex-col max-lg:px-[2rem] max-lg:pb-10 ">
           <Image
             className="w-full max-lg:mt-12 h-auto lg:w-[9.21875vw] lg:ml-[1.614583vw] lg:mt-[2.222222vh]"
             width={219}

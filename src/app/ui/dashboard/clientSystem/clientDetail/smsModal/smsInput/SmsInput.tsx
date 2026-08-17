@@ -218,8 +218,8 @@ export function SmsInput() {
   };
 
   return (
-    <section className="w-full flex flex-col gap-2 items-end pr-[1vw] mt-2">
-      <div className="flex flex-row justify-center items-end gap-[0.5vw] h-fit w-full">
+    <section className="w-full flex flex-col gap-2 items-end pr-[1vw] mt-2 max-lg:items-stretch max-lg:pr-2">
+      <div className="flex flex-row justify-center items-end gap-[0.5vw] h-fit w-full max-lg:flex-col max-lg:gap-3 max-lg:items-stretch">
         <TemplatesSelect
           smsTemplateValue={smsTemplateValue}
           handleChangeSmsTemplate={handleChangeSmsTemplate}
@@ -233,10 +233,10 @@ export function SmsInput() {
             options={listPhones}
             value={phone}
             width={10}
-            className="h-[5.092593vh] bg-[#F4F4F4] text-[1.666667vh]"
+            className="h-[5.092593vh] bg-[#F4F4F4] text-[1.666667vh] !max-lg:text-sm"
           />
         </div>
-        <div className="relative w-full min-h-[5.092593vh] h-fit flex flex-row items-end pb-[1.1vh] pl-[0.8vw] pr-[1vw] bg-[#F4F4F4] rounded-[0.520833vw] disabled:bg-[#F4F4F460]">
+        <div className="relative w-full min-h-[5.092593vh] h-fit flex flex-row items-end pb-[1.1vh] pl-[0.8vw] pr-[1vw] bg-[#F4F4F4] rounded-[0.520833vw] disabled:bg-[#F4F4F460] max-lg:px-2">
           <TextInput
             sms={sms}
             handleChangeSms={handleChangeSms}
@@ -252,14 +252,14 @@ export function SmsInput() {
             {fieldErrorMessage && <FieldErrorMessage message={fieldErrorMessage} />}
           </AnimatePresence>
           {!files && (
-            <p className="absolute bottom-[-3.2vh] right-0 text-[2.2vh] text-[#13151b]">
+            <p className="absolute bottom-[-3.2vh] right-0 text-[2.2vh] text-[#13151b] max-lg:text-xs">
               Image size must be 5MB or less
             </p>
           )}
         </div>
       </div>
       {files && !disabled && (
-        <div className="max-w-[75%] h-[4.5vh]">
+        <div className="max-w-[75%] h-[4.5vh] max-lg:max-w-full">
           <FileAttachment files={files} setFiles={handleChangeFile} />
         </div>
       )}

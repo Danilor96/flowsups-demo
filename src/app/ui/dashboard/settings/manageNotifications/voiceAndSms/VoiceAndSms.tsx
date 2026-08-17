@@ -452,7 +452,7 @@ export function VoiceAndSms() {
             ),
           )}
         </ContentRow>
-        <div className="ml-[24vw] mt-[2.777778vh]">
+        <div className="ml-[24vw] mt-[2.777778vh] max-lg:ml-0">
           <TagList
             height={14.259259}
             width={47.395833}

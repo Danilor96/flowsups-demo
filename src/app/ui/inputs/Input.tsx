@@ -323,7 +323,7 @@ export function Input({
           </label>
         )}
         <aside
-          className="h-[5.277778vh] flex flex-row items-center gap-[0.5vw] px-[0.6vw]"
+          className="h-[5.277778vh] flex flex-row items-center gap-[0.5vw] px-[0.6vw] !max-lg:w-full max-lg:h-11 max-lg:px-2"
           style={{
             width: width !== 0 ? `${width}vw` : '100%',
             height: height ? `${height}vh` : undefined,
@@ -367,7 +367,7 @@ export function Input({
             max={maxDateAge ? maxDate : undefined}
             maxLength={max ? max : undefined}
             min={type === 'text' ? min : undefined}
-            className={`w-full h-full outline-none font-medium ${
+            className={`w-full h-full outline-none font-medium !max-lg:text-sm ${
               textAlterColor
                 ? `placeholder:text-[${placeHolderColor || textAlterColor}]`
                 : 'placeholder:text-[#959595]'
@@ -433,7 +433,7 @@ export function Input({
           </label>
         )}
         <aside
-          className="h-[5.277778vh] flex flex-row items-center gap-[0.5vw] px-[0.6vw] rounded-[0.520833vw]"
+          className="h-[5.277778vh] flex flex-row items-center gap-[0.5vw] px-[0.6vw] rounded-[0.520833vw] !max-lg:w-full max-lg:h-11 max-lg:px-2"
           style={{
             width: width !== 0 ? `${width}vw` : '100%',
             height: height ? `${height}vh` : undefined,
@@ -457,7 +457,7 @@ export function Input({
               data-identity={identity}
               max={maxDateAge ? maxDate : undefined}
               maxLength={max ? max : undefined}
-              className={`w-[90%] h-full outline-none font-medium ${
+              className={`w-[90%] h-full outline-none font-medium !max-lg:text-sm ${
                 textAlterColor
                   ? `placeholder:text-[${textAlterColor}]`
                   : 'placeholder:text-[#959595]'
@@ -536,7 +536,7 @@ export function Input({
           </label>
         )}
         <aside
-          className="h-fit"
+          className="h-fit !max-lg:w-full"
           style={{
             width: width === 0 ? '100%' : 'fit-content',
           }}
@@ -550,7 +550,7 @@ export function Input({
             disabled={disabled}
             data-index={index}
             data-identity={identity}
-            className="h-[5.277778vh] outline-none pl-[0.6vw] pr-8 font-medium appearance-none bg-no-repeat bg-[position:right_0.75rem_center] bg-[size:0.7em_0.7em] 
+            className="h-[5.277778vh] outline-none pl-[0.6vw] pr-8 font-medium appearance-none bg-no-repeat bg-[position:right_0.75rem_center] bg-[size:0.7em_0.7em] !max-lg:w-full max-lg:h-11 !max-lg:text-sm 
           bg-[url('/inputSelectArrowIcon.svg')]"
             style={{
               width: width !== 0 ? `${width}vw` : '100%',
@@ -715,7 +715,7 @@ export function Input({
           {...(enableFloating ? getReferenceProps() : {})}
         >
           <aside
-            className="relative h-[5.277778vh] flex rounded-[0.520833vw] px-[0.6vw] overflow-hidden"
+            className="relative h-[5.277778vh] flex rounded-[0.520833vw] px-[0.6vw] overflow-hidden !max-lg:w-full max-lg:h-11 max-lg:px-2"
             style={{
               width: width && width !== 0 ? `${width}vw` : '100%',
               height: height ? `${height}vh` : undefined,
@@ -772,7 +772,7 @@ export function Input({
               data-index={index}
               max={maxDateAge ? maxDate : undefined}
               maxLength={max ? max : undefined}
-              className={`h-full outline-none font-medium bg-[#FFF0] ${
+              className={`h-full outline-none font-medium bg-[#FFF0] !max-lg:text-sm ${
                 textAlterColor
                   ? `placeholder:text-[${textAlterColor}]`
                   : 'placeholder:text-[#959595]'

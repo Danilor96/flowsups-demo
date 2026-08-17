@@ -208,11 +208,11 @@ export function Inventory({
           {showOptions && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="absolute right-[4vw] top-[3vh] z-30 w-[13.802083vw] bg-[#FFF] py-[1.4vh] flex flex-col gap-[3.219444vh] rounded-[0.520833vw] shadow-crmFormShadow"
+              className="absolute right-[4vw] top-[3vh] z-30 w-[13.802083vw] bg-[#FFF] py-[1.4vh] flex flex-col gap-[3.219444vh] rounded-[0.520833vw] shadow-crmFormShadow max-lg:right-2 max-lg:w-40"
             >
               {/* 1 */}
               {!isRead && (
-                <aside className="w-[11.197917vw] mx-auto flex flex-row gap-[0.653646vw]">
+                <aside className="w-[11.197917vw] mx-auto flex flex-row gap-[0.653646vw] max-lg:w-full max-lg:px-2">
                   <input
                     type="checkbox"
                     name=""
@@ -227,7 +227,7 @@ export function Inventory({
               )}
               {/* 2 */}
               {isRead && (
-                <aside className="w-[11.197917vw] mx-auto flex flex-row gap-[0.653646vw]">
+                <aside className="w-[11.197917vw] mx-auto flex flex-row gap-[0.653646vw] max-lg:w-full max-lg:px-2">
                   <input
                     type="checkbox"
                     name=""
@@ -247,7 +247,7 @@ export function Inventory({
                 whileTap={{ scale: 0.9 }}
                 data-notidelete={true}
                 disabled={disabledInput}
-                className="w-[11.197917vw] mx-auto flex flex-row gap-[0.653646vw]"
+                className="w-[11.197917vw] mx-auto flex flex-row gap-[0.653646vw] max-lg:w-full max-lg:px-2"
               >
                 <TrashNotiDeleteIcon />
                 <p className="text-[1.666667vh] font-medium text-[#00A78B]">Delete Notification</p>

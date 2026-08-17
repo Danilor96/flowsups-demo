@@ -56,17 +56,17 @@ export const ChangePasswordForm = ({ token }: { token: string }) => {
         <>
           <FormLabel htmlFor="password" title="Password" />
           <FormInput name="password" password />
-          {state && <p className="text-[2vh] text-red-500">{state.errors?.newPassword}</p>}
+          {state && <p className="text-[2vh] text-red-500 !max-lg:text-sm">{state.errors?.newPassword}</p>}
           <FormLabel htmlFor="confirmPassword" title="Confirm Password" />
           <FormInput name="confirmPassword" password confirmPassword />
-          {state && <p className="text-[2vh] text-red-500">{state.errors?.confirmPassword}</p>}
+          {state && <p className="text-[2vh] text-red-500 !max-lg:text-sm">{state.errors?.confirmPassword}</p>}
           <aside className="mb-[1.666667vh]"></aside>
           <FormSubmitButton buttonText="Continue" />
-          {state && state.serverError && <p className="text-[2vh] mt-2 text-red-500 mx-auto">{state.serverError}</p>}
-          <article className="h-[2.592593vh] mt-[5.161111vh]">
-            <p className="text-[1.859259vh] font-medium leading-[2.231481vh] text-[#B3B3B3]">
+          {state && state.serverError && <p className="text-[2vh] mt-2 text-red-500 mx-auto !max-lg:text-sm">{state.serverError}</p>}
+          <article className="h-[2.592593vh] mt-[5.161111vh] max-lg:h-auto max-lg:mt-3">
+            <p className="text-[1.859259vh] font-medium leading-[2.231481vh] text-[#B3B3B3] !max-lg:text-sm max-lg:leading-normal">
               Return to{' '}
-              <Link className="font-semibold leading-[2.788889vh] text-mainColor" href="/">
+              <Link className="font-semibold leading-[2.788889vh] text-mainColor max-lg:leading-normal" href="/">
                 sign in
               </Link>
             </p>

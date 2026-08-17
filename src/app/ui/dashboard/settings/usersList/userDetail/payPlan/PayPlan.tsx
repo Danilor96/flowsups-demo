@@ -37,7 +37,7 @@ export const PayPlan = ({
   return (
     <BorderedContent>
       <h6 className='text-gray-500 font-semibold'>Pay Plan</h6>
-      <div className="flex mt-4 gap-4 ">
+      <div className="flex mt-4 gap-4 max-lg:flex-col">
         <Input
           label={'Pay Type'}
           name={'pay_type'}
@@ -53,7 +53,7 @@ export const PayPlan = ({
           //   fieldErrors={fieldErrors}
         />
         {isPercent && (
-          <div className="flex gap-4">
+          <div className="flex gap-4 max-lg:flex-col">
             <DecimalInput
               label={'Front Gross'}
               name={'front_gross'}
@@ -104,7 +104,7 @@ export const PayPlan = ({
           </div>
         )}
         {!isPercent && (
-          <div className="flex gap-4">
+          <div className="flex gap-4 max-lg:flex-col">
             <DecimalInput
               label={'Front Gross'}
               name={'front_gross'}

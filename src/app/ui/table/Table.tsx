@@ -104,7 +104,7 @@ export function Table({
   return (
     <>
       <table
-        className="w-full text-[1.8vh] text-[#999999] font-medium"
+        className="w-full text-[1.8vh] text-[#999999] font-medium max-lg:text-sm"
         style={{
           marginTop: `${marginTop ? `${marginTop}vh` : 0}`,
           marginBottom: `${marginBottom ? `${marginBottom}vh` : 0}`,

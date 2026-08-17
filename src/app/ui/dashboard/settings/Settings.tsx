@@ -139,10 +139,10 @@ export function Settings() {
                   onClick={el.onClick}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="w-[10.416667vw] h-[10.416667vw] rounded-[1.041667vw] border-[0.15625vw] border-[#C9EBE6] flex flex-col justify-end pb-[4vh] items-center gap-[4.027778vh] hover:bg-[#C9EBE6] transition-colors ease-in-out"
+                  className="w-[10.416667vw] h-[10.416667vw] rounded-[1.041667vw] border-[0.15625vw] border-[#C9EBE6] flex flex-col justify-end pb-[4vh] items-center gap-[4.027778vh] hover:bg-[#C9EBE6] transition-colors ease-in-out max-lg:w-[9rem] max-lg:h-[9rem] max-lg:rounded-2xl max-lg:pb-4 max-lg:gap-3"
                 >
                   {el.icon}
-                  <p className="text-[1.851852vh] font-semibold text-primaryColor">{el.text}</p>
+                  <p className="text-[1.851852vh] font-semibold text-primaryColor max-lg:text-sm">{el.text}</p>
                 </motion.button>
               ) : null,
             )}

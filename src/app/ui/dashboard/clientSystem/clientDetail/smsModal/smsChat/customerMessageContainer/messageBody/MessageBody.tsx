@@ -12,8 +12,8 @@ export function MessageBody({
   // ----- local states -----
 
   return (
-    <aside className="relative w-[86.5%] min-h-[7.5vh] flex flex-row">
-      <div className="w-full text-[1.666667vh] font-normal leading-[1.805556vh] text-[#959595] rounded-r-[1.8vw] rounded-tl-[1.8vw] bg-[#f3f1f1] px-[1.5vw] py-[1.5vh] break-words text-wrap">
+    <aside className="relative w-[86.5%] min-h-[7.5vh] flex flex-row max-lg:max-w-[85%] max-lg:h-auto">
+      <div className="w-full text-[1.666667vh] font-normal leading-[1.805556vh] text-[#959595] rounded-r-[1.8vw] rounded-tl-[1.8vw] bg-[#f3f1f1] px-[1.5vw] py-[1.5vh] break-words text-wrap !max-lg:text-sm max-lg:px-3 max-lg:py-2">
         <p>{message}</p>
         {filesAttachment &&
           filesAttachment.length > 0 &&
@@ -28,7 +28,7 @@ export function MessageBody({
               <div className="text-gray-900 flex items-center justify-center w-4 h-4">
                 <AttachmentIcon />
               </div>
-              <span className="text-[1.5vh] text-[#00A78B]">
+              <span className="text-[1.5vh] text-[#00A78B] max-lg:text-xs">
                 {fileAttachment.name.slice(0, 20) +
                   `${fileAttachment.name.length > 20 ? '...' : ''}`}
               </span>

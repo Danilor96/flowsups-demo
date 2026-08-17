@@ -233,14 +233,14 @@ export function ConsentTerms() {
     >
       <BorderedContent>
         <div className="relative flex flex-col gap-[1.5vh] mb-[2.5vh] overflow-hidden">
-          <label htmlFor="statement" className="text-[2.3vh] text-primaryColor font-semibold">
+          <label htmlFor="statement" className="text-[2.3vh] text-primaryColor font-semibold max-lg:text-base">
             Policy Statement
           </label>
           <textarea
             onChange={handleChangeStatement}
             id="statement"
             spellCheck="false"
-            className="w-full h-[14vh] px-[0.8vw] py-[0.8vh] resize-none outline-none border focus:outline-2 focus:outline-primaryColor border-primaryColor rounded-md text-[2vh]"
+            className="w-full h-[14vh] px-[0.8vw] py-[0.8vh] resize-none outline-none border focus:outline-2 focus:outline-primaryColor border-primaryColor rounded-md text-[2vh] max-lg:text-sm max-lg:px-2"
             value={statementText}
           />
           {loadingFetch && <Loader />}
@@ -257,7 +257,7 @@ export function ConsentTerms() {
           />
         </ButtonContainer>
         <div className="relative flex flex-col gap-[1.5vh]">
-          <label htmlFor="" className="text-[2.3vh] text-primaryColor font-semibold">
+          <label htmlFor="" className="text-[2.3vh] text-primaryColor font-semibold max-lg:text-base">
             Terms and Conditions to Accept
           </label>
           <ButtonContainer marginTop={0} marginBottom={1} widthFull justify="right">
@@ -274,7 +274,7 @@ export function ConsentTerms() {
             />
           </ButtonContainer>
           <ul className="relative w-full h-[50vh] overflow-y-scroll border-x-2 border-primaryColor">
-            <li className="sticky top-0 z-[1] w-full flex flex-row bg-white border-b-2 border-primaryColor text-[2.3vh] text-primaryColor font-medium px-[1vh]">
+            <li className="sticky top-0 z-[1] w-full flex flex-row bg-white border-b-2 border-primaryColor text-[2.3vh] text-primaryColor font-medium px-[1vh] max-lg:text-sm">
               <p className="w-[85%]">Description</p>
               <aside className="w-[15%] flex flex-row gap-[1vw] border-l-2 border-primaryColor">
                 <p className="w-[50%] text-center">Required</p>

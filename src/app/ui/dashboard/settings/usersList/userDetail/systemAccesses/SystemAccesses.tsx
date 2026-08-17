@@ -49,7 +49,7 @@ export function SystemAccesses() {
   }, [systemAccessesData, selectedUserSystemAccess]);
 
   return (
-    <div className="flex flex-row items-center gap-[1.2vw]">
+    <div className="flex flex-row items-center gap-[1.2vw] max-lg:flex-col max-lg:items-start max-lg:gap-2">
       <aside className="flex flex-row gap-[0.3vw]">
         <p className="text-[2vh] text-primaryColor font-semibold">Today Entry:</p>
         <p className="text-[2vh] text-primaryColor">{systemAccessTime.entry || 'N/E'}</p>

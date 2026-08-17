@@ -408,10 +408,10 @@ export function CustomerConsent({
               )}
             </AnimatePresence>
             <aside className="lg:w-[67vw] lg:mx-auto">
-              <h2 className="text-[2.5vh] md:text-[3vh] text-gray-900 font-semibold mt-[2vh] ml-[1vw] md:ml-0">
+              <h2 className="text-[2.5vh] md:text-[3vh] text-gray-900 font-semibold mt-[2vh] ml-[1vw] md:ml-0 max-lg:text-xl max-lg:mt-4 max-lg:ml-4">
                 Personal
               </h2>
-              <section className="px-[1vw] md:px-0 py-[2vh] flex flex-col md:grid md:grid-cols-2 md:justify-self-center justify-center items-center gap-[3vh] lg:grid-cols-3 lg:w-full">
+              <section className="px-4 md:px-0 py-[2vh] flex flex-col md:grid md:grid-cols-2 md:justify-self-center justify-center items-center gap-[3vh] lg:grid-cols-3 lg:w-full max-lg:gap-6">
                 {/* inputs row 1 */}
                 {inputMobileContentRowOne.map((el, index) =>
                   el.name === 'phone' ? (
@@ -440,10 +440,10 @@ export function CustomerConsent({
               </section>
             </aside>
             <aside className="lg:w-[67vw] lg:mx-auto">
-              <h2 className="text-[2.5vh] md:text-[3vh] text-gray-900 font-semibold mt-[2vh] ml-[1vw] md:ml-0">
+              <h2 className="text-[2.5vh] md:text-[3vh] text-gray-900 font-semibold mt-[2vh] ml-[1vw] md:ml-0 max-lg:text-xl max-lg:mt-4 max-lg:ml-4">
                 Residence
               </h2>
-              <section className="px-[1vw] py-[2vh] flex flex-col justify-center items-center gap-[3vh] md:grid md:grid-cols-2 md:px-0 lg:grid-cols-3 lg:w-full">
+              <section className="px-4 py-[2vh] flex flex-col justify-center items-center gap-[3vh] md:grid md:grid-cols-2 md:px-0 lg:grid-cols-3 lg:w-full max-lg:gap-6">
                 {/* inputs row 2 */}
                 {inputMobileContentRowTwo.map((el, index) =>
                   el.select ? (
@@ -469,7 +469,7 @@ export function CustomerConsent({
                   ),
                 )}
                 <article className="flex flex-col gap-[3vh] md:col-span-2 lg:col-span-3">
-                  <p className="text-[1.8vh] font-normal text-gray-800 md:text-[2.3vh]">
+                  <p className="text-[1.8vh] font-normal text-gray-800 md:text-[2.3vh] max-lg:text-sm max-lg:leading-relaxed">
                     {statement?.consent_statement}
                   </p>
                   {checkInputs &&

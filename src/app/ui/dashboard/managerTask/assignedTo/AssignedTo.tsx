@@ -20,10 +20,10 @@ export function AssignedTo({
   const { isOpen, ref, toggleOpen } = useUiHandler();
 
   return (
-    <div ref={ref} className="relative flex flex-col w-[16.458333vw]">
+    <div ref={ref} className="relative flex flex-col w-[16.458333vw] !max-lg:w-full">
       <label
         htmlFor="leadFollowUpDate"
-        className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+        className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm max-lg:mb-2"
       >
         Assigned To
       </label>
@@ -40,18 +40,18 @@ export function AssignedTo({
           name="leadFollowUpDate"
           id="leadFollowUpDate"
           autoComplete="off"
-          className="w-[90%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] outline-none"
+          className="w-[90%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] outline-none max-lg:h-11 max-lg:text-sm"
         />
         <button
           type="button"
           onClick={toggleOpen}
-          className="w-[10%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw]"
+          className="w-[10%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] max-lg:h-11"
         >
           <ThreeGreenDots />
         </button>
       </aside>
       {isOpen && (
-        <ul className="absolute z-20 w-[21.458333vw] h-fit top-[10vh] text-[1.481482vh] font-medium leading-[2.222222vh] text-[#20B299] bg-[#FFF] rounded-[0.520833vw] py-[0.1vh] shadow-crmFormShadow">
+        <ul className="absolute z-20 w-[21.458333vw] h-fit top-[10vh] text-[1.481482vh] font-medium leading-[2.222222vh] text-[#20B299] bg-[#FFF] rounded-[0.520833vw] py-[0.1vh] shadow-crmFormShadow max-lg:w-full max-lg:top-24 max-lg:text-sm">
           {sellersList &&
             sellersList.map((el) => (
               <li

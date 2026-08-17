@@ -291,12 +291,12 @@ export function RoleList() {
           onDecision={handleDecision}
           loadingConfirmation={loadingFetch}
         >
-          <span className="w-full flex flex-row gap-[0.7vw] justify-between">
+          <span className="w-full flex flex-row gap-[0.7vw] justify-between max-lg:flex-col max-lg:gap-2 max-lg:items-start">
             <Paragraph color="#00a78b" fontSize={2} fontWeight={600}>
               Roles
             </Paragraph>
             <Can requiredPermission={45}>
-              <aside className="w-fit flex flex-row gap-[0.5vw]">
+              <aside className="w-fit flex flex-row gap-[0.5vw] max-lg:flex-wrap max-lg:gap-1">
                 <Paragraph color="#00a78b" fontSize={2} fontWeight={600}>
                   Create New Role:
                 </Paragraph>
@@ -331,7 +331,7 @@ export function RoleList() {
             itemButtonNoCancelIcon
             loading={loadingFetch}
           />
-          <ButtonContainer marginTop={2.5} justify="space-between" widthFull>
+          <ButtonContainer marginTop={2.5} justify="space-between" widthFull className="max-lg:flex-col max-lg:items-stretch max-lg:gap-4">
             <aside>
               <span className="w-fit flex flex-row gap-[0.7vw]">
                 <Paragraph color="#00a78b" fontSize={2} fontWeight={600}>

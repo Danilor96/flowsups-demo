@@ -85,13 +85,13 @@ export function AddingSelect({
 
   return (
     <div
-      className="relative flex flex-col"
+      className="relative flex flex-col !max-lg:w-full"
       style={{
         width: `${width}vw`
       }}
       ref={ref}
     >
-      <label htmlFor={name} className="mb-[1.666667vh] text-[1.626852vh] font-medium text-[#00A78B]">
+      <label htmlFor={name} className="mb-[1.666667vh] text-[1.626852vh] font-medium text-[#00A78B] max-lg:text-sm max-lg:mb-2">
         {label}
       </label>
       <aside
@@ -133,17 +133,17 @@ export function AddingSelect({
           value={value}
           autoComplete="off"
           placeholder="Search..."
-          className="w-[85%] h-[5.277778vh] outline-none pl-[0.2vw] pr-[0.2vw] text-[1.666667vh] font-medium text-[#00A78B]"
+          className="w-[85%] h-[5.277778vh] outline-none pl-[0.2vw] pr-[0.2vw] text-[1.666667vh] font-medium text-[#00A78B] max-lg:h-11 max-lg:text-sm"
         />
         <button
           onClick={() => toggleOpen()}
-          className="w-[20%] h-[5.277778vh] pr-[0.6rem] flex justify-end items-center "
+          className="w-[20%] h-[5.277778vh] pr-[0.6rem] flex justify-end items-center max-lg:h-11"
         >
           <SelectDropIcon color="#00A78B" />
         </button>
       </aside>
       {isOpen && (
-        <aside className="absolute top-[100%] mt-1 min-w-52 border-x border-y border-gray-400 rounded-md z-50 w-full max-h-[23.8vh] bg-[#F4F4F4] text-[1.666667vh] font-medium text-[#959595] shadow-crmFormShadow overflow-y-scroll">
+        <aside className="absolute top-[100%] mt-1 min-w-52 border-x border-y border-gray-400 rounded-md z-50 w-full max-h-[23.8vh] bg-[#F4F4F4] text-[1.666667vh] font-medium text-[#959595] shadow-crmFormShadow overflow-y-scroll max-lg:max-h-48 max-lg:text-sm">
           {filteredOptions.length === 0 && <p className="p-2 mx-auto text-center">No results found</p>}
           {filteredOptions.map(el => (
             <button
@@ -176,7 +176,7 @@ export function AddingSelect({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1 }}
-            className="absolute bottom-[-2.1vh] text-[1.666667vh] text-[#F00]"
+            className="absolute bottom-[-2.1vh] text-[1.666667vh] text-[#F00] max-lg:text-sm"
           >
             {fieldErrors[name][0]}
           </motion.p>

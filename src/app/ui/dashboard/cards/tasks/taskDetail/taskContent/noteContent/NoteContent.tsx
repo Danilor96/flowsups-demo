@@ -23,7 +23,7 @@ export function NoteContent({
   return (
     <>
       <BorderedContent title="Note" marginTop={4.074074}>
-        <aside className="w-full h-[36.759259vh] flex flex-col gap-[1.666667vh] pb-2 overflow-y-scroll">
+        <aside className="w-full h-[36.759259vh] flex flex-col gap-[1.666667vh] pb-2 overflow-y-scroll max-lg:h-auto max-lg:max-h-[50vh]">
           {singleClientTasks && singleClientTasks.notes && singleClientTasks.notes.length > 0 ? (
             singleClientTasks.notes.map((el, index) => (
               <LeadCard
@@ -48,7 +48,7 @@ export function NoteContent({
               id=""
               cols={20}
               rows={10}
-              className="w-full h-[8vh] resize-none outline-none bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] font-medium leading-//[1.805556vh] text-[#585858] py-[1.388889vh] px-[0.885417vw] mx-auto mt-[1.666667vh]"
+              className="w-full h-[8vh] resize-none outline-none bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] font-medium leading-//[1.805556vh] text-[#585858] py-[1.388889vh] px-[0.885417vw] mx-auto mt-[1.666667vh] max-lg:h-28 max-lg:text-sm max-lg:px-3"
               placeholder="Type note here"
             ></textarea>
           </div>

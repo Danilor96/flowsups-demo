@@ -241,3 +241,116 @@ input[type='number'] {
     width: 4rem;
   }
 }
+
+/* ============================================================
+   Responsive foundation (below `lg` = <1024px)
+   Desktop (>=1024px) keeps its vw/vh design untouched.
+   ============================================================ */
+
+/* scrollable horizontal container for wide tables/cards */
+.scrollable-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* only visible on desktop (lg+) */
+@media (max-width: 1023.98px) {
+  .lg-only {
+    display: none !important;
+  }
+}
+
+/* only visible below lg */
+@media (min-width: 1024px) {
+  .below-lg-only {
+    display: none !important;
+  }
+}
+
+/* reusable card */
+.card {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0px 7px 29px 0px rgba(100, 100, 111, 0.2);
+}
+
+/* prevent horizontal page overflow on small screens */
+@media (max-width: 1023.98px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  main {
+    max-width: 100vw;
+  }
+
+  /* readable text floor below lg (desktop vh sizing untouched) */
+  p {
+    font-size: max(0.875rem, 1.8vh) !important;
+    line-height: 1.4 !important;
+  }
+
+  /* readable input text floor below lg */
+  input,
+  select,
+  textarea {
+    font-size: max(0.875rem, 1.4vh) !important;
+    line-height: 1.4 !important;
+  }
+
+  /* readable form label floor below lg */
+  label {
+    font-size: max(0.875rem, 1.4vh) !important;
+    line-height: 1.4 !important;
+  }
+
+  /* bottom-sheet modal below lg */
+  .sheet-modal {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: 0.75rem 0.75rem 0 0;
+  }
+}
+
+/* FullCalendar mobile overrides */
+@media (max-width: 1023.98px) {
+  .fc {
+    font-size: 14px;
+  }
+
+  .fc-scrollgrid {
+    height: 60vh !important;
+    border-radius: 0.5rem !important;
+  }
+
+  .fc-daygrid-day {
+    width: auto;
+  }
+
+  .fc-prev-button,
+  .fc-next-button {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    margin-left: 0.25rem !important;
+  }
+
+  .fc-today-button {
+    font-size: 14px !important;
+  }
+
+  .fc-timeGridWeek-button,
+  .fc-dayGridMonth-button,
+  .fc-timeGridDay-button,
+  .fc-col-header-cell,
+  .fc-timegrid-slot,
+  .fc-timegrid-axis-cushion {
+    font-size: 12px !important;
+  }
+}

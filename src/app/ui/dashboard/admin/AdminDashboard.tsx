@@ -1135,7 +1135,7 @@ export function AdminDashboard({ newTabUrl }: { newTabUrl?: string }) {
             }}
             type="button"
             onClick={handlePrevView}
-            className="w-[5.3125vw] h-[57.685185vh] mt-[13.935185vh] rounded-r-[0.520833vw] bg-[#92CEC3] flex justify-center items-center"
+            className="lg-only w-[5.3125vw] h-[57.685185vh] mt-[13.935185vh] rounded-r-[0.520833vw] bg-[#92CEC3] flex justify-center items-center"
           >
             <PrevBtnIcon />
           </motion.button>
@@ -1150,7 +1150,7 @@ export function AdminDashboard({ newTabUrl }: { newTabUrl?: string }) {
                 exit="exit"
                 key={currentIndex}
                 custom={direction}
-                className="absolute top-0 bottom-0 left-0 right-0 h-full mx-auto w-fit"
+                className="absolute top-0 bottom-0 left-0 right-0 h-full mx-auto w-fit max-lg:w-full"
               >
                 {cards[currentIndex]}
               </motion.aside>
@@ -1166,7 +1166,7 @@ export function AdminDashboard({ newTabUrl }: { newTabUrl?: string }) {
             }}
             type="button"
             onClick={handleNextView}
-            className="w-[5.260417vw] h-[57.685185vh] mt-[13.981481vh] rounded-l-[0.520833vw] bg-[#92CEC3] flex justify-center items-center"
+            className="lg-only w-[5.260417vw] h-[57.685185vh] mt-[13.981481vh] rounded-l-[0.520833vw] bg-[#92CEC3] flex justify-center items-center"
           >
             <NextBtnIcon />
           </motion.button>

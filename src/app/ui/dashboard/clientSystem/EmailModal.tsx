@@ -79,12 +79,12 @@ export function EmailModal() {
       <AnimatePresence>
         {serverErrorMessage && <FailNotification apiMessage={serverErrorMessage} />}
       </AnimatePresence>
-      <aside className="w-[45.520833vw] h-[74.722222vh] bg-[#FFF] mx-auto mt-[12.685185vh] rounded-[0.520833vw]">
-        <article className="h-[9.259259vh] shadow-crmFormShadow flex justify-center items-center">
-          <section className="w-[43vw] flex flex-row justify-between items-center">
-            <p className="flex flex-row items-center gap-[1.041667vw]">
-              <span className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B]">{`${singleCLientData?.first_name} ${singleCLientData?.last_name}`}</span>
-              <span className="w-fit h-[5.462963vh] text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B] px-[1.640625vw] py-[1.805556vh] bg-[#C9EBE6] flex justify-center items-center rounded-[0.520833vw]">{`${
+      <aside className="w-[45.520833vw] h-[74.722222vh] bg-[#FFF] mx-auto mt-[12.685185vh] rounded-[0.520833vw] !max-lg:w-full !max-lg:h-auto !max-lg:mt-0 max-lg:min-h-screen max-lg:rounded-none">
+        <article className="h-[9.259259vh] shadow-crmFormShadow flex justify-center items-center max-lg:h-auto max-lg:min-h-[3.5rem] max-lg:px-3">
+          <section className="w-[43vw] flex flex-row justify-between items-center max-lg:w-full">
+            <p className="flex flex-row items-center gap-[1.041667vw] max-lg:flex-wrap max-lg:gap-2">
+              <span className="text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B] max-lg:text-base max-lg:leading-normal">{`${singleCLientData?.first_name} ${singleCLientData?.last_name}`}</span>
+              <span className="w-fit h-[5.462963vh] text-[2.777778vh] font-semibold leading-[1.805556vh] text-[#00A78B] px-[1.640625vw] py-[1.805556vh] bg-[#C9EBE6] flex justify-center items-center rounded-[0.520833vw] max-lg:h-auto max-lg:text-sm max-lg:leading-normal max-lg:px-3 max-lg:py-1">{`${
                 singleCLientData?.client_status?.status
                   ? singleCLientData?.client_status?.status
                   : ''
@@ -114,45 +114,45 @@ export function EmailModal() {
             </motion.button>
           </section>
         </article>
-        <article className="relative w-full h-[64vh] mx-auto mt-[1.2vh]">
+        <article className="relative w-full h-[64vh] mx-auto mt-[1.2vh] max-lg:h-auto">
           <div className="min-h-full bg-[#FFF]">
-            <aside className="pl-[1.5vw] pt-[1.5vh] flex flex-row items-center">
-              <span className="text-[2vh] font-medium leading-[1.805555vh] text-[#959595] mr-[0.5vw]">
+            <aside className="pl-[1.5vw] pt-[1.5vh] flex flex-row items-center max-lg:pl-3">
+              <span className="text-[2vh] font-medium leading-[1.805555vh] text-[#959595] mr-[0.5vw] max-lg:text-sm max-lg:leading-normal">
                 To:
               </span>
               <input
                 type="text"
                 value={singleCLientData?.email}
                 disabled
-                className="w-full text-[2vh] leading-[1.805555vh] text-[#959595] outline-none bg-[#FFF]"
+                className="w-full text-[2vh] leading-[1.805555vh] text-[#959595] outline-none bg-[#FFF] max-lg:text-sm max-lg:leading-normal"
               />
             </aside>
             <section className="w-full h-[0.25vh] mt-[1.296296vh] mb-[1.296296vh] bg-[#F1F1F1]"></section>
-            <aside className="pl-[1.5vw] flex flex-row items-center">
-              <span className="text-[2vh] font-medium leading-[1.805555vh] text-[#959595] mr-[0.5vw]">
+            <aside className="pl-[1.5vw] flex flex-row items-center max-lg:pl-3">
+              <span className="text-[2vh] font-medium leading-[1.805555vh] text-[#959595] mr-[0.5vw] max-lg:text-sm max-lg:leading-normal">
                 Subject:
               </span>
               <input
                 type="text"
                 onChange={(e: any) => setEmailSubject(e.target.value)}
                 value={emailSubject}
-                className="w-full text-[2vh] leading-[1.805555vh] text-[#959595] bg-none outline-none"
+                className="w-full text-[2vh] leading-[1.805555vh] text-[#959595] bg-none outline-none max-lg:text-sm max-lg:leading-normal"
               />
             </aside>
             <section className="w-full h-[0.4vh] mt-[1.296296vh] bg-[#F1F1F1]"></section>
             <textarea
               onChange={(e: any) => setEmailInput(e.target.value)}
               value={emailInput}
-              className="w-full min-h-[40vh] resize-none outline-none px-[1vw] py-[1vh] text-[2vh] font-normal text-[#959595]"
+              className="w-full min-h-[40vh] resize-none outline-none px-[1vw] py-[1vh] text-[2vh] font-normal text-[#959595] max-lg:min-h-[30vh] max-lg:text-sm max-lg:leading-normal"
             ></textarea>
           </div>
-          <div className="absolute bottom-0 z-30 w-full h-[8vh] flex flex-row justify-between items-center px-[1vw]">
-            <aside className="flex flex-row gap-[1.5vw]">
+          <div className="absolute bottom-0 z-30 w-full h-[8vh] flex flex-row justify-between items-center px-[1vw] max-lg:static max-lg:h-auto max-lg:py-3 max-lg:px-3 max-lg:mt-2">
+            <aside className="flex flex-row gap-[1.5vw] max-lg:gap-2">
               <motion.button
                 onClick={handleSendEmail}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-[9.010417vw] h-[5.462963vh] flex justify-center items-center text-[1.626852vh] ml-[0.729167vw] font-semibold leading-[2.440741vh] rounded-[0.653646vw] bg-[#00A78B] text-[#FFFFFF]"
+                className="w-[9.010417vw] h-[5.462963vh] flex justify-center items-center text-[1.626852vh] ml-[0.729167vw] font-semibold leading-[2.440741vh] rounded-[0.653646vw] bg-[#00A78B] text-[#FFFFFF] !max-lg:w-28 max-lg:h-11 !max-lg:text-sm max-lg:leading-normal max-lg:ml-0"
               >
                 Send
               </motion.button>

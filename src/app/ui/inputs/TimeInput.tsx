@@ -44,7 +44,7 @@ export function TimeInput({
         {label}
       </label>
       <div
-        className={`h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] flex flex-row justify-center items-center gap-[1.728646vw]`}
+        className={`h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] flex flex-row justify-center items-center gap-[1.728646vw] !max-lg:w-full max-lg:h-11 max-lg:gap-2 !max-lg:text-sm`}
         style={{
           width: `${width}vw`,
         }}
@@ -55,7 +55,7 @@ export function TimeInput({
           id={fromName ? fromName : ''}
           onChange={onChange}
           value={from}
-          className={`border-[0.052083vw] border-[#D9D9D9] rounded-[0.3125vw] bg-[#F4F4F4]`}
+          className={`border-[0.052083vw] border-[#D9D9D9] rounded-[0.3125vw] bg-[#F4F4F4] !max-lg:flex-1`}
           style={{
             width: `${fromWidth}vw`,
           }}
@@ -75,7 +75,7 @@ export function TimeInput({
           id={toName ? toName : ''}
           onChange={onChange}
           value={to}
-          className={`border-[0.052083vw] border-[#D9D9D9] rounded-[0.3125vw] bg-[#F4F4F4]`}
+          className={`border-[0.052083vw] border-[#D9D9D9] rounded-[0.3125vw] bg-[#F4F4F4] !max-lg:flex-1`}
           style={{
             width: `${toWidth}vw`,
           }}

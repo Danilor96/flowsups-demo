@@ -122,27 +122,51 @@ export function FlowsupsContent() {
 
   return (
     <>
-      {btnData.map((el, index) => (
-        <FlowsupsBtn
-          onClick={() => {
-            if (openInNewTab) {
-              const flowsupsTextFormatted = el.text.toLowerCase().replaceAll(' ', '');
+      <div className="lg-only">
+        {btnData.map((el, index) => (
+          <FlowsupsBtn
+            onClick={() => {
+              if (openInNewTab) {
+                const flowsupsTextFormatted = el.text.toLowerCase().replaceAll(' ', '');
 
-              window.open(`/dashboard/${flowsupsTextFormatted}`);
+                window.open(`/dashboard/${flowsupsTextFormatted}`);
 
-              return;
-            }
+                return;
+              }
 
-            el.onClick();
-          }}
-          key={`flupsbtn-${el.key}`}
-          left={el.left}
-          text={el.text}
-          top={el.top}
-          textWrap={el.textWrap}
-        />
-      ))}
-      <FlowsupsArrows />
+              el.onClick();
+            }}
+            key={`flupsbtn-${el.key}`}
+            left={el.left}
+            text={el.text}
+            top={el.top}
+            textWrap={el.textWrap}
+          />
+        ))}
+        <FlowsupsArrows />
+      </div>
+      <div className="below-lg-only grid grid-cols-2 gap-3 px-4 py-4 w-full">
+        {btnData.map((el, index) => (
+          <button
+            type="button"
+            key={`flupsbtn-mobile-${el.key}`}
+            onClick={() => {
+              if (openInNewTab) {
+                const flowsupsTextFormatted = el.text.toLowerCase().replaceAll(' ', '');
+
+                window.open(`/dashboard/${flowsupsTextFormatted}`);
+
+                return;
+              }
+
+              el.onClick();
+            }}
+            className="flex justify-center items-center px-3 py-4 rounded-full bg-[#7CC2B4] text-white text-sm font-semibold shadow-lg text-center"
+          >
+            {el.text}
+          </button>
+        ))}
+      </div>
     </>
   );
 }

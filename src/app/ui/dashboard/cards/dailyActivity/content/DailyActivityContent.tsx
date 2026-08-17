@@ -42,9 +42,9 @@ export function DailyActivityContent() {
   };
 
   return (
-    <article className="flex flex-col gap-[1.5vh] pt-[2.5vh] px-[0.25vw]">
+    <article className="flex flex-col gap-[1.5vh] pt-[2.5vh] px-[0.25vw] max-lg:gap-4 max-lg:pt-4 max-lg:px-2">
       <Filter assigned={assignedNameFilter} customer={customerNameFilter} onChange={handleChange} />
-      <aside className="flex flex-row justify-between">
+      <aside className="flex flex-row justify-between max-lg:flex-col max-lg:gap-6 max-lg:w-full">
         <TableOne
           loading={loading}
           assignedFilter={assignedNameFilter}

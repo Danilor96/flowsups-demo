@@ -26,16 +26,16 @@ export function YearPicker() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute top-[120%] right-[50%] translate-x-[50%] z-10 h-[35vh] w-[17vw] rounded-[0.78125vw] bg-[#FFF] shadow-crmFormShadow overflow-hidden"
+      className="absolute top-[120%] right-[50%] translate-x-[50%] z-10 h-[35vh] w-[17vw] rounded-[0.78125vw] bg-[#FFF] shadow-crmFormShadow overflow-hidden max-lg:w-64 max-lg:h-auto max-lg:rounded-xl"
     >
-      <aside className="h-[4.907407vh] bg-[#C9EBE6] flex flex-row justify-center items-center">
+      <aside className="h-[4.907407vh] bg-[#C9EBE6] flex flex-row justify-center items-center max-lg:h-10">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleYearSpanPrev}
           data-prev={true}
           type="button"
-          className="w-[1.5vw] flex justify-center items-center hover:bg-[#D4F1ED80] transition-colors ease-in-out rounded-[0.53vw]"
+          className="w-[1.5vw] flex justify-center items-center hover:bg-[#D4F1ED80] transition-colors ease-in-out rounded-[0.53vw] max-lg:w-9"
         >
           <PrevNavigationIcon />
         </motion.button>
@@ -46,12 +46,12 @@ export function YearPicker() {
           onClick={handleYearSpanNext}
           data-next={true}
           type="button"
-          className="w-[1.5vw] flex justify-center items-center hover:bg-[#D4F1ED80] transition-colors ease-in-out rounded-[0.53vw]"
+          className="w-[1.5vw] flex justify-center items-center hover:bg-[#D4F1ED80] transition-colors ease-in-out rounded-[0.53vw] max-lg:w-9"
         >
           <NextNavigationIcon />
         </motion.button>
       </aside>
-      <aside className="w-full h-[30vh] grid grid-cols-3 p-[0.5890625vw] justify-items-center">
+      <aside className="w-full h-[30vh] grid grid-cols-3 p-[0.5890625vw] justify-items-center max-lg:h-auto max-lg:p-2">
         {yearsInSpan.map(offset => {
           const yearValue = yearSpanStart + offset;
 
@@ -63,7 +63,7 @@ export function YearPicker() {
               value={yearValue}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="w-[3.7vw] h-[6vh] px-[2.2vw] flex justify-center items-center border-[0.052083vw] rounded-[0.520833vw]"
+              className="w-[3.7vw] h-[6vh] px-[2.2vw] flex justify-center items-center border-[0.052083vw] rounded-[0.520833vw] max-lg:w-full max-lg:h-10 max-lg:px-0 max-lg:text-sm"
               style={{
                 backgroundColor: `${
                   yearValue === (isSecondFilterActive ? currentSecondYear : currentYear) ? '#C9EBE6' : '#FFF'

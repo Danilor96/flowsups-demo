@@ -71,7 +71,7 @@ export function DashboardOptions() {
   };
 
   return (
-    <article className="w-[70.677083vw] h-[7.5vh] flex flex-row justify-end items-end gap-[1.041667vw] ml-[27.708333vw] mt-[2.037037vh] pr-[14vw]">
+    <article className="w-[70.677083vw] h-[7.5vh] flex flex-row justify-end items-end gap-[1.041667vw] ml-[27.708333vw] mt-[2.037037vh] pr-[14vw] max-lg:w-full max-lg:h-auto max-lg:justify-center max-lg:items-center max-lg:flex-wrap max-lg:gap-2 max-lg:ml-0 max-lg:mt-3 max-lg:pr-0 max-lg:px-3">
       <DashboardSearch />
       {/* <motion.button
         initial={{
@@ -155,7 +155,7 @@ export function DashboardOptions() {
           onHoverEnd={() => setHoverSettings(false)}
           onClick={openSettings}
           type="button"
-          className="w-[2.7vw] h-[6.074074vh] px-[0.885417vw] py-[0.925926vh] flex flex-row gap-[0.520833vw] bg-[#00A78B] text-[#FFFFFF] justify-center items-center rounded-[1.5vw] text-[2vh]"
+          className="w-[2.7vw] h-[6.074074vh] px-[0.885417vw] py-[0.925926vh] flex flex-row gap-[0.520833vw] bg-[#00A78B] text-[#FFFFFF] justify-center items-center rounded-[1.5vw] text-[2vh] !max-lg:w-10 !max-lg:h-10 max-lg:gap-1 !max-lg:px-0 max-lg:text-sm"
         >
           <motion.p
             animate={hoverSettings ? 'visible' : 'hidden'}
@@ -190,7 +190,7 @@ export function DashboardOptions() {
           onHoverStart={() => setHoverReports(true)}
           onHoverEnd={() => setHoverReports(false)}
           onClick={openReports}
-          className="w-[2.7vw] h-[6.074074vh] rounded-[1.5vw] px-[0.885417vw] py-[0.925926vh] flex flex-row justify-center items-center gap-[0.520833vw] bg-[#00A78B] text-[#FFFFFF] text-[2vh]"
+          className="w-[2.7vw] h-[6.074074vh] rounded-[1.5vw] px-[0.885417vw] py-[0.925926vh] flex flex-row justify-center items-center gap-[0.520833vw] bg-[#00A78B] text-[#FFFFFF] text-[2vh] !max-lg:w-10 !max-lg:h-10 max-lg:gap-1 !max-lg:px-0 max-lg:text-sm"
         >
           <motion.p
             animate={hoverReports ? 'visible' : 'hidden'}

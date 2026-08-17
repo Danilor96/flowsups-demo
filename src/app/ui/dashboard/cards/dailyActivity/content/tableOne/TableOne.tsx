@@ -303,6 +303,7 @@ export function TableOne({
         width: customerVisit ? '41.75vw' : '96%',
         marginInline: customerVisit ? '' : 'auto',
       }}
+      className="!max-lg:w-full"
     >
       <Paragraph marginBottom={2.5} fontSize={2.314815} color="#FFF">
         Appointment

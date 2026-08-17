@@ -338,7 +338,7 @@ export function CreateSmsView({ closeWindow }: CloseWindow) {
             fieldErrors={fieldErrors}
           />
           <ButtonContainer marginTop={2} widthFull justify="space-between" alignContentEnd>
-            <aside className="w-[18vw] flex flex-row justify-between items-end">
+            <aside className="w-[18vw] flex flex-row justify-between items-end max-lg:w-full max-lg:flex-col max-lg:items-stretch max-lg:gap-2">
               <AdderSelect
                 width={10}
                 iconTextGap={0}

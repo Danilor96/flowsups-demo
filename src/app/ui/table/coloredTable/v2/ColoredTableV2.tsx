@@ -573,7 +573,7 @@ export function ColoredTableV2<TData extends object>({
                 // fontSize: `${fontSize ? `${fontSize}vh` : '1.8vh'}`,
                 tableLayout: 'fixed',
               }}
-              className="h-fit font-medium border-collapse relative xl:text-[0.9rem] 2xl:text-[1.15rem]"
+              className="h-fit font-medium border-collapse relative xl:text-[0.9rem] 2xl:text-[1.15rem] !max-lg:w-max !max-lg:min-w-[48rem]"
             >
               <SortableContext items={allDraggableIds} strategy={horizontalListSortingStrategy}>
                 <thead className="sticky top-0 z-[2] group">
@@ -699,8 +699,8 @@ export function ColoredTableV2<TData extends object>({
         )}
       </aside>
       {extraComponent}
-      <aside className="relative flex flex-row items-center mt-[1.8vh] w-full">
-        <div className="flex-1 flex justify-center">
+      <aside className="relative flex flex-row items-center mt-[1.8vh] w-full max-lg:flex-col max-lg:gap-2 max-lg:mt-3">
+        <div className="flex-1 flex justify-center max-lg:w-full">
           {paginationIsActive && !loading && (
             <PaginationControlV2
               currentPage={pagination.pageIndex + 1}
@@ -720,7 +720,7 @@ export function ColoredTableV2<TData extends object>({
         </div>
         {printButtonIsActive && !loading && (
           <div
-            className="absolute right-0"
+            className="absolute right-0 max-lg:static max-lg:mx-auto"
             style={{
               marginTop: !paginationIsActive ? '2.5vh' : undefined,
             }}

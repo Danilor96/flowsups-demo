@@ -58,20 +58,20 @@ export function PaginationControlV2({
   const color = paginationTextColor || '#00A78B'
   return (
     <aside
-      className="mx-auto/ flex flex-row justify-center items-center py-[0.5vh]"
+      className="mx-auto/ flex flex-row justify-center items-center py-[0.5vh] max-lg:flex-wrap max-lg:gap-1 !max-lg:w-[min(92vw,26rem)] max-lg:[&_svg]:!w-4 max-lg:[&_svg]:!h-4"
       style={{ width: `${paginationControlWidth}vw` }}
     >
       <Paragraph fontSize={2} textNoWrap color={color} marginRight={1}>
         {totalItems} Results found
       </Paragraph>
 
-      <div className="flex flex-row justify-center items-center gap-4 ">
+      <div className="flex flex-row justify-center items-center gap-4 max-lg:gap-1">
         <button
           onClick={handleFirstPage}
           disabled={!previousPageActive}
           data-jumpprev={true}
           className={`w-[2vw] h-[2vw] rounded-full flex justify-center items-center
-          ${!previousPageActive ? 'opacity-50 cursor-not-allowed' : ''}`}
+          ${!previousPageActive ? 'opacity-50 cursor-not-allowed' : ''} !max-lg:w-9 !max-lg:h-9`}
         >
           <FullPrevPagIcon color={color} />
         </button>
@@ -80,7 +80,7 @@ export function PaginationControlV2({
           disabled={!previousPageActive}
           data-prev={true}
           className={`w-[2vw] h-[2vw] rounded-full flex justify-center items-center
-          ${!previousPageActive ? 'opacity-50 cursor-not-allowed' : ''}`}
+          ${!previousPageActive ? 'opacity-50 cursor-not-allowed' : ''} !max-lg:w-9 !max-lg:h-9`}
         >
           <PrevPagIcon color={color} />
         </button>
@@ -95,14 +95,14 @@ export function PaginationControlV2({
         of <span>{totalPages}</span>
       </div>
 
-      <div className="flex flex-row justify-center items-center gap-4">
+      <div className="flex flex-row justify-center items-center gap-4 max-lg:gap-1">
         <button
           onClick={handleNextPage}
           data-next={true}
           disabled={!nextPageActive}
           className={`w-[2vw] h-[2vw] rounded-full flex justify-center items-center ${
             !nextPageActive ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
+          } !max-lg:w-9 !max-lg:h-9`}
         >
           <NextPagIcon color={color} />
         </button>
@@ -113,7 +113,7 @@ export function PaginationControlV2({
           disabled={currentPage === totalPages}
           className={`w-[2vw] h-[2vw] rounded-full flex justify-center items-center ${
             !nextPageActive ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
+          } !max-lg:w-9 !max-lg:h-9`}
         >
           <FullNextPagIcon color={color} />
         </button>

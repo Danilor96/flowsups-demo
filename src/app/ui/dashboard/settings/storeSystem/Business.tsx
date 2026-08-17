@@ -601,7 +601,7 @@ export function Business() {
         <ModalContainerTitle title="Business Info" closeWindowFunction={closeBusinessInfo} />
         <ModalContent loading={loading || loadingFetch}>
           <BorderedContent title="Store Settings">
-            <div className="flex flex-row w-full pr-[1.5vw]">
+            <div className="flex flex-row w-full pr-[1.5vw] max-lg:flex-col max-lg:pr-0">
               <ContentRow cols={2} gap={2.777778}>
                 {inputsData1.slice(0, 6).map((el) => (
                   <Input
@@ -679,7 +679,7 @@ export function Business() {
                 ))}
               </ContentRow>
               <article className="flex flex-col w-full">
-                <aside className="relative flex flex-col justify-center items-center gap-[2vh] h-[49%] pb-[2vh] w-full ml-[1.5vw] mt-[4vh] rounded-[0.520833vw] bg-[#F4F4F4]">
+                <aside className="relative flex flex-col justify-center items-center gap-[2vh] h-[49%] pb-[2vh] w-full ml-[1.5vw] mt-[4vh] rounded-[0.520833vw] bg-[#F4F4F4] max-lg:ml-0 max-lg:mt-4 max-lg:h-auto max-lg:py-4 max-lg:px-4">
                   <ImageInput
                     name="image"
                     width={7.552083}
@@ -695,7 +695,7 @@ export function Business() {
                     id="storeName"
                     value={inputs.storeName}
                     onChange={handleInputsChange}
-                    className="w-[7vw] text-[1.9vh] font-medium text-[#B3B3B3] bg-[#F4F4F4] outline-none border-b border-[#B3B3B3]"
+                    className="w-[7vw] text-[1.9vh] font-medium text-[#B3B3B3] bg-[#F4F4F4] outline-none border-b border-[#B3B3B3] max-lg:w-full max-lg:text-sm"
                     placeholder="Store name"
                   />
                   {fieldErrors?.storeName && (
@@ -833,11 +833,11 @@ export function Business() {
           </BorderedContent>
           <Can requiredPermission={47}>
             <BorderedContent title="Sales Goals" marginTop={2.777778}>
-              <div className="flex flex-col gap-[2.77vh] w-[50%] pt-4 ml-4">
-                <div className="flex flex-row gap-[2.777778vh] items-center justify-between">
+              <div className="flex flex-col gap-[2.77vh] w-[50%] pt-4 ml-4 max-lg:w-full max-lg:ml-0">
+                <div className="flex flex-row gap-[2.777778vh] items-center justify-between max-lg:flex-col max-lg:items-stretch max-lg:gap-2">
                   <label
                     htmlFor="monthlySalesGoal"
-                    className="w-fit font-medium text-gray-500 text-[1.8vh]"
+                    className="w-fit font-medium text-gray-500 text-[1.8vh] max-lg:text-sm"
                   >
                     Monthly Sales Goal
                   </label>
@@ -851,10 +851,10 @@ export function Business() {
                     fieldErrors={fieldErrors}
                   />
                 </div>
-                <div className="flex flex-row gap-[2.777778vh] items-center justify-between">
+                <div className="flex flex-row gap-[2.777778vh] items-center justify-between max-lg:flex-col max-lg:items-stretch max-lg:gap-2">
                   <label
                     htmlFor="dailySalesPointsTarget"
-                    className="w-fit font-medium text-gray-500 text-[1.8vh]"
+                    className="w-fit font-medium text-gray-500 text-[1.8vh] max-lg:text-sm"
                   >
                     Daily Sales Points Target
                   </label>
@@ -873,7 +873,7 @@ export function Business() {
                 <h3 className="text-gray-500 font-semibold text-[2.1vh] mb-[2.1vh]">
                   Sales Point Definition
                 </h3>
-                <div className="w-[50%] flex flex-col gap-[2.77vh] ml-4">
+                <div className="w-[50%] flex flex-col gap-[2.77vh] ml-4 max-lg:w-full max-lg:ml-0">
                   <SalesPointInput
                     title="Emails Sent"
                     name="emailsSentNumber"
@@ -960,8 +960,8 @@ const SalesPointInput = ({
   fieldErrors,
 }: SalesPointInputProps) => {
   return (
-    <div className="flex flex-row gap-[2.777778vh] items-center justify-between">
-      <label htmlFor="pointsPerEmailSent" className="w-fit font-medium text-gray-500 text-[1.8vh]">
+    <div className="flex flex-row gap-[2.777778vh] items-center justify-between max-lg:flex-col max-lg:items-stretch max-lg:gap-2">
+      <label htmlFor="pointsPerEmailSent" className="w-fit font-medium text-gray-500 text-[1.8vh] max-lg:text-sm">
         No. of <span className="font-bold">{title}</span> equal to 1 Sales Point
       </label>
       <Input

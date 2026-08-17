@@ -29,7 +29,7 @@ export function BorderedContent({
 }) {
   return (
     <aside
-      className={`w-full border-[0.15625vw] border-[#C9EBE6] rounded-[1.041667vw] ${
+      className={`w-full border-[0.15625vw] border-[#C9EBE6] rounded-[1.041667vw] !max-lg:w-full !max-lg:ml-0 !max-lg:rounded-xl ${
         dottedBorder && 'border-dashed'
       }`}
       style={{
@@ -44,11 +44,11 @@ export function BorderedContent({
       }}
     >
       {title && (
-        <h3 className="w-full h-[6.944444vh] pl-[1.5vw] flex items-center text-[2.222222vh] text-[#00A78B] font-semibold bg-[#C9EBE6] rounded-t-[0.8vw]">
+        <h3 className="w-full h-[6.944444vh] pl-[1.5vw] flex items-center text-[2.222222vh] text-[#00A78B] font-semibold bg-[#C9EBE6] rounded-t-[0.8vw] max-lg:h-auto max-lg:min-h-[3rem] max-lg:py-2 max-lg:px-3 max-lg:text-base max-lg:leading-normal">
           {title}
         </h3>
       )}
-      <section className="my-[1.5vh] mx-[1.5vw]">{children}</section>
+      <section className="my-[1.5vh] mx-[1.5vw] max-lg:my-3 max-lg:mx-2">{children}</section>
       {positionRelative && loading && (
         <Loader
           props={{

@@ -20,6 +20,7 @@ export function ButtonContainer({
   paddingLeft,
   paddingRight,
   paddingBottom,
+  className,
 }: {
   children: React.ReactNode;
   marginTop: number;
@@ -42,10 +43,11 @@ export function ButtonContainer({
   backgroundColor?: string;
   positionRelative?: boolean;
   colSpan?: number;
+  className?: string;
 }) {
   return (
     <div
-      className="flex-row"
+      className={`flex-row ${className ? className : ''}`}
       style={{
         position: positionRelative ? 'relative' : 'static',
         display: `${block ? 'block' : 'flex'}`,

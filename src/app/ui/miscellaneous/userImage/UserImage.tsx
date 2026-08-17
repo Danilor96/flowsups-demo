@@ -28,7 +28,7 @@ export function UserImage({
 
   return (
     <section className="relative w-fit h-fit mt-[4vh]">
-      <article className="w-[16.2vw] h-[27vh] rounded-[0.78125vw] overflow-hidden">
+      <article className="w-[16.2vw] h-[27vh] rounded-[0.78125vw] overflow-hidden !max-lg:w-32 !max-lg:h-44">
         <img
           src={
             profileImageUrl

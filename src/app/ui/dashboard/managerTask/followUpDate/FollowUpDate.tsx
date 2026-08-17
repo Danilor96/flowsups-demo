@@ -20,10 +20,10 @@ export function FollowUpDate({
   const { isOpen, ref, toggleOpen } = useUiHandler();
 
   return (
-    <div ref={ref} className="relative flex flex-col w-[16.458333vw]">
+    <div ref={ref} className="relative flex flex-col w-[16.458333vw] !max-lg:w-full">
       <label
         htmlFor="leadFollowUpDate"
-        className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3]"
+        className="mb-[1.666667vh] text-[1.626852vh] font-medium leading-[2.440741vh] text-[#B3B3B3] max-lg:text-sm max-lg:mb-2"
       >
         Follow Up Date
       </label>
@@ -35,12 +35,12 @@ export function FollowUpDate({
           value={date ? new Date(date).toLocaleString() : ''}
           disabled
           autoComplete="off"
-          className="w-[90%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+          className="w-[90%] h-[5.277778vh] bg-[#F4F4F4] rounded-l-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] max-lg:h-11 max-lg:text-sm"
         />
         <button
           onClick={toggleOpen}
           type="button"
-          className="w-[10%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw]"
+          className="w-[10%] h-[5.277778vh] bg-[#C9EBE6] flex justify-center items-center rounded-r-[0.520833vw] max-lg:h-11"
         >
           <ThreeGreenDots />
         </button>

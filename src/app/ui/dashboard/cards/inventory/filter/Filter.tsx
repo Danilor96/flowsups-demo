@@ -50,7 +50,7 @@ export function Filter({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute top-[6vh] w-[19vw] max-h-[54vh] flex flex-col gap-[2vh] bg-white rounded-[0.520833vw] shadow-crmFormShadow px-[1.2vw] py-[2.777778vh] overflow-y-scroll"
+            className="absolute top-[6vh] w-[19vw] max-h-[54vh] flex flex-col gap-[2vh] bg-white rounded-[0.520833vw] shadow-crmFormShadow px-[1.2vw] py-[2.777778vh] overflow-y-scroll max-lg:w-[90vw] max-lg:left-0 max-lg:right-0 max-lg:mx-auto max-lg:px-4 max-lg:py-4 max-lg:gap-3 max-lg:rounded-xl"
             style={{
               zIndex: 4,
             }}

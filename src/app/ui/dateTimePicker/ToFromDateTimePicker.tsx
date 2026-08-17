@@ -147,7 +147,7 @@ export function ToFromDateTimePicker({
 
   return (
     <section
-      className="absolute bg-[#FFF] w-fit flex flex-col gap-[1.8vh] justify-center items-center rounded-[0.520833vw] px-[0.3vw] py-[0.3vh] shadow-crmFormShadow overflow-hidden"
+      className="absolute bg-[#FFF] w-fit flex flex-col gap-[1.8vh] justify-center items-center rounded-[0.520833vw] px-[0.3vw] py-[0.3vh] shadow-crmFormShadow overflow-hidden !max-lg:w-[calc(100%-1rem)] max-lg:gap-2 max-lg:px-2 max-lg:rounded-xl"
       style={{
         height: height ? `${height}vh` : 'fit-content',
         top: `${top}vh`,
@@ -157,25 +157,25 @@ export function ToFromDateTimePicker({
         zIndex: `${zIndex}`,
       }}
     >
-      <div className="bg-white h-fit w-fit flex flex-row justify-center items-end gap-[0.5vw] px-[0.3vw] py-[0.3vh]">
+      <div className="bg-white h-fit w-fit flex flex-row justify-center items-end gap-[0.5vw] px-[0.3vw] py-[0.3vh] max-lg:w-full max-lg:flex-col max-lg:items-center max-lg:gap-2">
         <aside className="relative">
           <input
             type="date"
             name="date"
             id=""
             value={datePicker}
-            className="bg-[#F4F4F4] text-[#959595] h-[5.277778vh] rounded-[0.520833vw]"
+            className="bg-[#F4F4F4] text-[#959595] h-[5.277778vh] rounded-[0.520833vw] max-lg:h-11 !max-lg:w-full"
             onChange={onChange}
             min={new Date().toLocaleDateString('sv-SE')}
           />
           {fieldErrors?.date && fieldErrors?.date.length > 0 && fieldErrors?.date[0] && (
-            <p className="absolute top-[5.1vh] w-[9vw] flex justify-start text-[1.8vh] text-red-500">
+            <p className="absolute top-[5.1vh] w-[9vw] flex justify-start text-[1.8vh] text-red-500 max-lg:w-40 max-lg:text-sm">
               {fieldErrors?.date[0]}
             </p>
           )}
         </aside>
-        <aside className="flex flex-row gap-[0.3vw]">
-          <article className="relative flex flex-col justify-center items-center">
+        <aside className="flex flex-row gap-[0.3vw] max-lg:w-full max-lg:flex-col max-lg:items-center max-lg:gap-2">
+          <article className="relative flex flex-col justify-center items-center max-lg:w-full">
             <label htmlFor="" className="text-[#00A78B]">
               From
             </label>
@@ -184,7 +184,7 @@ export function ToFromDateTimePicker({
               id=""
               onChange={onChange}
               value={fromDateTime}
-              className="w-[10vw] h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+              className="w-[10vw] h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] max-lg:h-11 !max-lg:w-full max-lg:text-sm"
             >
               <option value="">Time</option>
               {availableFromTime &&
@@ -196,12 +196,12 @@ export function ToFromDateTimePicker({
                 ))}
             </select>
             {fieldErrors?.from && fieldErrors?.from.length > 0 && fieldErrors?.from[0] && (
-              <p className="absolute top-[7.8vh] text-[1.8vh] text-red-500">
+              <p className="absolute top-[7.8vh] text-[1.8vh] text-red-500 max-lg:text-sm">
                 {fieldErrors?.from[0]}
               </p>
             )}
           </article>
-          <article className="relative flex flex-col justify-center items-center">
+          <article className="relative flex flex-col justify-center items-center max-lg:w-full">
             <label htmlFor="" className="text-[#00A78B]">
               To
             </label>
@@ -210,7 +210,7 @@ export function ToFromDateTimePicker({
               id=""
               onChange={onChange}
               value={toDateTime}
-              className="w-[10vw] h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw]"
+              className="w-[10vw] h-[5.277778vh] bg-[#F4F4F4] rounded-[0.520833vw] text-[1.666667vh] text-[#959595] font-medium leading-[1.805555vh] pl-[1.041666vw] max-lg:h-11 !max-lg:w-full max-lg:text-sm"
             >
               <option value="">Time</option>
               {availableToTime &&
@@ -222,7 +222,7 @@ export function ToFromDateTimePicker({
                 ))}
             </select>
             {fieldErrors?.to && fieldErrors?.to.length > 0 && fieldErrors?.to[0] && (
-              <p className="absolute top-[7.8vh] text-[1.8vh] text-red-500">{fieldErrors?.to[0]}</p>
+              <p className="absolute top-[7.8vh] text-[1.8vh] text-red-500 max-lg:text-sm">{fieldErrors?.to[0]}</p>
             )}
           </article>
         </aside>

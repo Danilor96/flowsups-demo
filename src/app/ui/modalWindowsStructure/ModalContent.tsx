@@ -51,7 +51,7 @@ export function ModalContent({
 }) {
   return (
     <div
-      className="px-[1.927083vw] py-[3.240741vh]"
+      className="px-[1.927083vw] py-[3.240741vh] max-lg:px-3 max-lg:py-4 !max-lg:h-auto"
       style={{
         position: positionStatic ? 'static' : 'relative',
         height: `${height ? `${height}vh` : 'fit-content'}`,

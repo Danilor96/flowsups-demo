@@ -59,11 +59,11 @@ export function Slide({
           />
         )}
       </AnimatePresence>
-      <h2 className="w-fit h-[5vh] mt-[1.203704vh] ml-[1.5vw] text-[3.333333vh] font-semibold text-[#01A087]">
+      <h2 className="w-fit h-[5vh] mt-[1.203704vh] ml-[1.5vw] text-[3.333333vh] font-semibold text-[#01A087] max-lg:h-auto max-lg:mt-2 max-lg:ml-4 max-lg:text-2xl">
         {title}
       </h2>
       <aside
-        className="w-[84.270833vw] h-[68.425926vh] mt-[0.833333vh] rounded-[2.604167vw] bg-[#00A28A]"
+        className="w-[84.270833vw] h-[68.425926vh] mt-[0.833333vh] rounded-[2.604167vw] bg-[#00A28A] max-lg:w-full max-lg:h-auto max-lg:min-h-[55vh] max-lg:rounded-2xl"
         style={{
           paddingTop: `${paddingTop}vh`,
           paddingInline: paddingInline && `${paddingInline}vw`,

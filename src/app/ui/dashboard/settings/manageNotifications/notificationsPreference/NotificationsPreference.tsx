@@ -437,7 +437,7 @@ export function NotificationsPreference() {
               : undefined
           }
         />
-        <ButtonContainer marginTop={2} widthFull justify="space-between">
+        <ButtonContainer marginTop={2} widthFull justify="space-between" className="max-lg:flex-col max-lg:items-stretch max-lg:gap-4">
           <article className="relative">
             <TagList
               height={30}
@@ -455,7 +455,7 @@ export function NotificationsPreference() {
               fontSize={2}
             />
           </article>
-          <article className="flex flex-row gap-[1vw]">
+          <article className="flex flex-row gap-[1vw] max-lg:flex-col max-lg:gap-3">
             <aside>
               <TagList
                 height={40}
@@ -480,7 +480,7 @@ export function NotificationsPreference() {
                   key={`userssss${el.key + index}`}
                   data-identity={el.identity}
                   disabled={loadingFetch}
-                  className="w-[6vw] flex justify-center items-center text-[2vh] text-primaryColor border border-primaryColor rounded-md py-[0.5vh] hover:bg-primaryColor hover:text-white transition-colors"
+                  className="w-[6vw] flex justify-center items-center text-[2vh] text-primaryColor border border-primaryColor rounded-md py-[0.5vh] hover:bg-primaryColor hover:text-white transition-colors !max-lg:w-24 max-lg:min-h-9 !max-lg:text-sm"
                   onClick={handleButton}
                 >
                   {el.text}

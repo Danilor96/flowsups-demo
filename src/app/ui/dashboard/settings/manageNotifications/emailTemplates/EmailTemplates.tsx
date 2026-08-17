@@ -397,7 +397,7 @@ export function EmailTemplates() {
   return (
     <ModalContent>
       <BorderedContent title="Email Templates" positionRelative loading={loading || loadingFetch}>
-        <section className="w-full flex flex-row justify-between items-baseline mb-[4vh]">
+        <section className="w-full flex flex-row justify-between items-baseline mb-[4vh] max-lg:flex-col max-lg:items-start max-lg:gap-2">
           <ContentRow cols={5} gap={4} marginTop={3}>
             {dataInfo1.map((el) =>
               el.onClick ? (

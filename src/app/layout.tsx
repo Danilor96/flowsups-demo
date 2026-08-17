@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/app/Provider';
 import { poppins } from '&/fonts';
+import { DesktopOnlyNotice } from '&/miscellaneous/desktopOnlyNotice/DesktopOnlyNotice';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,6 +15,11 @@ export const metadata: Metadata = {
   description: 'Flowsups home page',
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,7 +28,10 @@ export default function RootLayout({
   return (
     <html className="overflow-x-hidden" lang="es">
       <Providers>
-        <body className={`${poppins.className} antialiased`}>{children}</body>
+        <body className={`${poppins.className} antialiased`}>
+          <DesktopOnlyNotice />
+          {children}
+        </body>
       </Providers>
     </html>
   );

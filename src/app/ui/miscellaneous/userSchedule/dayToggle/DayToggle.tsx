@@ -22,8 +22,8 @@ export function DayToggle({
   // ----- local states -----
 
   return (
-    <section className="w-full h-full flex flex-row items-center justify-between">
-      <div className="w-[8vw] flex flex-row items-center justify-between">
+    <section className="w-full h-full flex flex-row items-center justify-between max-lg:gap-2">
+      <div className="w-[8vw] flex flex-row items-center justify-between max-lg:w-20">
         <Paragraph color="#959595" fontSize={2} widthFitContent>
           {day}
         </Paragraph>

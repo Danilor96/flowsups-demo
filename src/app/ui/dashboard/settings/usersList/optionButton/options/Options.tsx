@@ -94,7 +94,7 @@ export function Options({
   };
 
   return (
-    <aside className="absolute top-0 z-10 right-[2.5vw] w-[10.833333vw] h-fit flex flex-col bg-white rounded-[0.520833vw] text-[2vh] font-medium text-[#00A78B] shadow-crmFormShadow overflow-hidden">
+    <aside className="absolute top-0 z-10 right-[2.5vw] w-[10.833333vw] h-fit flex flex-col bg-white rounded-[0.520833vw] text-[2vh] font-medium text-[#00A78B] shadow-crmFormShadow overflow-hidden max-lg:w-40 max-lg:right-0 !max-lg:text-sm">
       {showConfirmation && (
         <ConfirmNotification
           notiMessage={`Are you sure you want to delete: `}

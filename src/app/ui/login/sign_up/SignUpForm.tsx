@@ -13,24 +13,26 @@ export function SignUpForm({ newUserEmail }: { newUserEmail: string }) {
   return (
     <FormElement action={dispatch}>
       <input type="email" name="email" defaultValue={newUserEmail} hidden />
-      <p className="text-[2.25vh] font-semibold leading-[4.183333vh] text-mainColor mb-[1.5vh]">
+      <p className="text-[2.25vh] font-semibold leading-[4.183333vh] text-mainColor mb-[1.5vh] max-lg:text-lg max-lg:mb-3 max-lg:break-all">
         <span className="text-formSecondaryColor">Welcome</span> {newUserEmail}
       </p>
-      <div className="w-[24.583333vw] flex flex-row justify-between items-center mb-[1.296296vh]">
-        <aside className="w-[11.484375vw]">
+      <div className="w-[24.583333vw] flex flex-row justify-between items-center mb-[1.296296vh] max-lg:w-full max-lg:flex-col max-lg:items-stretch max-lg:gap-4 max-lg:mb-4">
+        <aside className="w-[11.484375vw] max-lg:w-full">
           <FormLabel htmlFor="name" title="Name" />
           <FormInput text={true} name="name" id="name" placeholder="Jon" />
-          {state && <p className="text-[2vh] text-red-500">{state.errors?.name}</p>}
+          {state && <p className="text-[2vh] text-red-500 max-lg:text-sm">{state.errors?.name}</p>}
         </aside>
-        <aside className="w-[11.484375vw]">
+        <aside className="w-[11.484375vw] max-lg:w-full">
           <FormLabel htmlFor="lastName" title="Last name" />
           <FormInput text={true} name="lastName" id="lastName" placeholder="Doe" />
-          {state && <p className="text-[2vh] text-red-500">{state.errors?.lastName}</p>}
+          {state && (
+            <p className="text-[2vh] text-red-500 max-lg:text-sm">{state.errors?.lastName}</p>
+          )}
         </aside>
       </div>
       <FormLabel htmlFor="password" title="Password" />
       <FormInput password={true} name="password" id="password" />
-      {state && <p className="text-[2vh] text-red-500">{state.errors?.password}</p>}
+      {state && <p className="text-[2vh] text-red-500 max-lg:text-sm">{state.errors?.password}</p>}
       <FormLabel htmlFor="confirmPassword" title="Confirm password" />
       <FormInput
         password={true}
@@ -38,7 +40,9 @@ export function SignUpForm({ newUserEmail }: { newUserEmail: string }) {
         name="confirmPassword"
         id="confirmPassword"
       />
-      {state && <p className="text-[2vh] text-red-500">{state.errors?.confirmPassword}</p>}
+      {state && (
+        <p className="text-[2vh] text-red-500 max-lg:text-sm">{state.errors?.confirmPassword}</p>
+      )}
       <FormInput
         checkbox={true}
         name="terms"

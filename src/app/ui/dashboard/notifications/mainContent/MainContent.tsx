@@ -125,10 +125,10 @@ export function MainContent() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute left-[-25vw] top-[100%] mt-[2.5vh] z-10 w-[40vw] h-[59.259259vh] rounded-[0.520833vw] bg-[#FFF] shadow-crmFormShadow"
+      className="absolute left-[-25vw] top-[100%] mt-[2.5vh] z-10 w-[40vw] h-[59.259259vh] rounded-[0.520833vw] bg-[#FFF] shadow-crmFormShadow max-lg:fixed max-lg:left-0 max-lg:right-0 max-lg:bottom-0 max-lg:top-auto max-lg:mt-0 max-lg:w-full max-lg:h-[85vh] max-lg:max-h-[85vh] max-lg:rounded-t-xl"
     >
       {/* main container */}
-      <div className="w-[90%] h-[90%] mx-auto mt-[2.3vh]">
+      <div className="w-[90%] h-[90%] mx-auto mt-[2.3vh] flex flex-col max-lg:w-full max-lg:h-full max-lg:mt-0 max-lg:px-2 max-lg:py-2">
         {/* first row */}
         <aside className="flex justify-between">
           <p className="text-[2.1296296vh] font-bold text-[#00A78B]">Notifications</p>
@@ -142,7 +142,7 @@ export function MainContent() {
           </motion.button>
         </aside>
         {/* second row */}
-        <aside className="w-full h-[5.092593vh] flex flex-row justify-between items-center mt-[3.148148vh] rounded-[0.520833vw] bg-[#C9EBE6] px-[0.5vw]">
+        <aside className="w-full h-[5.092593vh] flex flex-row justify-between items-center mt-[3.148148vh] rounded-[0.520833vw] bg-[#C9EBE6] px-[0.5vw] max-lg:h-auto max-lg:mt-2 max-lg:overflow-x-auto max-lg:whitespace-nowrap">
           <button
             onClick={e => handleOptChange(e)}
             type="button"
@@ -242,7 +242,7 @@ export function MainContent() {
         <aside 
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="h-[42vh] relative overflow-y-scroll px-[0.5vw] flex flex-col gap-[1.8vh] mt-[1.5vh]"
+          className="h-[42vh] relative overflow-y-scroll px-[0.5vw] flex flex-col gap-[1.8vh] mt-[1.5vh] max-lg:h-auto max-lg:flex-1 max-lg:mt-1"
         >
           {loadingContent ? (
             <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">

@@ -630,7 +630,7 @@ export function DepositEditor({ depositId, openClose }: { depositId: number; ope
                     fieldErrors={fieldErrors as any}
                   />
                 ))}
-                <div className="w-[34.315104vw] flex items-end gap-4">
+                <div className="w-[34.315104vw] flex items-end gap-4 !max-lg:w-full max-lg:flex-col max-lg:items-stretch max-lg:gap-3">
                   <div className="w-full">
                     <EndVisitVehiclePicker
                       vehicleId={inputs.interestedVehicle}
@@ -718,7 +718,7 @@ export function DepositEditor({ depositId, openClose }: { depositId: number; ope
                 className="hidden"
                 accept="image/png, image/jpeg, application/pdf"
               />
-              <div className="max-w-[40%] mt-[3vh] flex gap-4">
+              <div className="max-w-[40%] mt-[3vh] flex gap-4 max-lg:max-w-full max-lg:mt-3 max-lg:flex-col max-lg:items-stretch">
                 <Button
                   backgroundColor="#FFF"
                   identity="upload"
@@ -743,14 +743,14 @@ export function DepositEditor({ depositId, openClose }: { depositId: number; ope
                       className="w-full h-[5.740741vh] flex flex-row justify-center items-center bg-[#c7e2dd75] cursor-pointer hover:bg-[#94afab75] transition-colors rounded-b-[0.520833vw]"
                     >
                       <DownloadIcon />
-                      <p className="ml-[0.260416vw] text-[1.851852vh] font-normal leading-[1.805556vh] text-[#00A78B]">
+                      <p className="ml-[0.260416vw] text-[1.851852vh] font-normal leading-[1.805556vh] text-[#00A78B] !max-lg:text-sm max-lg:ml-0">
                         Scanned deposit
                       </p>
                     </Link>
                     <button
                       title="Remove file"
                       onClick={e => setShowConfirmNotification(true)}
-                      className="h-[5.740741vh] px-4 flex justify-center items-center border border-red-500 cursor-pointer hover:bg-red-50 transition-colors rounded-b-[0.520833vw]"
+                      className="h-[5.740741vh] px-4 flex justify-center items-center border border-red-500 cursor-pointer hover:bg-red-50 transition-colors rounded-b-[0.520833vw] max-lg:h-12"
                     >
                       <TrashIcon color="#f87171" />
                     </button>
@@ -778,7 +778,7 @@ export function DepositEditor({ depositId, openClose }: { depositId: number; ope
                     handlePrintButtonClick();
                   }}
                   className="hover:scale-110 bg-[#00A78B]/ self-center w-fit font-semibold flex items-center justify-center gap-1 border-[0.052083vw]
-                border-[#00A78B] rounded-[0.8vw] px-[1.5vw] py-[1.2vh] text-[1.666667vh] text-[#00A78B] transition-all duration-300 ease-in-out
+                border-[#00A78B] rounded-[0.8vw] px-[1.5vw] py-[1.2vh] text-[1.666667vh] text-[#00A78B] transition-all duration-300 ease-in-out !max-lg:text-sm max-lg:px-3 max-lg:py-2
                 [svg]:fill-[#00A78B]
                 "
                 >

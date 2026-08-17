@@ -36,9 +36,9 @@ export function UserInfo({ name, lastname }: { name: string; lastname: string })
   const fullName = username ? username : `${name?.split(' ')[0]} ${lastname?.split(' ')[0]}`;
 
   return (
-    <div ref={ref} className="relative w-fit h-[6.833333vh] flex flex-row items-center justify-between">
+    <div ref={ref} className="relative w-fit h-[6.833333vh] flex flex-row items-center justify-between max-lg:h-[3rem]">
       <aside
-        className="w-[12.552083vw] h-fit shadow-crmFormShadow rounded-[2.083333vw] flex flex-row items-center gap-[0.621354vw] cursor-pointer"
+        className="w-[12.552083vw] h-fit shadow-crmFormShadow rounded-[2.083333vw] flex flex-row items-center gap-[0.621354vw] cursor-pointer max-lg:w-auto"
         onClick={toggleOpen}
       >
         <img
@@ -46,9 +46,9 @@ export function UserInfo({ name, lastname }: { name: string; lastname: string })
           height={55}
           src={`${session?.user.img ? session?.user.img : '/users/flowsups_default_avatar.png'}`}
           alt="Image of the user"
-          className="w-[3.0411458vw] h-[6.9vh] object-contain object-center rounded-full"
+          className="w-[3.0411458vw] h-[6.9vh] object-contain object-center rounded-full max-lg:w-9 max-lg:h-9"
         />
-        <p className="flex flex-col justify-center w-fit">
+        <p className="flex flex-col justify-center w-fit max-lg:hidden">
           <span className="w-fit flex flex-row text-[1.94vh] text-[#B3B3B3] capitalize">
             {fullName}
             <span className="mt-[1vh] ml-[0.5vw]">
@@ -60,7 +60,7 @@ export function UserInfo({ name, lastname }: { name: string; lastname: string })
       </aside>
       <AnimatePresence>
         {isOpen && (
-          <motion.article className="absolute w-fit h-fit top-[8vh] right-0 flex justify-center z-10">
+          <motion.article className="absolute w-fit h-fit top-[8vh] right-0 flex justify-center z-10 max-lg:top-14 max-lg:right-0">
             {/* <LogoutButton /> */}
             <UserSettings />
           </motion.article>

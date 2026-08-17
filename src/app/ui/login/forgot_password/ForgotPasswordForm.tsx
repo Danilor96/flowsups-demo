@@ -48,10 +48,10 @@ export function ForgotPasswordForm() {
       <FormLabel htmlFor="email" title="Email" />
       <FormInput email={true} name="email" id="email" />
       {state && <p className="text-[2vh] text-red-500">{state.errors?.email}</p>}
-      <aside className="mb-[1.666667vh]"></aside>
+      <aside className="mb-[1.666667vh] max-lg:mb-2"></aside>
       <FormSubmitButton buttonText="Continue" />
-      <article className="h-[2.592593vh] mt-[5.161111vh]">
-        <p className="text-[1.859259vh] font-medium leading-[2.231481vh] text-[#B3B3B3]">
+      <article className="h-[2.592593vh] mt-[5.161111vh] max-lg:h-auto max-lg:mt-6">
+        <p className="text-[1.859259vh] font-medium leading-[2.231481vh] text-[#B3B3B3] max-lg:text-sm">
           Return to{' '}
           <Link className="font-semibold leading-[2.788889vh] text-mainColor" href="/">
             sign in

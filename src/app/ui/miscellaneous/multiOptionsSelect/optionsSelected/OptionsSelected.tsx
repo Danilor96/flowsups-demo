@@ -49,7 +49,7 @@ export function OptionsSelected({
     <aside>
       <article
         onClick={toggleOpen}
-        className={`h-[5.277778vh] flex flex-row items-center gap-[0.2vw] bg-[#F4F4F4] px-[0.2vw] py-[0.2vh] overflow-hidden cursor-pointer ${
+        className={`h-[5.277778vh] flex flex-row items-center gap-[0.2vw] bg-[#F4F4F4] px-[0.2vw] py-[0.2vh] overflow-hidden cursor-pointer !max-lg:w-full max-lg:h-11 ${
           isOpen ? 'rounded-t-md' : 'rounded-md'
         }`}
         style={{

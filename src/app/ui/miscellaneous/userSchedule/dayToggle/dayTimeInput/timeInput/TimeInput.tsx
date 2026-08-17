@@ -18,7 +18,7 @@ export function TimeInput({
   // ----- local states -----
 
   return (
-    <article className="w-fit flex flex-row items-center justify-center gap-[0.5vw] px-[0.5vw] py-[0.4vh] border-[0.025vw] border-[#D9D9D9] rounded-[0.3125vw]">
+    <article className="w-fit flex flex-row items-center justify-center gap-[0.5vw] px-[0.5vw] py-[0.4vh] border-[0.025vw] border-[#D9D9D9] rounded-[0.3125vw] max-lg:gap-1 max-lg:px-2">
       <Paragraph color="#959595">
         {dayTime && dayTime.length > 0 && dayTime[currentTime]?.time}
       </Paragraph>

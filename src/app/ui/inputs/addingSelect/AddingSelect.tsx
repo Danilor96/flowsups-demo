@@ -59,14 +59,14 @@ export function AddingSelect({
   return (
     <div
       ref={ref}
-      className="relative flex flex-col"
+      className="relative flex flex-col !max-lg:w-full"
       style={{
         width: `${width}vw`,
       }}
     >
       <label
         htmlFor={name}
-        className="mb-[1.666667vh] text-[1.626852vh] font-medium text-[#B3B3B3]"
+        className="mb-[1.666667vh] text-[1.626852vh] font-medium text-[#B3B3B3] max-lg:text-sm max-lg:mb-2"
       >
         {label}
       </label>
@@ -85,18 +85,18 @@ export function AddingSelect({
           disabled={disabled}
           value={capitalString ? handlingCapitalWords(value) : value}
           autoComplete="off"
-          className="w-[85%] h-[5.277778vh] rounded-l-[0.520833vw] bg-[#F4F4F4] outline-none px-[0.6vw] text-[1.666667vh] font-medium text-[#959595]"
+          className="w-[85%] h-[5.277778vh] rounded-l-[0.520833vw] bg-[#F4F4F4] outline-none px-[0.6vw] text-[1.666667vh] font-medium text-[#959595] max-lg:h-11 max-lg:px-2 max-lg:text-sm"
         />
         <button
           onClick={toggleOpen}
           disabled={disabled}
-          className="w-[15%] h-[5.277778vh] pr-[0.3vw] flex justify-end items-center rounded-r-[0.520833vw] bg-[#F4F4F4]"
+          className="w-[15%] h-[5.277778vh] pr-[0.3vw] flex justify-end items-center rounded-r-[0.520833vw] bg-[#F4F4F4] max-lg:h-11"
         >
           <SelectDropIcon />
         </button>
       </aside>
       {isOpen && (
-        <aside className="absolute top-[9.6vh] z-50 w-full max-h-[15.8vh] bg-[#F4F4F4] text-[1.666667vh] font-medium text-[#959595] shadow-crmFormShadow overflow-y-scroll">
+        <aside className="absolute top-[9.6vh] z-50 w-full max-h-[15.8vh] bg-[#F4F4F4] text-[1.666667vh] font-medium text-[#959595] shadow-crmFormShadow overflow-y-scroll max-lg:top-24 max-lg:max-h-40 max-lg:text-sm">
           {filteredOptions.map((el) => (
             <button
               key={el.value}

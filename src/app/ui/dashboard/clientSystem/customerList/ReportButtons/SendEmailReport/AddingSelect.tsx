@@ -75,7 +75,7 @@ export function AddingSelect({
 
   return (
     <div
-      className="relative flex flex-col"
+      className="relative flex flex-col !max-lg:w-full"
       style={{
         width: `${width}vw`
       }}
@@ -109,7 +109,7 @@ export function AddingSelect({
             </button>
           </div>
         )}
-        <div className="w-[85%] h-[5.277778vh] pl-[0.2vw] pr-[0.2vw]">
+        <div className="w-[85%] h-[5.277778vh] pl-[0.2vw] pr-[0.2vw] max-lg:h-11">
           <input
             onChange={e => {
               handleFilter(e);
@@ -122,12 +122,12 @@ export function AddingSelect({
             value={value}
             autoComplete="off"
             placeholder="Search..."
-            className="outline-none text-[1.666667vh] font-medium text-[#00A78B] w-full h-full"
+            className="outline-none text-[1.666667vh] font-medium text-[#00A78B] w-full h-full max-lg:text-sm"
           />
         </div>
         <button
           onClick={() => toggleOpen()}
-          className="w-[20%] h-[5.277778vh] pr-[0.6rem] flex justify-end items-center "
+          className="w-[20%] h-[5.277778vh] pr-[0.6rem] flex justify-end items-center max-lg:h-11"
         >
           <SelectDropIcon color="#00A78B" />
         </button>
@@ -135,7 +135,7 @@ export function AddingSelect({
       {isOpen && (
         <aside
           className="min-w-[100%] max-w-max py-2 flex flex-col gap-2 border-x border-y border-gray-400 absolute rounded-md z-50 w-full 
-          max-h-[23.8vh] bg-[#F4F4F4] text-[1.666667vh] font-medium text-[#959595] shadow-crmFormShadow overflow-y-scroll  top-[5.999vh] "
+          max-h-[23.8vh] bg-[#F4F4F4] text-[1.666667vh] font-medium text-[#959595] shadow-crmFormShadow overflow-y-scroll  top-[5.999vh] max-lg:max-h-48 max-lg:text-sm"
         >
           {filteredOptions.length === 0 && <p className="p-2 mx-auto text-center">No results found</p>}
           {filteredOptions.map(el => (

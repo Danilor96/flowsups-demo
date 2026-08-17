@@ -154,7 +154,7 @@ export function MassiveSms() {
         <ModalContainerTitle title="Send Sms" closeWindowFunction={openCloseMassiveSms} />
         <ModalContent overflowVisible minHeight={67} loading={loading || loadingFetch}>
           <SendTo />
-          <aside className="flex flex-row justify-between pt-[3vh]">
+          <aside className="flex flex-row justify-between pt-[3vh] max-lg:flex-col max-lg:gap-3">
             <TemplatesSelect
               smsTemplateValue={smsTemplateValueSearch}
               handleChangeSmsTemplate={handleChangeSmsTemplate}
@@ -191,7 +191,7 @@ export function MassiveSms() {
               onClick={handleSelectButton}
             />
           </aside>
-          <aside className="relative mt-[3vh] h-[20vh]">
+          <aside className="relative mt-[3vh] h-[20vh] max-lg:h-auto">
             <article className="relative w-full h-full">
               <textarea
                 ref={textAreaRef}
@@ -216,12 +216,12 @@ export function MassiveSms() {
               />
             </article>
             {!file && (
-              <p className="absolute top-[19.68vh] right-0 text-[2.2vh] text-[#13151b]">
+              <p className="absolute top-[19.68vh] right-0 text-[2.2vh] text-[#13151b] max-lg:static max-lg:text-xs max-lg:mt-2">
                 Image size must be 5MB or less
               </p>
             )}
           </aside>
-          <aside className="w-full mt-[3vh] flex flex-row justify-between">
+          <aside className="w-full mt-[3vh] flex flex-row justify-between max-lg:flex-col max-lg:gap-3">
             <FileInput fileInputRef={fileInputRef} onChange={handleChangeFile} />
             <InputButtons
               sendSms={handleSendSms}
@@ -231,7 +231,7 @@ export function MassiveSms() {
             />
           </aside>
           {file && !loadingFetch && (
-            <div className="max-w-[75%] h-[4.5vh] mx-auto mt-[2vh]">
+            <div className="max-w-[75%] h-[4.5vh] mx-auto mt-[2vh] max-lg:max-w-full">
               <FileAttachment files={file ? [file] : null} setFiles={handleChangeFile} />
             </div>
           )}

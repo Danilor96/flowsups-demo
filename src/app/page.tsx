@@ -19,22 +19,22 @@ export default async function Home({ searchParams }: { searchParams: { reason?: 
 
   return (
     <main>
-      <section className="flex flex-row h-[100vh]">
-        <div className="relative w-[42.1875vw] flex flex-col">
+      <section className="flex flex-col lg:flex-row lg:h-[100vh] min-h-screen">
+        <div className="relative w-full lg:w-[42.1875vw] flex flex-col">
           <SessionExpiration reason={searchParams.reason} />
           <Image
-            className="w-[9.21875vw] h-auto ml-[1.614583vw] mt-[2.222222vh]"
+            className="w-36 sm:w-40 h-auto ml-4 mt-4 lg:w-[9.21875vw] lg:ml-[1.614583vw] lg:mt-[2.222222vh]"
             width={219}
             height={52}
             src="/flowsups.png"
             alt="Logo of flowsups app"
           />
-          <aside className="w-[32.65625vw] h-[63.981481vh] shadow-crmFormShadow rounded-[0.520833vw] mt-[12.407407vh] ml-[4.479167vw] mb-[17.5vh] mr-[5.052083vw] pr-[3.441667vw] pl-[4.635417vw] pb-[0.925926vh] pt-[2.332407vh] flex flex-col items-center">
+          <aside className="w-full max-w-md mx-auto my-8 px-5 py-6 flex flex-col items-center shadow-crmFormShadow rounded-[0.520833vw] lg:w-[32.65625vw] lg:h-[63.981481vh] lg:mt-[12.407407vh] lg:ml-[4.479167vw] lg:mb-[17.5vh] lg:mr-[5.052083vw] lg:pr-[3.441667vw] lg:pl-[4.635417vw] lg:pb-[0.925926vh] lg:pt-[2.332407vh]">
             <FormTitle title="Sign in" text="Enter your details to continue" />
             <SignInForm />
           </aside>
         </div>
-        <div className="relative w-[57.8125vw]">
+        <div className="hidden lg:block relative w-[57.8125vw]">
           <Image
             src="/loginImage.png"
             alt="Presentation image of the CRM app"

@@ -32,21 +32,21 @@ export default async function ForgotPasswordPage({ params }: { params: { code: s
 
   return (
     <main>
-      <section className="flex flex-row h-[100vh]">
-        <div className="w-[42.5vw] flex flex-col">
+      <section className="flex flex-col lg:flex-row lg:h-[100vh] min-h-screen">
+        <div className="w-full lg:w-[42.5vw] flex flex-col">
           <Image
-            className="w-[9.21875vw] h-auto ml-[1.614583vw] mt-[2.222222vh]"
+            className="w-36 sm:w-40 h-auto ml-4 mt-4 lg:w-[9.21875vw] lg:ml-[1.614583vw] lg:mt-[2.222222vh]"
             width={219}
             height={52}
             src="/flowsups.png"
             alt="Logo of flowsups app"
           />
-          <aside className="w-[32.65625vw] h-fit shadow-crmFormShadow rounded-[0.520833vw] mt-[20.277778vh] mb-[26.111111vh] ml-[4.895833vw] mr-[4.947917vw] pt-[2.314815vh] pl-[4.114583vw] pr-[3.958333vw] pb-[2.685185vh] flex flex-col items-center">
+          <aside className="w-full max-w-md mx-auto my-8 px-5 py-6 flex flex-col items-center shadow-crmFormShadow rounded-[0.520833vw] lg:w-[32.65625vw] lg:h-fit lg:mt-[20.277778vh] lg:mb-[26.111111vh] lg:ml-[4.895833vw] lg:mr-[4.947917vw] lg:pt-[2.314815vh] lg:pl-[4.114583vw] lg:pr-[3.958333vw] lg:pb-[2.685185vh]">
             <FormTitle title="Forgot your password" text="Enter a new password" />
             <ChangePassword userEmail={userCode.code_data[0].user.email} />
           </aside>
         </div>
-        <div className="relative w-[57.5vw]">
+        <div className="hidden lg:block relative w-[57.5vw]">
           <Image
             src="/loginImage.png"
             alt="Presentation image of the CRM app"

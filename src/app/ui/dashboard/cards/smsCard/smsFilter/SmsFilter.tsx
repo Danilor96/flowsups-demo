@@ -64,7 +64,7 @@ export function SmsFilter({
   const { isOpen, ref, toggleOpen } = useUiHandler();
 
   return (
-    <div className="w-full h-fit flex flex-row justify-end items-center gap-[1.5vw] pr-[1vw]">
+    <div className="w-full h-fit flex flex-row justify-end items-center gap-[1.5vw] pr-[1vw] max-lg:flex-col max-lg:items-stretch max-lg:gap-2 max-lg:pr-0">
       <LeadTempSmsStatusFilter
         inputDataOne={inputDataOne}
         inputDataTwo={inputDataTwo}

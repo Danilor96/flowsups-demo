@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 import {
   Appointments,
   AppointmentsStatuses,
@@ -117,12 +117,12 @@ import {
   NotificationCounts,
   NotificationsPagination,
   DailyMadeLeadWithCreditApp,
-} from '@/app/libs/definitions';
-import { dateFormatsStore } from './dateFormats';
-import { CallActivitySummary } from '@/app/api/reports/storeReport/callActivity/route';
-import { TaskActivityData } from '@/app/api/reports/storeReport/taskActivity/types';
-import { useSocketStore } from './socketIo';
-import { CUSTOMER_STATUSES_LIST } from '@/app/libs/customer/customersFunctions';
+} from "@/app/libs/definitions";
+import { dateFormatsStore } from "./dateFormats";
+import { CallActivitySummary } from "@/app/api/reports/storeReport/callActivity/route";
+import { TaskActivityData } from "@/app/api/reports/storeReport/taskActivity/types";
+import { useSocketStore } from "./socketIo";
+import { CUSTOMER_STATUSES_LIST } from "@/app/libs/customer/customersFunctions";
 
 // general data for display in admin dashboard
 
@@ -258,7 +258,10 @@ interface AdminDashboardStore {
   getPaymentTypes: () => Promise<void>;
   getAutomaticEmails: () => Promise<void>;
   getReminderTime: () => Promise<void>;
-  getDeal: (customerId: number, leadId?: string | number | null) => Promise<void>;
+  getDeal: (
+    customerId: number,
+    leadId?: string | number | null,
+  ) => Promise<void>;
   getDealByDealId: (dealId: number) => Promise<void>;
   getCreditAppAddress: (customerId: number) => Promise<void>;
   getIncomingCallIdentity: (phoneNumber: string) => Promise<void>;
@@ -439,7 +442,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   smsTemplateVariables: undefined,
   smsTemplates: undefined,
   specificClientsNotesData: [],
-  clientDetailLeadSelectedData: '',
+  clientDetailLeadSelectedData: "",
   bdc: undefined,
   financeManagers: undefined,
   salesManagers: undefined,
@@ -492,7 +495,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   lostReasons: null,
   // setStates
   getLostReasons: async () => {
-    const res = await fetch('/api/lostReasons');
+    const res = await fetch("/api/lostReasons");
 
     const json = await res.json();
 
@@ -501,8 +504,8 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   getTasksActivity: async (userId, createDate, dueDate) => {
     if (userId) {
       const apiUrl = `/api/reports/storeReport/taskActivity/${userId}${
-        createDate ? `?${createDate}` : ''
-      }${dueDate ? (createDate ? `&${dueDate}` : `?${dueDate}`) : ''}`;
+        createDate ? `?${createDate}` : ""
+      }${dueDate ? (createDate ? `&${dueDate}` : `?${dueDate}`) : ""}`;
 
       const res = await fetch(apiUrl);
 
@@ -531,28 +534,28 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     set({ dailySells: json });
   },
   getEventCategories: async () => {
-    const res = await fetch('/api/adminDashboard/eventsCategories');
+    const res = await fetch("/api/adminDashboard/eventsCategories");
 
     const json = await res.json();
 
     set({ eventCategories: json });
   },
   getTaskDueTimeLimit: async () => {
-    const res = await fetch('/api/taskDueTimeLimit');
+    const res = await fetch("/api/taskDueTimeLimit");
 
     const json = await res.json();
 
     set({ taskDueTimeLimit: json });
   },
   getTaskSettings: async () => {
-    const res = await fetch('/api/settings/customerSettings/taskSettings');
+    const res = await fetch("/api/settings/customerSettings/taskSettings");
 
     const json = await res.json();
 
     set({ taskSettings: json });
   },
   getEventsTypes: async () => {
-    const res = await fetch('/api/eventsTypes');
+    const res = await fetch("/api/eventsTypes");
 
     const json = await res.json();
 
@@ -562,7 +565,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     set({ selectedUserSystemAccess: userId });
   },
   getSystemAccesses: async () => {
-    const res = await fetch('/api/systemAccesses');
+    const res = await fetch("/api/systemAccesses");
 
     const json = await res.json();
 
@@ -577,56 +580,62 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     set({ selectedCustomersIds: selectedCustomersIdsRows });
   },
   getAutomaticSms: async () => {
-    const res = await fetch('/api/settings/automaticSms');
+    const res = await fetch("/api/settings/automaticSms");
 
     const json = await res.json();
 
     set({ automaticSms: json });
   },
   getDisableSelectValues: async () => {
-    const res = await fetch('/api/disableSelects');
+    const res = await fetch("/api/disableSelects");
 
     const json = await res.json();
 
     set({ disableSelectValues: json });
   },
   getPaymentTypes: async () => {
-    const res = await fetch('/api/settings/paymentTypes');
+    const res = await fetch("/api/settings/paymentTypes");
 
     const json = await res.json();
 
     set({ paymentTypes: json });
   },
   getAutomaticEmails: async () => {
-    const res = await fetch('/api/settings/automaticEmails');
+    const res = await fetch("/api/settings/automaticEmails");
 
     const json = await res.json();
 
     set({ automaticEmails: json });
   },
   getReminderTime: async () => {
-    const res = await fetch('/api/adminDashboard/reminderTime');
+    const res = await fetch("/api/adminDashboard/reminderTime");
 
     const json = await res.json();
 
     set({ reminderTime: json });
   },
   getDeal: async (customerId, leadId) => {
-    const res = await fetch(`/api/deal/${customerId}${leadId ? `?leadId=${leadId}` : ''}`);
+    const res = await fetch(
+      `/api/deal/${customerId}${leadId ? `?leadId=${leadId}` : ""}`,
+    );
 
     const json = await res.json();
 
     set({ deal: json?.deal, dealLeadActive: json?.dealLeadActive });
   },
   getDealByDealId: async (dealId: number) => {
-    const res = await fetch(`/api/reports/storeReport/sold-customers/deal/${dealId}`);
+    const res = await fetch(
+      `/api/reports/storeReport/sold-customers/deal/${dealId}`,
+    );
 
     const json = await res.json();
 
     set({ deal: json?.deal, dealLeadActive: json?.deal?.lead });
   },
   getCreditAppAddress: async (customerId) => {
-    const res = await fetch(`/api/adminDashboard/creditApp/address/${customerId}`);
+    const res = await fetch(
+      `/api/adminDashboard/creditApp/address/${customerId}`,
+    );
 
     const json = await res.json();
 
@@ -634,7 +643,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getIncomingCallIdentity: async (phoneNumber) => {
     const data = await (
-      await fetch(`/api/incomingCallerIdentity/${phoneNumber}`, { cache: 'no-store' })
+      await fetch(`/api/incomingCallerIdentity/${phoneNumber}`, {
+        cache: "no-store",
+      })
     ).json();
 
     set((state) => ({
@@ -648,7 +659,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
       const data = await (
         await fetch(
           `/api/adminDashboard/dailyTotals/${userId}?timeZone=${encodeURIComponent(timeZone)}`,
-          { cache: 'no-store' },
+          { cache: "no-store" },
         )
       ).json();
 
@@ -671,7 +682,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     const data = await (
       await fetch(
         `/api/adminDashboard/dailyMadeAppointments/${userId}?timezone=${encodeURIComponent(timeZone)}`,
-        { cache: 'no-store' },
+        { cache: "no-store" },
       )
     ).json();
 
@@ -690,7 +701,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     set({ noteCustomerIdSelected: customerId });
   },
   getBusinessPrimaryUrl: async () => {
-    const data = await (await fetch('/api/adminDashboard/primaryDealerWebsiteUrl')).json();
+    const data = await (
+      await fetch("/api/adminDashboard/primaryDealerWebsiteUrl")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -698,7 +711,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getBusinessVehicleUrl: async () => {
-    const data = await (await fetch('/api/adminDashboard/vehicleDetailPageUrl')).json();
+    const data = await (
+      await fetch("/api/adminDashboard/vehicleDetailPageUrl")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -706,7 +721,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getBusinessWebsites: async () => {
-    const data = await (await fetch('/api/adminDashboard/website')).json();
+    const data = await (await fetch("/api/adminDashboard/website")).json();
 
     set((state) => ({
       ...state,
@@ -714,9 +729,11 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCallActivity: async (dateQuery) => {
-    const apiUrl = '/api/reports/storeReport/callActivity';
+    const apiUrl = "/api/reports/storeReport/callActivity";
 
-    const data = await (await fetch(dateQuery ? apiUrl + `?${dateQuery}` : apiUrl)).json();
+    const data = await (
+      await fetch(dateQuery ? apiUrl + `?${dateQuery}` : apiUrl)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -726,7 +743,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   getCustomerCalls: async (customerId) => {
     if (!customerId) return;
 
-    const data = await (await fetch(`/api/adminDashboard/calls/${customerId}`)).json();
+    const data = await (
+      await fetch(`/api/adminDashboard/calls/${customerId}`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -734,7 +753,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getDayweeks: async () => {
-    const data = await (await fetch('/api/adminDashboard/dayweeks')).json();
+    const data = await (await fetch("/api/adminDashboard/dayweeks")).json();
 
     set((state) => ({
       ...state,
@@ -742,7 +761,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCreditAppReferences: async (id) => {
-    const data = await (await fetch(`/api/adminDashboard/creditApp/references/${id}`)).json();
+    const data = await (
+      await fetch(`/api/adminDashboard/creditApp/references/${id}`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -750,7 +771,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCreditAppReferenceRelationship: async () => {
-    const data = await (await fetch('/api/adminDashboard/creditAppReferenceRelationship')).json();
+    const data = await (
+      await fetch("/api/adminDashboard/creditAppReferenceRelationship")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -758,7 +781,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCustomerEmployment: async (id) => {
-    const data = await (await fetch(`/api/adminDashboard/creditApp/employmentStatus/${id}`)).json();
+    const data = await (
+      await fetch(`/api/adminDashboard/creditApp/employmentStatus/${id}`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -766,7 +791,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getIncomeType: async () => {
-    const data = await (await fetch('/api/adminDashboard/incomeType')).json();
+    const data = await (await fetch("/api/adminDashboard/incomeType")).json();
 
     set((state) => ({
       ...state,
@@ -774,7 +799,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getOccuaption: async () => {
-    const data = await (await fetch('/api/adminDashboard/occupation')).json();
+    const data = await (await fetch("/api/adminDashboard/occupation")).json();
 
     set((state) => ({
       ...state,
@@ -782,7 +807,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getEmploymentStatus: async () => {
-    const data = await (await fetch('/api/adminDashboard/employmentStatus')).json();
+    const data = await (
+      await fetch("/api/adminDashboard/employmentStatus")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -790,7 +817,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getBdc: async () => {
-    const data = await (await fetch('/api/adminDashboard/bdc')).json();
+    const data = await (await fetch("/api/adminDashboard/bdc")).json();
 
     set((state) => ({
       ...state,
@@ -798,7 +825,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getFinanceManagers: async () => {
-    const data = await (await fetch('/api/adminDashboard/financeManager')).json();
+    const data = await (
+      await fetch("/api/adminDashboard/financeManager")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -806,7 +835,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getSalesManagers: async () => {
-    const data = await (await fetch('/api/adminDashboard/salesManager')).json();
+    const data = await (await fetch("/api/adminDashboard/salesManager")).json();
 
     set((state) => ({
       ...state,
@@ -815,7 +844,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getSpecificClientsNotes: async (customerStatusId) => {
     const notes = await (
-      await fetch(`/api/adminDashboard/clientsNotes/${customerStatusId}`, { cache: 'no-store' })
+      await fetch(`/api/adminDashboard/clientsNotes/${customerStatusId}`, {
+        cache: "no-store",
+      })
     ).json();
 
     set((state) => ({
@@ -827,7 +858,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     set({ specificClientsNotesData: [] });
   },
   getSmsTemplates: async () => {
-    const data = await (await fetch(`/api/message/smsTemplate`, { cache: 'no-store' })).json();
+    const data = await (
+      await fetch(`/api/message/smsTemplate`, { cache: "no-store" })
+    ).json();
 
     set((state) => ({
       ...state,
@@ -835,7 +868,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getSmsTemplateVariables: async () => {
-    const data = await (await fetch(`/api/message/smsTemplateVariables`)).json();
+    const data = await (
+      await fetch(`/api/message/smsTemplateVariables`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -874,13 +909,16 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
       ...prevStates,
       specificClientsData: prevStates.specificClientsData?.filter(
         (customer) =>
-          customer.client_status?.id !== 12 && !specificClientsIds.includes(customer.id),
+          customer.client_status?.id !== 12 &&
+          !specificClientsIds.includes(customer.id),
       ),
     }));
   },
   getSpecificClients: async (customerStatusId) => {
     const data = await (
-      await fetch(`/api/adminDashboard/clients/${customerStatusId}`, { cache: 'no-store' })
+      await fetch(`/api/adminDashboard/clients/${customerStatusId}`, {
+        cache: "no-store",
+      })
     ).json();
 
     set((state) => ({
@@ -890,7 +928,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getSpecificClientsTwo: async (customerStatusId) => {
     const data = await (
-      await fetch(`/api/adminDashboard/clients/${customerStatusId}`, { cache: 'no-store' })
+      await fetch(`/api/adminDashboard/clients/${customerStatusId}`, {
+        cache: "no-store",
+      })
     ).json();
 
     set((state) => ({
@@ -900,7 +940,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getSpecificClientsThree: async (customerStatusId) => {
     const data = await (
-      await fetch(`/api/adminDashboard/clients/${customerStatusId}`, { cache: 'no-store' })
+      await fetch(`/api/adminDashboard/clients/${customerStatusId}`, {
+        cache: "no-store",
+      })
     ).json();
 
     set((state) => ({
@@ -909,7 +951,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCustomBeBackReasons: async () => {
-    const reasons = await (await fetch(`/api/settings/customBeBackReasons`)).json();
+    const reasons = await (
+      await fetch(`/api/settings/customBeBackReasons`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -917,7 +961,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCustomNoSaleReasons: async () => {
-    const reasons = await (await fetch(`/api/settings/customNoSaleReasons`)).json();
+    const reasons = await (
+      await fetch(`/api/settings/customNoSaleReasons`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -925,7 +971,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCustomLostReasons: async () => {
-    const reasons = await (await fetch(`/api/settings/customLostReason`)).json();
+    const reasons = await (
+      await fetch(`/api/settings/customLostReason`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -941,7 +989,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCustomerSettings: async () => {
-    const settings = await (await fetch(`/api/settings/customerSettings`)).json();
+    const settings = await (
+      await fetch(`/api/settings/customerSettings`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -949,7 +999,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getFollowupVisibility: async () => {
-    const followup = await (await fetch(`/api/adminDashboard/followupVisibility`)).json();
+    const followup = await (
+      await fetch(`/api/adminDashboard/followupVisibility`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -957,12 +1009,16 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getNotificationsPreference: async () => {
-    const notiPref = await (await fetch(`/api/adminDashboard/notificationsPreferences`)).json();
+    const notiPref = await (
+      await fetch(`/api/adminDashboard/notificationsPreferences`)
+    ).json();
 
     set({ notificationPreference: notiPref });
   },
   getBusiness: async () => {
-    const business = await (await fetch('/api/adminDashboard/business', { method: 'GET' })).json();
+    const business = await (
+      await fetch("/api/adminDashboard/business", { method: "GET" })
+    ).json();
 
     set((state) => ({
       ...state,
@@ -972,11 +1028,11 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   getTotalNotifications: async (userId, roleId) => {
     const formData = new FormData();
 
-    userId && formData.append('userRoleId', roleId?.toString());
+    userId && formData.append("userRoleId", roleId?.toString());
 
     const totalNoti = await (
       await fetch(`/api/adminDashboard/totalNotifications/${userId}`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       })
     ).json();
@@ -987,7 +1043,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getPermissions: async () => {
-    const perm = await (await fetch('/api/adminDashboard/permission')).json();
+    const perm = await (await fetch("/api/adminDashboard/permission")).json();
 
     set((state) => ({
       ...state,
@@ -995,18 +1051,20 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getUserStatus: async () => {
-    const userStatus = await (await fetch('/api/adminDashboard/userStatus')).json();
+    const userStatus = await (
+      await fetch("/api/adminDashboard/userStatus")
+    ).json();
 
     set({ userStatus: userStatus });
   },
   getUsers: async () => {
-    const users = await (await fetch('/api/adminDashboard/users')).json();
+    const users = await (await fetch("/api/adminDashboard/users")).json();
 
     set({ users: users });
     return users;
   },
   getRoles: async () => {
-    const roles = await (await fetch('/api/adminDashboard/roles')).json();
+    const roles = await (await fetch("/api/adminDashboard/roles")).json();
 
     set((state) => ({
       ...state,
@@ -1022,11 +1080,11 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     const dailyActApp = await (
       await fetch(
         `/api/adminDashboard/dailyActvityAppointments/${today.replaceAll(
-          '/',
-          '-',
+          "/",
+          "-",
         )}?timezone=${timeZone}`,
         {
-          cache: 'no-store',
+          cache: "no-store",
         },
       )
     ).json();
@@ -1036,18 +1094,27 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
       dailyActivityAppointments: dailyActApp,
     }));
   },
-  getNotifications: async ({ userId, roleId, page = 1, typeId, append = false }) => {
+  getNotifications: async ({
+    userId,
+    roleId,
+    page = 1,
+    typeId,
+    append = false,
+  }) => {
     const formData = new FormData();
 
-    formData.append('userRoleId', roleId);
-    formData.append('page', page.toString());
-    formData.append('limit', '10');
+    formData.append("userRoleId", roleId);
+    formData.append("page", page.toString());
+    formData.append("limit", "10");
     if (typeId !== undefined) {
-      formData.append('typeId', typeId.toString());
+      formData.append("typeId", typeId.toString());
     }
 
     const response = await (
-      await fetch(`/api/adminDashboard/notifications/${userId}`, { method: 'POST', body: formData })
+      await fetch(`/api/adminDashboard/notifications/${userId}`, {
+        method: "POST",
+        body: formData,
+      })
     ).json();
 
     if (response.notifications && response.pagination) {
@@ -1064,11 +1131,11 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   getNotificationCounts: async (userId, roleId) => {
     const formData = new FormData();
 
-    formData.append('userRoleId', roleId);
+    formData.append("userRoleId", roleId);
 
     const counts = await (
       await fetch(`/api/adminDashboard/notificationsCounts/${userId}`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       })
     ).json();
@@ -1139,7 +1206,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
       deletedItem = notiToDelete;
 
       // Remove from list
-      const updatedNotifications = state.notifications?.filter((n) => n.id !== id);
+      const updatedNotifications = state.notifications?.filter(
+        (n) => n.id !== id,
+      );
 
       let newCounts = { ...state.notificationCounts };
 
@@ -1191,7 +1260,8 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
         : [notification];
       // Sort by date descding to be safe?
       updatedNotifications.sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
 
       let newCounts = { ...state.notificationCounts };
@@ -1219,7 +1289,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
       }
 
       const newTotal =
-        state.totalNotifications !== undefined ? state.totalNotifications + totalChange : undefined;
+        state.totalNotifications !== undefined
+          ? state.totalNotifications + totalChange
+          : undefined;
 
       return {
         ...state,
@@ -1250,7 +1322,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getMissingTasks: async (userId) => {
     const misTask = await (
-      await fetch(`/api/adminDashboard/missingTasks/${userId}`, { cache: 'no-store' })
+      await fetch(`/api/adminDashboard/missingTasks/${userId}`, {
+        cache: "no-store",
+      })
     ).json();
 
     set((state) => ({
@@ -1261,9 +1335,12 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   getDailysCalls: async (userId) => {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const dailyCalls = await (
-      await fetch(`/api/adminDashboard/dailyCalls/${userId}?timezone=${timeZone}`, {
-        cache: 'no-store',
-      })
+      await fetch(
+        `/api/adminDashboard/dailyCalls/${userId}?timezone=${timeZone}`,
+        {
+          cache: "no-store",
+        },
+      )
     ).json();
 
     set((state) => ({
@@ -1283,7 +1360,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getDayTime: async () => {
-    const times = await (await fetch('/api/adminDashboard/dayTime')).json();
+    const times = await (await fetch("/api/adminDashboard/dayTime")).json();
 
     set((state) => ({
       ...state,
@@ -1308,11 +1385,13 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     const params = new URLSearchParams();
 
     status.forEach((id) => {
-      params.append('status', id.toString());
+      params.append("status", id.toString());
     });
 
     const allTasks = await (
-      await fetch(`/api/adminDashboard/tasks/taskList/${userId}?${params.toString()}`)
+      await fetch(
+        `/api/adminDashboard/tasks/taskList/${userId}?${params.toString()}`,
+      )
     ).json();
 
     set((state) => ({
@@ -1321,7 +1400,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCreditAppListStatus: async () => {
-    const statuses = await (await fetch('/api/adminDashboard/creditAppListStatus')).json();
+    const statuses = await (
+      await fetch("/api/adminDashboard/creditAppListStatus")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1329,7 +1410,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getDepositMethods: async () => {
-    const methods = await (await fetch('/api/adminDashboard/depositMethods')).json();
+    const methods = await (
+      await fetch("/api/adminDashboard/depositMethods")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1337,7 +1420,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getLeadTemperatures: async () => {
-    const temp = await (await fetch('/api/adminDashboard/leadTemperature')).json();
+    const temp = await (
+      await fetch("/api/adminDashboard/leadTemperature")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1345,7 +1430,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getContactTime: async () => {
-    const contactTimes = await (await fetch('/api/adminDashboard/contactTime')).json();
+    const contactTimes = await (
+      await fetch("/api/adminDashboard/contactTime")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1353,7 +1440,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getClientEvents: async (id: string) => {
-    const events = await (await fetch(`/api/adminDashboard/events/${id}`)).json();
+    const events = await (
+      await fetch(`/api/adminDashboard/events/${id}`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1362,7 +1451,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getClientsNotes: async () => {
     const notes = await (
-      await fetch('/api/adminDashboard/clientsNotes', { cache: 'no-store' })
+      await fetch("/api/adminDashboard/clientsNotes", { cache: "no-store" })
     ).json();
 
     set((state) => ({
@@ -1371,7 +1460,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getAppointments: async () => {
-    const allAppointments = await (await fetch('/api/adminDashboard/appointments')).json();
+    const allAppointments = await (
+      await fetch("/api/adminDashboard/appointments")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1380,7 +1471,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getClients: async () => {
     const data: Clients = await (
-      await fetch('/api/adminDashboard/clients', { cache: 'no-store' })
+      await fetch("/api/adminDashboard/clients", { cache: "no-store" })
     ).json();
 
     set((state) => ({
@@ -1390,7 +1481,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getSellers: async () => {
     const allSellers = await (
-      await fetch('/api/adminDashboard/sellers', { cache: 'no-store' })
+      await fetch("/api/adminDashboard/sellers", { cache: "no-store" })
     ).json();
 
     set((state) => ({
@@ -1399,7 +1490,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getAppointmentsStatuses: async () => {
-    const allAppointmentsStatuses = await (await fetch('/api/adminDashboard/statuses')).json();
+    const allAppointmentsStatuses = await (
+      await fetch("/api/adminDashboard/statuses")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1407,7 +1500,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getLeadTypes: async () => {
-    const allLeadTypes = await (await fetch('/api/adminDashboard/leadTypes')).json();
+    const allLeadTypes = await (
+      await fetch("/api/adminDashboard/leadTypes")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1415,7 +1510,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getLeadSources: async () => {
-    const allLeadSources = await (await fetch('/api/adminDashboard/leadSources')).json();
+    const allLeadSources = await (
+      await fetch("/api/adminDashboard/leadSources")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1423,7 +1520,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getClientTypes: async () => {
-    const allClientTypes = await (await fetch('/api/adminDashboard/clientTypes')).json();
+    const allClientTypes = await (
+      await fetch("/api/adminDashboard/clientTypes")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1431,7 +1530,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getContactMethod: async () => {
-    const allContactMethods = await (await fetch('/api/adminDashboard/contactMethods')).json();
+    const allContactMethods = await (
+      await fetch("/api/adminDashboard/contactMethods")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1439,7 +1540,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getInquiryType: async () => {
-    const allInquirTypes = await (await fetch('/api/adminDashboard/inquiryTypes')).json();
+    const allInquirTypes = await (
+      await fetch("/api/adminDashboard/inquiryTypes")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1447,7 +1550,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getVehicleTypes: async () => {
-    const allVehiclesTypes = await (await fetch('/api/adminDashboard/vehicleTypes')).json();
+    const allVehiclesTypes = await (
+      await fetch("/api/adminDashboard/vehicleTypes")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1455,7 +1560,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getVehicleMileages: async () => {
-    const allVehiclesMileages = await (await fetch('/api/adminDashboard/vehicleMileages')).json();
+    const allVehiclesMileages = await (
+      await fetch("/api/adminDashboard/vehicleMileages")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1464,7 +1571,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getCobuyerRelationship: async () => {
     const cobuyerRelationship = await (
-      await fetch('/api/adminDashboard/cobuyerRelationship')
+      await fetch("/api/adminDashboard/cobuyerRelationship")
     ).json();
 
     set((state) => ({
@@ -1473,7 +1580,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getClientDetailLead: async () => {
-    const clientDetailLead = await (await fetch('/api/adminDashboard/clientDetailLeads')).json();
+    const clientDetailLead = await (
+      await fetch("/api/adminDashboard/clientDetailLeads")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1496,7 +1605,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getLanguages: async () => {
-    const languages = await (await fetch('/api/adminDashboard/languages')).json();
+    const languages = await (
+      await fetch("/api/adminDashboard/languages")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1504,7 +1615,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getStates: async () => {
-    const states = await (await fetch('/api/adminDashboard/states')).json();
+    const states = await (await fetch("/api/adminDashboard/states")).json();
 
     set((state) => ({
       ...state,
@@ -1513,7 +1624,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
   },
   getFiles: async (id: number) => {
     if (id) {
-      const files = await (await fetch(`/api/adminDashboard/files/${id}`)).json();
+      const files = await (
+        await fetch(`/api/adminDashboard/files/${id}`)
+      ).json();
 
       set((state) => ({
         ...state,
@@ -1522,7 +1635,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }
   },
   getVehicleOptions: async () => {
-    const options = await (await fetch('/api/adminDashboard/vehicleOptions')).json();
+    const options = await (
+      await fetch("/api/adminDashboard/vehicleOptions")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1530,7 +1645,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getIdState: async () => {
-    const idState = await (await fetch('/api/adminDashboard/clientIdState')).json();
+    const idState = await (
+      await fetch("/api/adminDashboard/clientIdState")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1538,7 +1655,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getIdType: async () => {
-    const idType = await (await fetch('/api/adminDashboard/clientIdType')).json();
+    const idType = await (
+      await fetch("/api/adminDashboard/clientIdType")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1546,7 +1665,7 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getGender: async () => {
-    const gender = await (await fetch('/api/adminDashboard/gender')).json();
+    const gender = await (await fetch("/api/adminDashboard/gender")).json();
 
     set((state) => ({
       ...state,
@@ -1554,7 +1673,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCreditAddressMonth: async () => {
-    const months = await (await fetch('/api/adminDashboard/creditAddressMonth')).json();
+    const months = await (
+      await fetch("/api/adminDashboard/creditAddressMonth")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1562,7 +1683,9 @@ export const adminDashboardStore = create<AdminDashboardStore>((set) => ({
     }));
   },
   getCreditAddressType: async () => {
-    const types = await (await fetch('/api/adminDashboard/creditAddressType')).json();
+    const types = await (
+      await fetch("/api/adminDashboard/creditAddressType")
+    ).json();
 
     set((state) => ({
       ...state,
@@ -1646,7 +1769,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
   paymentMethod: undefined,
   // api's
   getPaymentMethod: async () => {
-    const data = await (await fetch('/api/inventory/paymentMethod')).json();
+    const data = await (await fetch("/api/inventory/paymentMethod")).json();
 
     set((state) => ({
       ...state,
@@ -1654,7 +1777,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getEmissionStatus: async () => {
-    const data = await (await fetch('/api/inventory/emissionStatus')).json();
+    const data = await (await fetch("/api/inventory/emissionStatus")).json();
 
     set((state) => ({
       ...state,
@@ -1662,7 +1785,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getInspectionStatus: async () => {
-    const data = await (await fetch('/api/inventory/inspectionStatus')).json();
+    const data = await (await fetch("/api/inventory/inspectionStatus")).json();
 
     set((state) => ({
       ...state,
@@ -1670,7 +1793,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getTitleBrand: async () => {
-    const data = await (await fetch('/api/inventory/titleBrand')).json();
+    const data = await (await fetch("/api/inventory/titleBrand")).json();
 
     set((state) => ({
       ...state,
@@ -1678,7 +1801,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getTitleStatus: async () => {
-    const data = await (await fetch('/api/inventory/titleStatus')).json();
+    const data = await (await fetch("/api/inventory/titleStatus")).json();
 
     set((state) => ({
       ...state,
@@ -1686,7 +1809,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getAcqType: async () => {
-    const data = await (await fetch('/api/inventory/acqType')).json();
+    const data = await (await fetch("/api/inventory/acqType")).json();
 
     set((state) => ({
       ...state,
@@ -1694,7 +1817,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getDetailSource: async () => {
-    const data = await (await fetch('/api/inventory/source')).json();
+    const data = await (await fetch("/api/inventory/source")).json();
 
     set((state) => ({
       ...state,
@@ -1702,7 +1825,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getDetailCondition: async () => {
-    const data = await (await fetch('/api/inventory/detailCondition')).json();
+    const data = await (await fetch("/api/inventory/detailCondition")).json();
 
     set((state) => ({
       ...state,
@@ -1710,7 +1833,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getSalesTypes: async () => {
-    const data = await (await fetch('/api/inventory/salesType')).json();
+    const data = await (await fetch("/api/inventory/salesType")).json();
 
     set((state) => ({
       ...state,
@@ -1718,7 +1841,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getColors: async () => {
-    const data = await (await fetch('/api/inventory/color')).json();
+    const data = await (await fetch("/api/inventory/color")).json();
 
     set((state) => ({
       ...state,
@@ -1726,7 +1849,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getConditions: async () => {
-    const data = await (await fetch('/api/inventory/condition')).json();
+    const data = await (await fetch("/api/inventory/condition")).json();
 
     set((state) => ({
       ...state,
@@ -1734,7 +1857,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getDriveTrains: async () => {
-    const data = await (await fetch('/api/inventory/driveTrain')).json();
+    const data = await (await fetch("/api/inventory/driveTrain")).json();
 
     set((state) => ({
       ...state,
@@ -1742,7 +1865,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getEngines: async () => {
-    const data = await (await fetch('/api/inventory/engine')).json();
+    const data = await (await fetch("/api/inventory/engine")).json();
 
     set((state) => ({
       ...state,
@@ -1750,7 +1873,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getFuelTypes: async () => {
-    const data = await (await fetch('/api/inventory/fuelType')).json();
+    const data = await (await fetch("/api/inventory/fuelType")).json();
 
     set((state) => ({
       ...state,
@@ -1758,7 +1881,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getMakes: async () => {
-    const data = await (await fetch('/api/inventory/make')).json();
+    const data = await (await fetch("/api/inventory/make")).json();
 
     set((state) => ({
       ...state,
@@ -1766,7 +1889,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getModels: async () => {
-    const data = await (await fetch('/api/inventory/model')).json();
+    const data = await (await fetch("/api/inventory/model")).json();
 
     set((state) => ({
       ...state,
@@ -1774,7 +1897,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getOdometers: async () => {
-    const data = await (await fetch('/api/inventory/odometer')).json();
+    const data = await (await fetch("/api/inventory/odometer")).json();
 
     set((state) => ({
       ...state,
@@ -1782,7 +1905,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getOdometersType: async () => {
-    const data = await (await fetch('/api/inventory/odometerType')).json();
+    const data = await (await fetch("/api/inventory/odometerType")).json();
 
     set((state) => ({
       ...state,
@@ -1790,7 +1913,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getStatuses: async () => {
-    const data = await (await fetch('/api/inventory/status')).json();
+    const data = await (await fetch("/api/inventory/status")).json();
 
     set((state) => ({
       ...state,
@@ -1798,7 +1921,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getTransmissions: async () => {
-    const data = await (await fetch('/api/inventory/transmission')).json();
+    const data = await (await fetch("/api/inventory/transmission")).json();
 
     set((state) => ({
       ...state,
@@ -1806,7 +1929,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getTrims: async () => {
-    const data = await (await fetch('/api/inventory/trim')).json();
+    const data = await (await fetch("/api/inventory/trim")).json();
 
     set((state) => ({
       ...state,
@@ -1814,7 +1937,7 @@ export const inventoryStore = create<InventoryStore>((set) => ({
     }));
   },
   getTypes: async () => {
-    const data = await (await fetch('/api/inventory/type')).json();
+    const data = await (await fetch("/api/inventory/type")).json();
 
     set((state) => ({
       ...state,
@@ -2205,7 +2328,8 @@ export const modalWindowStore = create<ModalWindowStore>((set) => ({
   openCloseCustomerSettingsFromConsentWindow: () => {
     set((prevState) => ({
       ...prevState,
-      openCustomerSettingsFromConsentWindow: !prevState.openCustomerSettingsFromConsentWindow,
+      openCustomerSettingsFromConsentWindow:
+        !prevState.openCustomerSettingsFromConsentWindow,
     }));
   },
   openCloseCustomerSettings: () => {
@@ -3127,7 +3251,7 @@ export const singleCLientDataStore = create<SingleClientData>((set, get) => ({
       previousController.abort();
     }
 
-    if (id === 'clear' || id === '') {
+    if (id === "clear" || id === "") {
       set({ singleCLientData: undefined, currentController: null });
       return;
     }
@@ -3137,11 +3261,11 @@ export const singleCLientDataStore = create<SingleClientData>((set, get) => ({
 
     try {
       const response = await fetch(
-        `/api/adminDashboard/singleClient/${id}${leadId ? `?leadId=${leadId}` : ''}`,
+        `/api/adminDashboard/singleClient/${id}${leadId ? `?leadId=${leadId}` : ""}`,
         { signal: controller.signal },
       );
 
-      if (!response.ok) throw new Error('Fetching error');
+      if (!response.ok) throw new Error("Fetching error");
 
       const singleCLient: SingleClient = await response.json();
 
@@ -3150,9 +3274,9 @@ export const singleCLientDataStore = create<SingleClientData>((set, get) => ({
         currentController: null,
       });
     } catch (error: any) {
-      if (error.name === 'AbortError') {
+      if (error.name === "AbortError") {
       } else {
-        console.error('Error en fetch:', error);
+        console.error("Error en fetch:", error);
         set({ currentController: null });
       }
     }
@@ -3171,15 +3295,17 @@ interface CobuyerReferrerSingleClientData {
   getCobuyerReferrerSingleClientData: (id: string) => Promise<void>;
 }
 
-export const cobuyerReferrerSingleCLientDataStore = create<CobuyerReferrerSingleClientData>(
-  (set) => ({
+export const cobuyerReferrerSingleCLientDataStore =
+  create<CobuyerReferrerSingleClientData>((set) => ({
     cobuyerReferrerSingleCLientData: undefined,
     getCobuyerReferrerSingleClientData: async (id: string) => {
-      if (id != 'clear' && id != '') {
-        console.log('Buscando!');
+      if (id != "clear" && id != "") {
+        console.log("Buscando!");
 
         const singleCLient: SingleClient = await (
-          await fetch(`/api/adminDashboard/cobuyerReferrerSingleClient/${id}`, { method: 'GET' })
+          await fetch(`/api/adminDashboard/cobuyerReferrerSingleClient/${id}`, {
+            method: "GET",
+          })
         ).json();
 
         set((state) => ({
@@ -3187,15 +3313,14 @@ export const cobuyerReferrerSingleCLientDataStore = create<CobuyerReferrerSingle
           cobuyerReferrerSingleCLientData: singleCLient,
         }));
       }
-      if (id == 'clear') {
+      if (id == "clear") {
         set((state) => ({
           ...state,
           cobuyerReferrerSingleCLientData: undefined,
         }));
       }
     },
-  }),
-);
+  }));
 
 // logic to handle the updating of a client
 
@@ -3214,7 +3339,7 @@ export const updateClientDataStore = create<UpdateClientData>((set) => ({
     } else if (data) {
       const doUpdateFetch = await (
         await fetch(`/api/adminDashboard/singleClient/${data.id}`, {
-          method: 'PUT',
+          method: "PUT",
           body: JSON.stringify(data),
         })
       ).json();
@@ -3245,19 +3370,21 @@ export const deleteClientStore = create<DeleteClient>((set) => ({
 
     try {
       const doDelete = await (
-        await fetch(`/api/adminDashboard/singleClient/${id}`, { method: 'DELETE' })
+        await fetch(`/api/adminDashboard/singleClient/${id}`, {
+          method: "DELETE",
+        })
       ).json();
 
-      setMessages(undefined, 'Customer Successfully Deleted');
+      setMessages(undefined, "Customer Successfully Deleted");
 
       set((state) => ({
         ...state,
         deleteResponse: doDelete,
       }));
 
-      updateDataWithSocket('customersList');
+      updateDataWithSocket("customersList");
     } catch (error) {
-      setMessages('An error occurred');
+      setMessages("An error occurred");
     }
   },
   clearDeleteResponse: () => {
@@ -3298,7 +3425,10 @@ interface ClientMessages {
   getClientMessages: (clientId: number) => Promise<void>;
   getClientMessagesByPhoneNumber: (phoneNumber: string) => Promise<void>;
   clearClientMessages: () => void;
-  setMessagesStatusToRead: (customerId?: number, readBy?: number) => Promise<void>;
+  setMessagesStatusToRead: (
+    customerId?: number,
+    readBy?: number,
+  ) => Promise<void>;
 }
 
 export const clientMessagesStore = create<ClientMessages>((set) => ({
@@ -3312,7 +3442,7 @@ export const clientMessagesStore = create<ClientMessages>((set) => ({
       await fetch(
         `/api/adminDashboard/dailyMessages/${userId}?timezone=${encodeURIComponent(timeZone)}`,
         {
-          cache: 'no-store',
+          cache: "no-store",
         },
       )
     ).json();
@@ -3322,7 +3452,14 @@ export const clientMessagesStore = create<ClientMessages>((set) => ({
       dailyMessages: data,
     }));
   },
-  setWaitingSendCurrentMessage: (id, message, name, date, sentByUser, files = null) => {
+  setWaitingSendCurrentMessage: (
+    id,
+    message,
+    name,
+    date,
+    sentByUser,
+    files = null,
+  ) => {
     const waitingObject: {
       id: number;
       message: string;
@@ -3350,7 +3487,9 @@ export const clientMessagesStore = create<ClientMessages>((set) => ({
     set({ waitingSendCurrentMessage: undefined });
   },
   getAllClientsMessages: async () => {
-    const allSms = await (await fetch('/api/message', { cache: 'no-store' })).json();
+    const allSms = await (
+      await fetch("/api/message", { cache: "no-store" })
+    ).json();
 
     set((state) => ({
       ...state,
@@ -3379,13 +3518,17 @@ export const clientMessagesStore = create<ClientMessages>((set) => ({
   setMessagesStatusToRead: async (customerId, readBy) => {
     if (customerId && readBy) {
       const data = await (
-        await fetch(`/api/message/status/${customerId}_${readBy}`, { method: 'PUT' })
+        await fetch(`/api/message/status/${customerId}_${readBy}`, {
+          method: "PUT",
+        })
       ).json();
 
       set((state) => ({
         ...state,
         allClientsMessages: state.allClientsMessages?.map((message) =>
-          message.client_id === customerId ? { ...message, total_no_read_messages: 0 } : message,
+          message.client_id === customerId
+            ? { ...message, total_no_read_messages: 0 }
+            : message,
         ),
       }));
     }
@@ -3400,7 +3543,12 @@ interface LeadSelectedOptions {
   assigned_to: String;
   note: String;
   reminder_time: Date | null;
-  appointment: { seller_id: string; client_id: string; start: Date; end: Date } | null;
+  appointment: {
+    seller_id: string;
+    client_id: string;
+    start: Date;
+    end: Date;
+  } | null;
   incoming: Boolean;
   outcoming: Boolean;
   dealtime: Date | null;
@@ -3417,41 +3565,43 @@ interface LeadSelectedOptions {
   }) => void;
 }
 
-export const clientDetailSelectedOptionsStore = create<LeadSelectedOptions>((set) => ({
-  lead: '',
-  follow_up_date: null,
-  assigned_to: '',
-  appointment: null,
-  dealtime: null,
-  incoming: false,
-  outcoming: false,
-  note: '',
-  reminder_time: null,
-  setSelctedOptions: (opt: {
-    lead?: string;
-    followDate?: Date;
-    assignedTo?: string;
-    appointment?: any;
-    dealtime?: Date;
-    incoming?: boolean;
-    outcoming?: boolean;
-    note?: string;
-    reminderTime?: Date;
-  }) => {
-    set((state) => ({
-      ...state,
-      lead: opt.lead,
-      follow_up_date: opt.followDate,
-      assigned_to: opt.assignedTo,
-      appointment: opt.appointment,
-      dealtime: opt.dealtime,
-      incoming: opt.incoming,
-      outcoming: opt.outcoming,
-      note: opt.note,
-      reminder_time: opt.reminderTime,
-    }));
-  },
-}));
+export const clientDetailSelectedOptionsStore = create<LeadSelectedOptions>(
+  (set) => ({
+    lead: "",
+    follow_up_date: null,
+    assigned_to: "",
+    appointment: null,
+    dealtime: null,
+    incoming: false,
+    outcoming: false,
+    note: "",
+    reminder_time: null,
+    setSelctedOptions: (opt: {
+      lead?: string;
+      followDate?: Date;
+      assignedTo?: string;
+      appointment?: any;
+      dealtime?: Date;
+      incoming?: boolean;
+      outcoming?: boolean;
+      note?: string;
+      reminderTime?: Date;
+    }) => {
+      set((state) => ({
+        ...state,
+        lead: opt.lead,
+        follow_up_date: opt.followDate,
+        assigned_to: opt.assignedTo,
+        appointment: opt.appointment,
+        dealtime: opt.dealtime,
+        incoming: opt.incoming,
+        outcoming: opt.outcoming,
+        note: opt.note,
+        reminder_time: opt.reminderTime,
+      }));
+    },
+  }),
+);
 
 // logic to handle credit app
 
@@ -3536,7 +3686,9 @@ export const creditAppInputsStore = create<CreditAppInputs>((set) => ({
   },
   addressInputs: undefined,
   getCreditApp: async (id: number) => {
-    const creditApp = await (await fetch(`/api/adminDashboard/creditApp/start/${id}`)).json();
+    const creditApp = await (
+      await fetch(`/api/adminDashboard/creditApp/start/${id}`)
+    ).json();
 
     set((state) => ({
       ...state,
@@ -3544,7 +3696,9 @@ export const creditAppInputsStore = create<CreditAppInputs>((set) => ({
     }));
   },
   getCreditAppAddress: async (id: number) => {
-    const address = await (await fetch(`/api/adminDashboard/creditApp/address/${id}`)).json();
+    const address = await (
+      await fetch(`/api/adminDashboard/creditApp/address/${id}`)
+    ).json();
 
     set(() => ({
       addressInputs: address,
@@ -3726,83 +3880,83 @@ interface CreditAppAddressState extends CreditAppAddress {
 }
 
 const states = [
-  { id: 1, state: 'Alabama' },
-  { id: 2, state: 'Alaska' },
-  { id: 3, state: 'Arizona' },
-  { id: 4, state: 'Arkansas' },
-  { id: 5, state: 'California' },
-  { id: 6, state: 'Colorado' },
-  { id: 7, state: 'Connecticut' },
-  { id: 8, state: 'Dsitrict of Columbia' },
-  { id: 9, state: 'Delaware' },
-  { id: 10, state: 'Florida' },
-  { id: 11, state: 'Georgia' },
-  { id: 12, state: 'Hawaii' },
-  { id: 13, state: 'Idaho' },
-  { id: 14, state: 'Illinois' },
-  { id: 15, state: 'Indiana' },
-  { id: 16, state: 'Indiana' },
-  { id: 17, state: 'Iowa' },
-  { id: 18, state: 'Kansas' },
-  { id: 19, state: 'Kentucky' },
-  { id: 20, state: 'Louisiana' },
-  { id: 21, state: 'Maine' },
-  { id: 22, state: 'Maryland' },
-  { id: 23, state: 'Massachusetts' },
-  { id: 24, state: 'Michigan' },
-  { id: 25, state: 'Minnesota' },
-  { id: 26, state: 'Mississippi' },
-  { id: 27, state: 'Missouri' },
-  { id: 28, state: 'Montana' },
-  { id: 29, state: 'Nebraska' },
-  { id: 30, state: 'Nevada' },
-  { id: 31, state: 'New Hampshire' },
-  { id: 32, state: 'New Jersey' },
-  { id: 33, state: 'New Mexico' },
-  { id: 34, state: 'New York' },
-  { id: 35, state: 'North Carolina' },
-  { id: 36, state: 'North Dakota' },
-  { id: 37, state: 'Ohio' },
-  { id: 38, state: 'Oklahoma' },
-  { id: 39, state: 'Oregon' },
-  { id: 40, state: 'Pennsylvania' },
-  { id: 41, state: 'Rhode Island' },
-  { id: 42, state: 'South Carolina' },
-  { id: 43, state: 'South Dakota' },
-  { id: 44, state: 'Tennessee' },
-  { id: 45, state: 'Texas' },
-  { id: 46, state: 'Utah' },
-  { id: 47, state: 'Vermont' },
-  { id: 48, state: 'Virginia' },
-  { id: 49, state: 'Washington' },
-  { id: 50, state: 'West Virginia' },
-  { id: 51, state: 'Wisconsin' },
-  { id: 52, state: 'Wyoming' },
+  { id: 1, state: "Alabama" },
+  { id: 2, state: "Alaska" },
+  { id: 3, state: "Arizona" },
+  { id: 4, state: "Arkansas" },
+  { id: 5, state: "California" },
+  { id: 6, state: "Colorado" },
+  { id: 7, state: "Connecticut" },
+  { id: 8, state: "Dsitrict of Columbia" },
+  { id: 9, state: "Delaware" },
+  { id: 10, state: "Florida" },
+  { id: 11, state: "Georgia" },
+  { id: 12, state: "Hawaii" },
+  { id: 13, state: "Idaho" },
+  { id: 14, state: "Illinois" },
+  { id: 15, state: "Indiana" },
+  { id: 16, state: "Indiana" },
+  { id: 17, state: "Iowa" },
+  { id: 18, state: "Kansas" },
+  { id: 19, state: "Kentucky" },
+  { id: 20, state: "Louisiana" },
+  { id: 21, state: "Maine" },
+  { id: 22, state: "Maryland" },
+  { id: 23, state: "Massachusetts" },
+  { id: 24, state: "Michigan" },
+  { id: 25, state: "Minnesota" },
+  { id: 26, state: "Mississippi" },
+  { id: 27, state: "Missouri" },
+  { id: 28, state: "Montana" },
+  { id: 29, state: "Nebraska" },
+  { id: 30, state: "Nevada" },
+  { id: 31, state: "New Hampshire" },
+  { id: 32, state: "New Jersey" },
+  { id: 33, state: "New Mexico" },
+  { id: 34, state: "New York" },
+  { id: 35, state: "North Carolina" },
+  { id: 36, state: "North Dakota" },
+  { id: 37, state: "Ohio" },
+  { id: 38, state: "Oklahoma" },
+  { id: 39, state: "Oregon" },
+  { id: 40, state: "Pennsylvania" },
+  { id: 41, state: "Rhode Island" },
+  { id: 42, state: "South Carolina" },
+  { id: 43, state: "South Dakota" },
+  { id: 44, state: "Tennessee" },
+  { id: 45, state: "Texas" },
+  { id: 46, state: "Utah" },
+  { id: 47, state: "Vermont" },
+  { id: 48, state: "Virginia" },
+  { id: 49, state: "Washington" },
+  { id: 50, state: "West Virginia" },
+  { id: 51, state: "Wisconsin" },
+  { id: 52, state: "Wyoming" },
 ];
 
 export const creditAppAddressStore = create<CreditAppAddressState>((set) => ({
   currentAddressForm: {
-    id: '',
-    currentAddress: '',
+    id: "",
+    currentAddress: "",
     showCurrentAddressOptions: false,
-    currentYear: '0',
-    currentMonthId: '1',
-    currentAddressTypeId: '',
-    currentRentMort: '',
-    currentStreet: '',
-    currentCity: '',
-    currentState: '',
-    currentStateId: '',
-    currentZip: '',
-    currentCounty: '',
-    mailingAddress: '',
+    currentYear: "0",
+    currentMonthId: "1",
+    currentAddressTypeId: "",
+    currentRentMort: "",
+    currentStreet: "",
+    currentCity: "",
+    currentState: "",
+    currentStateId: "",
+    currentZip: "",
+    currentCounty: "",
+    mailingAddress: "",
     showMailingAddressOptions: false,
-    mailingStreet: '',
-    mailingCity: '',
-    mailingState: '',
-    mailingStateId: '',
-    mailingZip: '',
-    mailingCounty: '',
+    mailingStreet: "",
+    mailingCity: "",
+    mailingState: "",
+    mailingStateId: "",
+    mailingZip: "",
+    mailingCounty: "",
   },
   updateCurrentAddress: (key, value) =>
     set((state) => {
@@ -3812,25 +3966,34 @@ export const creditAppAddressStore = create<CreditAppAddressState>((set) => ({
       };
 
       if (
-        ['currentStreet', 'currentCity', 'currentStateId', 'currentZip', 'currentCounty'].includes(
-          key,
-        )
+        [
+          "currentStreet",
+          "currentCity",
+          "currentStateId",
+          "currentZip",
+          "currentCounty",
+        ].includes(key)
       ) {
         updatedForm.currentAddress = [
           updatedForm.currentStreet,
           updatedForm.currentCity,
-          updatedForm.currentStateId && states[parseInt(updatedForm.currentStateId) - 1].state,
+          updatedForm.currentStateId &&
+            states[parseInt(updatedForm.currentStateId) - 1].state,
           updatedForm.currentZip,
           updatedForm.currentCounty,
         ]
           .filter(Boolean)
-          .join(', ');
+          .join(", ");
       }
 
       if (
-        ['mailingStreet', 'mailingCity', 'mailingState', 'mailingZip', 'mailingCounty'].includes(
-          key,
-        )
+        [
+          "mailingStreet",
+          "mailingCity",
+          "mailingState",
+          "mailingZip",
+          "mailingCounty",
+        ].includes(key)
       ) {
         updatedForm.mailingAddress = [
           updatedForm.mailingStreet,
@@ -3840,7 +4003,7 @@ export const creditAppAddressStore = create<CreditAppAddressState>((set) => ({
           updatedForm.mailingCounty,
         ]
           .filter(Boolean)
-          .join(', ');
+          .join(", ");
       }
 
       return { currentAddressForm: updatedForm };
@@ -3868,187 +4031,217 @@ interface PreviousAddressForm {
 interface PreviousAddressState {
   previousAddressForms: PreviousAddressForm[];
   addPreviousAddressForm: () => void;
-  updatePreviousAddressForm: (index: number, name: string, value: string) => void;
+  updatePreviousAddressForm: (
+    index: number,
+    name: string,
+    value: string,
+  ) => void;
   togglePrevOptions: (index: number, closeOptions?: boolean) => void;
   removePreviousAddressForm: (index: number) => void;
 }
 
-export const usePreviousAddressStore = create<PreviousAddressState>((set, get) => ({
-  previousAddressForms: [
-    {
-      id: '',
-      prevAddress: '',
-      prevYear: '0',
-      prevMonthId: '1',
-      prevAddressTypeId: '',
-      prevRentMort: '',
-      prevStreet: '',
-      prevCity: '',
-      prevState: '',
-      prevStateId: '',
-      prevZip: '',
-      prevCounty: '',
-      showOptions: false,
-    },
-  ],
-  addPreviousAddressForm: () =>
-    set((state) => ({
-      previousAddressForms: [
-        ...state.previousAddressForms,
-        {
-          id: '',
-          prevAddress: '',
-          prevYear: '0',
-          prevMonthId: '1',
-          prevAddressTypeId: '',
-          prevRentMort: '',
-          prevStreet: '',
-          prevCity: '',
-          prevState: '',
-          prevStateId: '',
-          prevZip: '',
-          prevCounty: '',
-          showOptions: false,
-        },
-      ],
-    })),
-  updatePreviousAddressForm: (index, name, value) => {
-    const handlePrevAddress = (prevAddress: string, position: number, value: string) => {
-      let newAddress = prevAddress;
-      const newAddressSplitted = newAddress.split(', ');
+export const usePreviousAddressStore = create<PreviousAddressState>(
+  (set, get) => ({
+    previousAddressForms: [
+      {
+        id: "",
+        prevAddress: "",
+        prevYear: "0",
+        prevMonthId: "1",
+        prevAddressTypeId: "",
+        prevRentMort: "",
+        prevStreet: "",
+        prevCity: "",
+        prevState: "",
+        prevStateId: "",
+        prevZip: "",
+        prevCounty: "",
+        showOptions: false,
+      },
+    ],
+    addPreviousAddressForm: () =>
+      set((state) => ({
+        previousAddressForms: [
+          ...state.previousAddressForms,
+          {
+            id: "",
+            prevAddress: "",
+            prevYear: "0",
+            prevMonthId: "1",
+            prevAddressTypeId: "",
+            prevRentMort: "",
+            prevStreet: "",
+            prevCity: "",
+            prevState: "",
+            prevStateId: "",
+            prevZip: "",
+            prevCounty: "",
+            showOptions: false,
+          },
+        ],
+      })),
+    updatePreviousAddressForm: (index, name, value) => {
+      const handlePrevAddress = (
+        prevAddress: string,
+        position: number,
+        value: string,
+      ) => {
+        let newAddress = prevAddress;
+        const newAddressSplitted = newAddress.split(", ");
 
-      switch (position) {
-        case 1:
-          newAddress = `${value}${
-            newAddressSplitted.slice(1).join(', ')
-              ? `, ${newAddressSplitted.slice(1).join(', ')}`
-              : ''
-          }`;
-          break;
+        switch (position) {
+          case 1:
+            newAddress = `${value}${
+              newAddressSplitted.slice(1).join(", ")
+                ? `, ${newAddressSplitted.slice(1).join(", ")}`
+                : ""
+            }`;
+            break;
 
-        case 2:
-          newAddress = `${newAddressSplitted.slice(0, 1)}${value ? `, ${value}` : ''}${
-            newAddressSplitted.slice(2).join(', ')
-              ? `, ${newAddressSplitted.slice(2).join(', ')}`
-              : ''
-          }`;
-          break;
+          case 2:
+            newAddress = `${newAddressSplitted.slice(0, 1)}${value ? `, ${value}` : ""}${
+              newAddressSplitted.slice(2).join(", ")
+                ? `, ${newAddressSplitted.slice(2).join(", ")}`
+                : ""
+            }`;
+            break;
 
-        case 3:
-          newAddress = `${newAddressSplitted.slice(0, 2).join(', ')}${value ? `, ${value}` : ''}${
-            newAddressSplitted.slice(3).join(', ')
-              ? `, ${newAddressSplitted.slice(3).join(', ')}`
-              : ''
-          }`;
-          break;
+          case 3:
+            newAddress = `${newAddressSplitted.slice(0, 2).join(", ")}${value ? `, ${value}` : ""}${
+              newAddressSplitted.slice(3).join(", ")
+                ? `, ${newAddressSplitted.slice(3).join(", ")}`
+                : ""
+            }`;
+            break;
 
-        case 4:
-          newAddress = `${newAddressSplitted.slice(0, 3).join(', ')}${value ? `, ${value}` : ''}${
-            newAddressSplitted.slice(4).join() ? `, ${newAddressSplitted.slice(4).join()}` : ''
-          }`;
-          break;
+          case 4:
+            newAddress = `${newAddressSplitted.slice(0, 3).join(", ")}${value ? `, ${value}` : ""}${
+              newAddressSplitted.slice(4).join()
+                ? `, ${newAddressSplitted.slice(4).join()}`
+                : ""
+            }`;
+            break;
 
-        case 5:
-          newAddress = `${newAddressSplitted.slice(0, 4).join(', ')}${value ? `, ${value}` : ''}`;
-          break;
-      }
+          case 5:
+            newAddress = `${newAddressSplitted.slice(0, 4).join(", ")}${value ? `, ${value}` : ""}`;
+            break;
+        }
 
-      return newAddress;
-    };
-
-    const stateText = (value: string) =>
-      states.find((el) => el.id === parseInt(value))?.state || '';
-
-    set((state) => {
-      const updatedForms = [...state.previousAddressForms];
-
-      switch (name) {
-        case 'prevStreet':
-          updatedForms[index] = {
-            ...updatedForms[index],
-            prevAddress: handlePrevAddress(updatedForms[index].prevAddress || '', 1, value),
-          };
-          break;
-
-        case 'prevCity':
-          updatedForms[index] = {
-            ...updatedForms[index],
-            prevAddress: handlePrevAddress(updatedForms[index].prevAddress || '', 2, value),
-          };
-          break;
-
-        case 'prevStateId':
-          updatedForms[index] = {
-            ...updatedForms[index],
-            prevAddress: handlePrevAddress(
-              updatedForms[index].prevAddress || '',
-              3,
-              stateText(value),
-            ),
-          };
-          break;
-
-        case 'prevZip':
-          updatedForms[index] = {
-            ...updatedForms[index],
-            prevAddress: handlePrevAddress(updatedForms[index].prevAddress || '', 4, value),
-          };
-          break;
-
-        case 'prevCounty':
-          updatedForms[index] = {
-            ...updatedForms[index],
-            prevAddress: handlePrevAddress(updatedForms[index].prevAddress || '', 5, value),
-          };
-          break;
-      }
-
-      updatedForms[index] = {
-        ...updatedForms[index],
-        [name]: value,
+        return newAddress;
       };
 
-      return { previousAddressForms: updatedForms };
-    });
-  },
-  togglePrevOptions: (index, closeOptions) => {
-    if (closeOptions) {
-      const { previousAddressForms } = get();
+      const stateText = (value: string) =>
+        states.find((el) => el.id === parseInt(value))?.state || "";
 
-      const newVal: PreviousAddressForm[] = [];
-
-      if (previousAddressForms && previousAddressForms.length > 0) {
-        previousAddressForms.forEach((form) => {
-          newVal.push({
-            ...form,
-            showOptions: false,
-          });
-        });
-      }
-
-      set({ previousAddressForms: newVal });
-    } else {
       set((state) => {
         const updatedForms = [...state.previousAddressForms];
 
-        updatedForms.map((form, formIindex) =>
-          formIindex !== index ? (form.showOptions = false) : form,
-        );
+        switch (name) {
+          case "prevStreet":
+            updatedForms[index] = {
+              ...updatedForms[index],
+              prevAddress: handlePrevAddress(
+                updatedForms[index].prevAddress || "",
+                1,
+                value,
+              ),
+            };
+            break;
+
+          case "prevCity":
+            updatedForms[index] = {
+              ...updatedForms[index],
+              prevAddress: handlePrevAddress(
+                updatedForms[index].prevAddress || "",
+                2,
+                value,
+              ),
+            };
+            break;
+
+          case "prevStateId":
+            updatedForms[index] = {
+              ...updatedForms[index],
+              prevAddress: handlePrevAddress(
+                updatedForms[index].prevAddress || "",
+                3,
+                stateText(value),
+              ),
+            };
+            break;
+
+          case "prevZip":
+            updatedForms[index] = {
+              ...updatedForms[index],
+              prevAddress: handlePrevAddress(
+                updatedForms[index].prevAddress || "",
+                4,
+                value,
+              ),
+            };
+            break;
+
+          case "prevCounty":
+            updatedForms[index] = {
+              ...updatedForms[index],
+              prevAddress: handlePrevAddress(
+                updatedForms[index].prevAddress || "",
+                5,
+                value,
+              ),
+            };
+            break;
+        }
 
         updatedForms[index] = {
           ...updatedForms[index],
-          showOptions: !updatedForms[index].showOptions,
+          [name]: value,
         };
 
         return { previousAddressForms: updatedForms };
       });
-    }
-  },
-  removePreviousAddressForm: (index: number) =>
-    set((state) => ({
-      previousAddressForms: state.previousAddressForms.filter((_, i) => i !== index),
-    })),
-}));
+    },
+    togglePrevOptions: (index, closeOptions) => {
+      if (closeOptions) {
+        const { previousAddressForms } = get();
+
+        const newVal: PreviousAddressForm[] = [];
+
+        if (previousAddressForms && previousAddressForms.length > 0) {
+          previousAddressForms.forEach((form) => {
+            newVal.push({
+              ...form,
+              showOptions: false,
+            });
+          });
+        }
+
+        set({ previousAddressForms: newVal });
+      } else {
+        set((state) => {
+          const updatedForms = [...state.previousAddressForms];
+
+          updatedForms.map((form, formIindex) =>
+            formIindex !== index ? (form.showOptions = false) : form,
+          );
+
+          updatedForms[index] = {
+            ...updatedForms[index],
+            showOptions: !updatedForms[index].showOptions,
+          };
+
+          return { previousAddressForms: updatedForms };
+        });
+      }
+    },
+    removePreviousAddressForm: (index: number) =>
+      set((state) => ({
+        previousAddressForms: state.previousAddressForms.filter(
+          (_, i) => i !== index,
+        ),
+      })),
+  }),
+);
 
 // single user data
 
@@ -4110,24 +4303,24 @@ interface ConsentMessage {
 }
 
 export const consentMessageStore = create<ConsentMessage>((set) => ({
-  consentLink: '',
-  sendCreditAppMessage: '',
+  consentLink: "",
+  sendCreditAppMessage: "",
   setConsentLink: async (id) => {
     const link = await (
-      await fetch(`/api/adminDashboard/consentLink/${id}`, { method: 'POST' })
+      await fetch(`/api/adminDashboard/consentLink/${id}`, { method: "POST" })
     ).json();
 
     set({
-      consentLink: link ? `${link}` : '',
+      consentLink: link ? `${link}` : "",
     });
   },
   setSendCreditAppMessage: async (user, id) => {
     const formData = new FormData();
 
-    formData.append('customerId', id.toString());
+    formData.append("customerId", id.toString());
 
     const res = await (
-      await fetch(`/api/creditAppCode`, { method: 'POST', body: formData })
+      await fetch(`/api/creditAppCode`, { method: "POST", body: formData })
     ).json();
 
     console.log(res);
@@ -4155,7 +4348,9 @@ interface DailyTotals {
 export const dailyTotalsStore = create<DailyTotals>((set) => ({
   todayAppointments: undefined,
   getTodayAppointments: async () => {
-    const data = await (await fetch('/api/adminDashboard/totalTodayAppointments')).json();
+    const data = await (
+      await fetch("/api/adminDashboard/totalTodayAppointments")
+    ).json();
 
     set(() => ({
       todayAppointments: data,
@@ -4214,41 +4409,46 @@ export const messagesStore = create<Messages>((set) => ({
 // number formatter
 
 interface NumberFormatter {
-  numberFormatter: (value: string, allowNegative?: boolean, format?: number) => string;
+  numberFormatter: (
+    value: string,
+    allowNegative?: boolean,
+    format?: number,
+  ) => string;
   numberFilter: (value: string, format?: number) => string;
 }
 
 export const numberFormatterStore = create<NumberFormatter>(() => ({
   numberFormatter: (value, allowNegative, format) => {
-    let numericValue = value.toString();
+    let numericValue = value ? value.toString() : "";
 
-    let negativeSign = '';
+    let negativeSign = "";
 
-    if (allowNegative && numericValue.includes('-')) {
-      negativeSign = '-';
+    if (allowNegative && numericValue?.includes("-")) {
+      negativeSign = "-";
 
-      numericValue = numericValue.substring(1);
+      numericValue = numericValue?.substring(1);
     }
 
-    numericValue = numericValue.replace(/[^0-9.]/g, '');
+    numericValue = numericValue?.replace(/[^0-9.]/g, "");
 
-    if (numericValue === '' || numericValue === '.') {
-      numericValue = '0';
+    if (numericValue === "" || numericValue === ".") {
+      numericValue = "0";
 
-      negativeSign = '';
+      negativeSign = "";
     }
 
-    const [integerPart, decimalPart] = numericValue.split('.');
+    const [integerPart, decimalPart] = numericValue?.split(".");
 
-    let formattedInteger: number | string = '0';
+    let formattedInteger: number | string = "0";
 
     switch (format) {
       case 1:
-        formattedInteger = '$' + parseFloat(integerPart || '0').toLocaleString('en-US');
+        formattedInteger =
+          "$" + parseFloat(integerPart || "0").toLocaleString("en-US");
         break;
 
       default:
-        formattedInteger = parseFloat(integerPart || '0');
+        formattedInteger = parseFloat(integerPart || "0");
         break;
     }
 
@@ -4260,18 +4460,18 @@ export const numberFormatterStore = create<NumberFormatter>(() => ({
     return negativeSign + formattedValue;
   },
   numberFilter: (value, format) => {
-    let valueFiltered = value?.replace(/[^-\d.]/g, '');
+    let valueFiltered = value?.replace(/[^-\d.]/g, "");
 
-    let negativeSign = '';
+    let negativeSign = "";
 
-    if (valueFiltered && valueFiltered.startsWith('-')) {
-      negativeSign = '-';
+    if (valueFiltered && valueFiltered.startsWith("-")) {
+      negativeSign = "-";
       valueFiltered = valueFiltered.substring(1);
     }
 
     switch (format) {
       case 1:
-        valueFiltered = `${negativeSign}$${valueFiltered.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+        valueFiltered = `${negativeSign}$${valueFiltered.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
         break;
     }
 
@@ -4300,7 +4500,10 @@ interface CreditAppPagination {
   resetCurrentPage: () => void;
   setCurrentPage: (identity: string) => void;
   getCreditAppNavigation: (customerId: number) => Promise<void>;
-  setCreditAppNavigation: (currentPage: number, isNextPageAvailable: boolean) => void;
+  setCreditAppNavigation: (
+    currentPage: number,
+    isNextPageAvailable: boolean,
+  ) => void;
 }
 
 export enum CreditAppPages {
@@ -4310,112 +4513,114 @@ export enum CreditAppPages {
   References = 4,
 }
 
-export const creditAppPaginationStore = create<CreditAppPagination>((set, get) => ({
-  currentPage: 1,
-  creditAppNav: null,
-  availablesPages: {
-    address: false,
-    employmentStatus: false,
-    references: false,
-  },
-  nextPage: () => {
-    const { currentPage } = get();
-    let newCurrentPage: number = 1;
+export const creditAppPaginationStore = create<CreditAppPagination>(
+  (set, get) => ({
+    currentPage: 1,
+    creditAppNav: null,
+    availablesPages: {
+      address: false,
+      employmentStatus: false,
+      references: false,
+    },
+    nextPage: () => {
+      const { currentPage } = get();
+      let newCurrentPage: number = 1;
 
-    switch (currentPage) {
-      case 1:
-        newCurrentPage = 2;
-        break;
+      switch (currentPage) {
+        case 1:
+          newCurrentPage = 2;
+          break;
 
-      case 2:
-        newCurrentPage = 3;
-        break;
+        case 2:
+          newCurrentPage = 3;
+          break;
 
-      case 3:
-        newCurrentPage = 4;
-        break;
-    }
+        case 3:
+          newCurrentPage = 4;
+          break;
+      }
 
-    set({ currentPage: newCurrentPage });
-  },
-  prevPage: () => {
-    const { currentPage } = get();
-    let newCurrentPage: number = 1;
+      set({ currentPage: newCurrentPage });
+    },
+    prevPage: () => {
+      const { currentPage } = get();
+      let newCurrentPage: number = 1;
 
-    switch (currentPage) {
-      case 2:
-        newCurrentPage = 1;
-        break;
+      switch (currentPage) {
+        case 2:
+          newCurrentPage = 1;
+          break;
 
-      case 3:
-        newCurrentPage = 2;
-        break;
+        case 3:
+          newCurrentPage = 2;
+          break;
 
-      case 4:
-        newCurrentPage = 3;
-        break;
-    }
+        case 4:
+          newCurrentPage = 3;
+          break;
+      }
 
-    set({ currentPage: newCurrentPage });
-  },
-  resetCurrentPage: () => {
-    set({ currentPage: 1 });
-  },
-  setCurrentPage: (identity) => {
-    let currentPage = 1;
+      set({ currentPage: newCurrentPage });
+    },
+    resetCurrentPage: () => {
+      set({ currentPage: 1 });
+    },
+    setCurrentPage: (identity) => {
+      let currentPage = 1;
 
-    switch (identity) {
-      case 'start':
-        currentPage = 1;
-        break;
+      switch (identity) {
+        case "start":
+          currentPage = 1;
+          break;
 
-      case 'address':
-        currentPage = 2;
-        break;
+        case "address":
+          currentPage = 2;
+          break;
 
-      case 'status':
-        currentPage = 3;
-        break;
+        case "status":
+          currentPage = 3;
+          break;
 
-      case 'references':
-        currentPage = 4;
-        break;
-    }
+        case "references":
+          currentPage = 4;
+          break;
+      }
 
-    set({ currentPage: currentPage });
-  },
-  getCreditAppNavigation: async (customerId) => {
-    const res = await fetch(`/api/creditAppNav/${customerId}`);
+      set({ currentPage: currentPage });
+    },
+    getCreditAppNavigation: async (customerId) => {
+      const res = await fetch(`/api/creditAppNav/${customerId}`);
 
-    const json = await res.json();
+      const json = await res.json();
 
-    set({ creditAppNav: json });
-  },
-  setCreditAppNavigation: (currentPage, isNextPageAvailable) => {
-    const { availablesPages } = get();
+      set({ creditAppNav: json });
+    },
+    setCreditAppNavigation: (currentPage, isNextPageAvailable) => {
+      const { availablesPages } = get();
 
-    let availablesPagesCopy = { ...availablesPages };
+      let availablesPagesCopy = { ...availablesPages };
 
-    switch (currentPage) {
-      case CreditAppPages.Address:
-        availablesPagesCopy.address = isNextPageAvailable;
+      switch (currentPage) {
+        case CreditAppPages.Address:
+          availablesPagesCopy.address = isNextPageAvailable;
 
-        break;
+          break;
 
-      case CreditAppPages.EmploymentStatus:
-        availablesPagesCopy.employmentStatus = isNextPageAvailable;
+        case CreditAppPages.EmploymentStatus:
+          availablesPagesCopy.employmentStatus = isNextPageAvailable;
 
-        break;
+          break;
 
-      case CreditAppPages.References:
-        availablesPagesCopy.references = isNextPageAvailable;
+        case CreditAppPages.References:
+          availablesPagesCopy.references = isNextPageAvailable;
 
-        break;
-    }
+          break;
+      }
 
-    set({ availablesPages: availablesPagesCopy });
-  },
-}));
+      set({ availablesPages: availablesPagesCopy });
+    },
+  }),
+);
 
 // task filter search input value
 
@@ -4430,56 +4635,63 @@ interface TaskFilterSearchInput {
   setTaskStatusFilterChecksboxes: (value: string) => void;
 }
 
-export const taskFilterSearchInputStore = create<TaskFilterSearchInput>((set, get) => ({
-  taskSearchFilterInput: '',
-  taskStatusFilterChecksboxes: [],
-  taskBetweenFrom: '',
-  taskBetweenTo: '',
-  setTaskStatusFilterChecksboxes: (val) => {
-    const { taskStatusFilterChecksboxes } = get();
+export const taskFilterSearchInputStore = create<TaskFilterSearchInput>(
+  (set, get) => ({
+    taskSearchFilterInput: "",
+    taskStatusFilterChecksboxes: [],
+    taskBetweenFrom: "",
+    taskBetweenTo: "",
+    setTaskStatusFilterChecksboxes: (val) => {
+      const { taskStatusFilterChecksboxes } = get();
 
-    let newValues = [...taskStatusFilterChecksboxes];
+      let newValues = [...taskStatusFilterChecksboxes];
 
-    if (val === 'clean') {
-      newValues = [];
-    } else if (newValues.includes(val)) {
-      newValues = newValues.filter((el) => el !== val);
-    } else {
-      newValues.push(val);
-    }
+      if (val === "clean") {
+        newValues = [];
+      } else if (newValues.includes(val)) {
+        newValues = newValues.filter((el) => el !== val);
+      } else {
+        newValues.push(val);
+      }
 
-    set({ taskStatusFilterChecksboxes: newValues });
-  },
-  setTaskSearchFilterInput: (value) => {
-    set({ taskSearchFilterInput: value });
-  },
-  setTaskBetweenFrom: (value) => {
-    set({ taskBetweenFrom: value });
-  },
-  setTaskBetweenTo: (value) => {
-    set({ taskBetweenTo: value });
-  },
-}));
+      set({ taskStatusFilterChecksboxes: newValues });
+    },
+    setTaskSearchFilterInput: (value) => {
+      set({ taskSearchFilterInput: value });
+    },
+    setTaskBetweenFrom: (value) => {
+      set({ taskBetweenFrom: value });
+    },
+    setTaskBetweenTo: (value) => {
+      set({ taskBetweenTo: value });
+    },
+  }),
+);
 
 // user permission allowed
 
 interface UserPermissionAllowed {
-  returnPermission: (roleIdAllowed: number[], currentUserRoleId?: number) => boolean;
+  returnPermission: (
+    roleIdAllowed: number[],
+    currentUserRoleId?: number,
+  ) => boolean;
 }
 
-export const userPermissionAllowedStore = create<UserPermissionAllowed>((set) => ({
-  returnPermission: (roleIdAllowed, currentUserRoleId) => {
-    let allowed: boolean = false;
+export const userPermissionAllowedStore = create<UserPermissionAllowed>(
+  (set) => ({
+    returnPermission: (roleIdAllowed, currentUserRoleId) => {
+      let allowed: boolean = false;
 
-    if (currentUserRoleId) {
-      if (roleIdAllowed.includes(currentUserRoleId)) {
-        allowed = true;
+      if (currentUserRoleId) {
+        if (roleIdAllowed.includes(currentUserRoleId)) {
+          allowed = true;
+        }
       }
-    }
 
-    return allowed;
-  },
-}));
+      return allowed;
+    },
+  }),
+);
 
 // dashboard height
 

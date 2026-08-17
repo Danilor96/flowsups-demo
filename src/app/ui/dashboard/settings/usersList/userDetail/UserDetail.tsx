@@ -6,31 +6,35 @@ import {
   modalWindowStore,
   singleUserDataStore,
   userPermissionAllowedStore,
-} from '@/store/adminDashboard';
-import { useCallback, useEffect, useState } from 'react';
-import { ModalWindow } from '&/modalWindowsStructure/ModalWindow';
-import { ModalContainer } from '&/modalWindowsStructure/ModalContainer';
-import { ModalContainerTitle } from '&/modalWindowsStructure/ModalContainerTitle';
-import { ModalContent } from '&/modalWindowsStructure/ModalContent';
-import { BorderedContent } from '&/modalWindowsStructure/BorderedContent';
-import { ContentRow } from '&/modalWindowsStructure/ContentRow';
-import { Input } from '&/inputs/Input';
-import { UserSchedule } from '&/miscellaneous/userSchedule/UserSchedule';
-import { UserImage } from '&/miscellaneous/userImage/UserImage';
-import { ButtonContainer } from '&/buttons/ButtonContainer';
-import { Button } from '&/buttons/Button';
-import { daytimeStore, dayweekStore, userScheduleStore } from '@/store/userSchedule';
-import { ConfirmNotification } from '&/notifications/Notification';
-import { signOut, useSession } from 'next-auth/react';
-import { useSocketStore } from '@/store/socketIo';
-import { phoneNumbersFormatStore } from '@/store/phoneNumbersFormat';
-import { useLoadingGetData } from '@/hooks/loadingGetData';
-import { SystemAccesses } from './systemAccesses/SystemAccesses';
-import { useAsyncFetching } from '@/hooks/asyncFetchingHandler';
-import { LockOpenIcon } from '@/app/ui/icons/Icons';
-import { PayPlan } from './payPlan/PayPlan';
-import { useCan } from '@/hooks/permissions';
-import { Can } from '@/app/ui/auth/Can';
+} from "@/store/adminDashboard";
+import { useCallback, useEffect, useState } from "react";
+import { ModalWindow } from "&/modalWindowsStructure/ModalWindow";
+import { ModalContainer } from "&/modalWindowsStructure/ModalContainer";
+import { ModalContainerTitle } from "&/modalWindowsStructure/ModalContainerTitle";
+import { ModalContent } from "&/modalWindowsStructure/ModalContent";
+import { BorderedContent } from "&/modalWindowsStructure/BorderedContent";
+import { ContentRow } from "&/modalWindowsStructure/ContentRow";
+import { Input } from "&/inputs/Input";
+import { UserSchedule } from "&/miscellaneous/userSchedule/UserSchedule";
+import { UserImage } from "&/miscellaneous/userImage/UserImage";
+import { ButtonContainer } from "&/buttons/ButtonContainer";
+import { Button } from "&/buttons/Button";
+import {
+  daytimeStore,
+  dayweekStore,
+  userScheduleStore,
+} from "@/store/userSchedule";
+import { ConfirmNotification } from "&/notifications/Notification";
+import { signOut, useSession } from "next-auth/react";
+import { useSocketStore } from "@/store/socketIo";
+import { phoneNumbersFormatStore } from "@/store/phoneNumbersFormat";
+import { useLoadingGetData } from "@/hooks/loadingGetData";
+import { SystemAccesses } from "./systemAccesses/SystemAccesses";
+import { useAsyncFetching } from "@/hooks/asyncFetchingHandler";
+import { LockOpenIcon } from "@/app/ui/icons/Icons";
+import { PayPlan } from "./payPlan/PayPlan";
+import { useCan } from "@/hooks/permissions";
+import { Can } from "@/app/ui/auth/Can";
 
 interface PercentInputsType {
   frontGross: string;
@@ -41,10 +45,10 @@ interface PercentInputsType {
 }
 
 const initialPayPlanInputs = {
-  frontGross: '',
-  backGross: '',
-  ofCashDown: '',
-  salesPersonId: '',
+  frontGross: "",
+  backGross: "",
+  ofCashDown: "",
+  salesPersonId: "",
   excludeReserveOrFlat: false,
 };
 
@@ -59,7 +63,8 @@ export function UserDetail() {
   const { returnPermission } = userPermissionAllowedStore();
 
   const { profileOpenFromuUserOptions, closeNewTab } = modalWindowStore();
-  const { closeSingleUser, closeProfileOpenFromuUserOptions } = modalWindowStore();
+  const { closeSingleUser, closeProfileOpenFromuUserOptions } =
+    modalWindowStore();
 
   const { singleUser } = singleUserDataStore();
   const { clearSingleUserData, getSingleUserData } = singleUserDataStore();
@@ -99,13 +104,15 @@ export function UserDetail() {
   const { can } = useCan();
 
   useEffect(() => {
-    getCurrentSection('User detail');
+    getCurrentSection("User detail");
   }, [getCurrentSection]);
 
   // ----- local states -----
 
-  const [userSelectdForDeleteIt, setUserSelectdForDeleteIt] = useState<string>('');
-  const [showActionConfirmation, setShowActionConfirmation] = useState<boolean>(false);
+  const [userSelectdForDeleteIt, setUserSelectdForDeleteIt] =
+    useState<string>("");
+  const [showActionConfirmation, setShowActionConfirmation] =
+    useState<boolean>(false);
 
   const [inputs, setInputs] = useState<{
     firstName: string | undefined;
@@ -117,25 +124,33 @@ export function UserDetail() {
     userImage: File | undefined;
     username: string | undefined;
   }>({
-    firstName: '',
-    lastName: '',
-    role: '',
-    email: '',
-    mobilePhone: '',
-    password: '',
+    firstName: "",
+    lastName: "",
+    role: "",
+    email: "",
+    mobilePhone: "",
+    password: "",
     userImage: undefined,
-    username: '',
+    username: "",
   });
 
   const [isPercent, setIsPercent] = useState(true);
-  const [percentInputs, setPercentInputs] = useState<PercentInputsType>(initialPayPlanInputs);
-  const [flatInputs, setFlatInputs] = useState<PercentInputsType>(initialPayPlanInputs);
-  const [monthlyVehicleSalesGoal, setMonthlyVehicleSalesGoal] = useState<number | null>(null);
+  const [percentInputs, setPercentInputs] =
+    useState<PercentInputsType>(initialPayPlanInputs);
+  const [flatInputs, setFlatInputs] =
+    useState<PercentInputsType>(initialPayPlanInputs);
+  const [monthlyVehicleSalesGoal, setMonthlyVehicleSalesGoal] = useState<
+    number | null
+  >(null);
 
-  const [resetPasswordConfirmationMessage, setResetPasswordConfirmationMessage] =
-    useState<string>('');
-  const [resetPasswordLoading, setResetPasswordLoading] = useState<boolean>(false);
-  const [showResetPasswordChoice, setShowResetPasswordChoice] = useState<boolean>(false);
+  const [
+    resetPasswordConfirmationMessage,
+    setResetPasswordConfirmationMessage,
+  ] = useState<string>("");
+  const [resetPasswordLoading, setResetPasswordLoading] =
+    useState<boolean>(false);
+  const [showResetPasswordChoice, setShowResetPasswordChoice] =
+    useState<boolean>(false);
   const [sendToAdmin, setSendToAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -143,10 +158,10 @@ export function UserDetail() {
       setInputs((prevState) => ({
         ...prevState,
         firstName: singleUser.name,
-        lastName: singleUser.last_name || '',
+        lastName: singleUser.last_name || "",
         role:
           singleUser.user_has && singleUser.user_has.length > 0
-            ? singleUser.user_has[0].role.id.toString()
+            ? singleUser.user_has[0].role?.id?.toString()
             : undefined,
         email: singleUser.email,
         mobilePhone: singleUser.mobile_phone,
@@ -155,22 +170,22 @@ export function UserDetail() {
       setMonthlyVehicleSalesGoal(singleUser.monthly_vehicle_sales_goal);
       if (singleUser.pay_plan) {
         const payPlan = singleUser.pay_plan;
-        setIsPercent(payPlan.pay_type === 'Percent');
-        if (payPlan.pay_type === 'Percent') {
+        setIsPercent(payPlan.pay_type === "Percent");
+        if (payPlan.pay_type === "Percent") {
           setPercentInputs({
-            frontGross: payPlan.front_gross || '',
-            backGross: payPlan.back_gross || '',
-            ofCashDown: payPlan.of_cash_down || '',
-            salesPersonId: payPlan.sales_person_id || '',
+            frontGross: payPlan.front_gross || "",
+            backGross: payPlan.back_gross || "",
+            ofCashDown: payPlan.of_cash_down || "",
+            salesPersonId: payPlan.sales_person_id || "",
             excludeReserveOrFlat: payPlan.exclude_reserve_or_flat || false,
           });
           setFlatInputs(initialPayPlanInputs);
         } else {
           setFlatInputs({
-            frontGross: payPlan.front_gross || '',
-            backGross: payPlan.back_gross || '',
-            ofCashDown: payPlan.of_cash_down || '',
-            salesPersonId: payPlan.sales_person_id || '',
+            frontGross: payPlan.front_gross || "",
+            backGross: payPlan.back_gross || "",
+            ofCashDown: payPlan.of_cash_down || "",
+            salesPersonId: payPlan.sales_person_id || "",
             excludeReserveOrFlat: false, // Not applicable for Flat
           });
           setPercentInputs(initialPayPlanInputs);
@@ -202,7 +217,8 @@ export function UserDetail() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const localImagePath = e.target.files && e.target.files[0];
 
-    const userImg = e.target.files && e.target.files[0] ? e.target.files[0] : undefined;
+    const userImg =
+      e.target.files && e.target.files[0] ? e.target.files[0] : undefined;
 
     userImg &&
       setInputs((prevState) => ({
@@ -223,10 +239,12 @@ export function UserDetail() {
 
   //   handling input changes
 
-  const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputsChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { value, name } = e.target;
 
-    if (name === 'mobilePhone') {
+    if (name === "mobilePhone") {
       const newValue = extractDigits(value);
 
       setInputs((prevState) => ({
@@ -245,7 +263,7 @@ export function UserDetail() {
 
   //   handling pay plan inputs
   const handlePayPlanTypeChange = (optionValue: string) => {
-    setIsPercent(optionValue === '1');
+    setIsPercent(optionValue === "1");
   };
 
   const handlePercentInputsChange = (input: Partial<PercentInputsType>) => {
@@ -265,26 +283,29 @@ export function UserDetail() {
 
     // save current values
 
-    if (identity === 'save') {
+    if (identity === "save") {
       const formData = new FormData();
 
       for (const [key, value] of Object.entries(inputs)) {
-        value ? formData.append(key, value) : formData.append(key, '');
+        value ? formData.append(key, value) : formData.append(key, "");
       }
 
-      formData.append('dayweek', JSON.stringify(dayweek));
-      formData.append('daytimeFrom', JSON.stringify(daytimeFrom));
-      formData.append('daytimeTo', JSON.stringify(daytimeTo));
-      formData.append('userScheduleData', JSON.stringify(userSchedule));
+      formData.append("dayweek", JSON.stringify(dayweek));
+      formData.append("daytimeFrom", JSON.stringify(daytimeFrom));
+      formData.append("daytimeTo", JSON.stringify(daytimeTo));
+      formData.append("userScheduleData", JSON.stringify(userSchedule));
       // Add pay plan data
-      formData.append('pay_plan_type', isPercent ? 'Percent' : 'Flat');
+      formData.append("pay_plan_type", isPercent ? "Percent" : "Flat");
       if (isPercent) {
-        formData.append('pay_plan_data', JSON.stringify(percentInputs));
+        formData.append("pay_plan_data", JSON.stringify(percentInputs));
       } else {
-        formData.append('pay_plan_data', JSON.stringify(flatInputs));
+        formData.append("pay_plan_data", JSON.stringify(flatInputs));
       }
       if (monthlyVehicleSalesGoal !== null) {
-        formData.append('monthlyVehicleSalesGoal', monthlyVehicleSalesGoal.toString());
+        formData.append(
+          "monthlyVehicleSalesGoal",
+          monthlyVehicleSalesGoal.toString(),
+        );
       }
 
       const apiUrl = `/api/adminDashboard/users/${singleUser?.id}`;
@@ -292,16 +313,16 @@ export function UserDetail() {
       await makeAsyncFetch({
         formData,
         apiUrl,
-        method: 'PUT',
+        method: "PUT",
         permissionForFetch: 34,
         options: {
           onSuccess: (data) => {
             if (singleUser && singleUser.id) {
-              updateDataWithSocket('usersAndSingleUser', undefined, {
+              updateDataWithSocket("usersAndSingleUser", undefined, {
                 singleUserId: singleUser.id.toString(),
               });
 
-              updateDataWithSocket('updateRole', singleUser.email);
+              updateDataWithSocket("updateRole", singleUser.email);
             }
           },
         },
@@ -310,15 +331,15 @@ export function UserDetail() {
 
     // change user status
 
-    const userStatusChangeKeys = ['disable', 'enable'];
+    const userStatusChangeKeys = ["disable", "enable"];
 
     if (identity && userStatusChangeKeys.includes(identity)) {
       const formData = new FormData();
 
-      if (identity === 'disable') {
-        formData.append('status', '2');
+      if (identity === "disable") {
+        formData.append("status", "2");
       } else {
-        formData.append('status', '1');
+        formData.append("status", "1");
       }
 
       const apiUrl = `/api/adminDashboard/userStatus/${singleUser?.id}`;
@@ -326,12 +347,12 @@ export function UserDetail() {
       await makeAsyncFetch({
         formData,
         apiUrl,
-        method: 'PUT',
+        method: "PUT",
         permissionForFetch: 41,
         options: {
           onSuccess: () => {
             if (singleUser && singleUser.id) {
-              updateDataWithSocket('usersAndSingleUser', undefined, {
+              updateDataWithSocket("usersAndSingleUser", undefined, {
                 singleUserId: singleUser.id.toString(),
               });
             }
@@ -342,7 +363,7 @@ export function UserDetail() {
 
     // delete user
 
-    if (identity === 'delete') {
+    if (identity === "delete") {
       setShowActionConfirmation(true);
     }
   };
@@ -353,11 +374,11 @@ export function UserDetail() {
 
       await makeAsyncFetch({
         apiUrl,
-        method: 'DELETE',
+        method: "DELETE",
         permissionForFetch: 42,
         options: {
           onSuccess: () => {
-            updateDataWithSocket('usersAndSingleUser');
+            updateDataWithSocket("usersAndSingleUser");
 
             clearSingleUserData();
 
@@ -375,7 +396,7 @@ export function UserDetail() {
       setShowResetPasswordChoice(true);
     } else {
       setResetPasswordConfirmationMessage(
-        'Are you sure you want to reset this password? A link will be sent to the user email.',
+        "Are you sure you want to reset this password? A link will be sent to the user email.",
       );
     }
   };
@@ -383,42 +404,46 @@ export function UserDetail() {
   const handleResetPasswordDecision = async (decision: boolean) => {
     if (!singleUser || !singleUser.email) return;
     if (!decision) {
-      setResetPasswordConfirmationMessage('');
+      setResetPasswordConfirmationMessage("");
       setShowResetPasswordChoice(false);
       setSendToAdmin(null);
       return;
     }
 
-    if (sendToAdmin === null && userAuhtIsSuperUserOrAdmin && !isAuthenticatedUserProfile) {
-      setMessages('Please select an option.');
+    if (
+      sendToAdmin === null &&
+      userAuhtIsSuperUserOrAdmin &&
+      !isAuthenticatedUserProfile
+    ) {
+      setMessages("Please select an option.");
       return;
     }
 
     setResetPasswordLoading(true);
     const formData = new FormData();
-    formData.append('email', singleUser.email);
+    formData.append("email", singleUser.email);
     if (sendToAdmin) {
-      formData.append('sendToAdmin', 'true');
+      formData.append("sendToAdmin", "true");
     } else {
-      formData.append('sendToAdmin', 'false');
+      formData.append("sendToAdmin", "false");
     }
 
-    const apiUrl = '/api/auth/forgot-password';
+    const apiUrl = "/api/auth/forgot-password";
 
     await makeAsyncFetch({
       formData,
       apiUrl,
-      method: 'POST',
+      method: "POST",
       permissionForFetch: 39,
       options: {
         onSuccess() {
-          setResetPasswordConfirmationMessage('');
+          setResetPasswordConfirmationMessage("");
           setShowResetPasswordChoice(false);
           setSendToAdmin(null);
         },
         onError(error) {
-          console.error('Error resetting password:', error);
-          setMessages('An error occurred while resetting the password.');
+          console.error("Error resetting password:", error);
+          setMessages("An error occurred while resetting the password.");
         },
       },
     });
@@ -431,30 +456,30 @@ export function UserDetail() {
   const inputData1 = [
     {
       id: 1,
-      name: 'firstName',
+      name: "firstName",
       value: inputs.firstName,
-      label: 'First Name',
-      type: 'text',
+      label: "First Name",
+      type: "text",
       onChange: handleInputsChange,
       width: 25,
       can: profileOpenFromuUserOptions ? 0 : 36,
     },
     {
       id: 2,
-      name: 'lastName',
+      name: "lastName",
       value: inputs.lastName,
-      label: 'Last Name',
-      type: 'text',
+      label: "Last Name",
+      type: "text",
       onChange: handleInputsChange,
       width: 25,
       can: profileOpenFromuUserOptions ? 0 : 36,
     },
     {
       id: 3,
-      name: 'role',
+      name: "role",
       value: inputs.role,
-      label: 'Role',
-      type: 'select',
+      label: "Role",
+      type: "select",
       disabled: profileOpenFromuUserOptions ? true : false,
       options: roles
         ?.filter((el) => (userId !== 1 ? el.id !== 1 : true))
@@ -471,9 +496,9 @@ export function UserDetail() {
     {
       id: 4,
       value: inputs.mobilePhone && formatPhoneNumber(inputs.mobilePhone),
-      name: 'mobilePhone',
-      label: 'Phone Number',
-      type: 'text',
+      name: "mobilePhone",
+      label: "Phone Number",
+      type: "text",
       onChange: handleInputsChange,
       width: 25,
       can: profileOpenFromuUserOptions ? 0 : 36,
@@ -481,9 +506,9 @@ export function UserDetail() {
     {
       id: 5,
       value: inputs.email,
-      name: 'email',
-      label: 'Email',
-      type: 'text',
+      name: "email",
+      label: "Email",
+      type: "text",
       onChange: handleInputsChange,
       width: 25,
       can: profileOpenFromuUserOptions ? 0 : 36,
@@ -491,9 +516,9 @@ export function UserDetail() {
     {
       id: 7,
       value: inputs.username,
-      name: 'username',
-      label: 'Username',
-      type: 'text',
+      name: "username",
+      label: "Username",
+      type: "text",
       onChange: handleInputsChange,
       width: 25,
       can: profileOpenFromuUserOptions ? 0 : 36,
@@ -513,36 +538,40 @@ export function UserDetail() {
 
   const buttonData = [
     {
-      id: !profileOpenFromuUserOptions ? 1 : '',
+      id: !profileOpenFromuUserOptions ? 1 : "",
       width: 9.2,
-      backgroundColor: '#FFF',
-      identity: `${singleUser?.status_id === 2 ? 'enable' : 'disable'}`,
-      textColor: '#00A78B',
-      buttonText: `${singleUser?.status_id === 2 ? 'Enable' : 'Disable'}`,
+      backgroundColor: "#FFF",
+      identity: `${singleUser?.status_id === 2 ? "enable" : "disable"}`,
+      textColor: "#00A78B",
+      buttonText: `${singleUser?.status_id === 2 ? "Enable" : "Disable"}`,
       border: 0.104167,
-      borderColor: '#00A78B',
+      borderColor: "#00A78B",
       onClick: handleSubmitForm,
       can: 41,
     },
     {
-      id: !profileOpenFromuUserOptions ? (returnPermission([1, 2], userId) ? 3 : '') : '',
+      id: !profileOpenFromuUserOptions
+        ? returnPermission([1, 2], userId)
+          ? 3
+          : ""
+        : "",
       width: 9.2,
-      backgroundColor: '#FFF',
-      identity: 'delete',
-      textColor: '#00A78B',
-      buttonText: 'Delete',
+      backgroundColor: "#FFF",
+      identity: "delete",
+      textColor: "#00A78B",
+      buttonText: "Delete",
       border: 0.104167,
-      borderColor: '#00A78B',
+      borderColor: "#00A78B",
       onClick: handleSubmitForm,
       can: 42,
     },
     {
       id: 5,
       width: 9.2,
-      backgroundColor: '#00A78B',
-      identity: 'save',
-      textColor: '#FFF',
-      buttonText: 'Save',
+      backgroundColor: "#00A78B",
+      identity: "save",
+      textColor: "#FFF",
+      buttonText: "Save",
       onClick: handleSubmitForm,
       // can: profileOpenFromuUserOptions ? 0 : [36, 37, 38, 40],
       can: [36, 37, 38, 40],
@@ -559,9 +588,11 @@ export function UserDetail() {
       )}
       <ModalContainer marginTop={3.814815} width={82.916667}>
         <ModalContainerTitle
-          title={`User - ${inputs.firstName || 'Loading'} ${inputs.lastName || ''}`}
+          title={`User - ${inputs.firstName || "Loading"} ${inputs.lastName || ""}`}
           openNewTab
-          directOpenUrl={singleUser ? `/dashboard/userDetail-${singleUser.id}` : ''}
+          directOpenUrl={
+            singleUser ? `/dashboard/userDetail-${singleUser.id}` : ""
+          }
           closeWindowFunction={() => {
             // if (closeNewTab) {
             //   window.close();
@@ -578,18 +609,31 @@ export function UserDetail() {
         <ModalContent loading={loading || loadingFetch} minHeight={75}>
           <div className="w-full h-full overflow-y-scroll overflow-x-hidden whitespace-nowrap pr-[0.5rem] max-h-[68vh]">
             <BorderedContent>
-              <ContentRow cols={3} gap={3} widthFull justifyContent="space-between">
+              <ContentRow
+                cols={3}
+                gap={3}
+                widthFull
+                justifyContent="space-between"
+              >
                 {inputData1.map((el) => (
                   <Input
                     key={el.id}
                     label={el.label}
                     name={el.name}
                     type={el.type}
-                    onChange={el.can ? (can(el.can) ? el.onChange : () => {}) : el.onChange}
+                    onChange={
+                      el.can
+                        ? can(el.can)
+                          ? el.onChange
+                          : () => {}
+                        : el.onChange
+                    }
                     value={el.value}
                     width={el.width}
                     options={el.options}
-                    disabled={el.can ? (can(el.can) ? el.disabled : true) : el.disabled}
+                    disabled={
+                      el.can ? (can(el.can) ? el.disabled : true) : el.disabled
+                    }
                     fieldErrors={fieldErrors}
                   />
                 ))}
@@ -609,7 +653,13 @@ export function UserDetail() {
                       label={el.label}
                       name={el.name}
                       type={el.type}
-                      onChange={el.can ? (can(el.can) ? el.onChange : () => {}) : el.onChange}
+                      onChange={
+                        el.can
+                          ? can(el.can)
+                            ? el.onChange
+                            : () => {}
+                          : el.onChange
+                      }
                       value={el.value}
                       width={el.width}
                       disabled={el.can ? (can(el.can) ? false : true) : false}
@@ -617,60 +667,63 @@ export function UserDetail() {
                     />
                   ))}
                   {/* {can(39) && ( */}
-                    <>
-                      <Button
-                        width={13}
-                        backgroundColor={''}
-                        border={0.104167}
-                        borderColor={'#00A78B'}
-                        textColor={'#00A78B'}
-                        identity={'resetPassword'}
-                        buttonText={'Reset Password'}
-                        iconTextGap={0.5}
-                        buttonIcon={<LockOpenIcon />}
-                        onClick={handlePasswordResetConfirmation}
+                  <>
+                    <Button
+                      width={13}
+                      backgroundColor={""}
+                      border={0.104167}
+                      borderColor={"#00A78B"}
+                      textColor={"#00A78B"}
+                      identity={"resetPassword"}
+                      buttonText={"Reset Password"}
+                      iconTextGap={0.5}
+                      buttonIcon={<LockOpenIcon />}
+                      onClick={handlePasswordResetConfirmation}
+                    />
+                    {resetPasswordConfirmationMessage && (
+                      <ConfirmNotification
+                        notiMessage={resetPasswordConfirmationMessage}
+                        onDecision={handleResetPasswordDecision}
+                        loading={resetPasswordLoading}
                       />
-                      {resetPasswordConfirmationMessage && (
-                        <ConfirmNotification
-                          notiMessage={resetPasswordConfirmationMessage}
-                          onDecision={handleResetPasswordDecision}
-                          loading={resetPasswordLoading}
-                        />
-                      )}
-                      {showResetPasswordChoice && (
-                        <ConfirmNotification
-                          notiMessage="Where do you want to send the password reset email?"
-                          onDecision={handleResetPasswordDecision}
-                          loading={resetPasswordLoading}
-                        >
-                          <div className="flex flex-col gap-2 w-fit pl-4">
-                            <label className="flex items-center gap-2">
-                              <input
-                                type="radio"
-                                name="sendTo"
-                                value="user"
-                                checked={sendToAdmin === false}
-                                onChange={() => setSendToAdmin(false)}
-                              />
-                              Send to user email
-                            </label>
-                            <label className="flex items-center gap-2">
-                              <input
-                                type="radio"
-                                name="sendTo"
-                                value="admin"
-                                checked={sendToAdmin === true}
-                                onChange={() => setSendToAdmin(true)}
-                              />
-                              Send to my email (admin)
-                            </label>
-                            {userAuhtIsSuperUserOrAdmin && sendToAdmin === null && (
-                              <p className="text-red-500 text-sm">Please select an option</p>
+                    )}
+                    {showResetPasswordChoice && (
+                      <ConfirmNotification
+                        notiMessage="Where do you want to send the password reset email?"
+                        onDecision={handleResetPasswordDecision}
+                        loading={resetPasswordLoading}
+                      >
+                        <div className="flex flex-col gap-2 w-fit pl-4">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="sendTo"
+                              value="user"
+                              checked={sendToAdmin === false}
+                              onChange={() => setSendToAdmin(false)}
+                            />
+                            Send to user email
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="sendTo"
+                              value="admin"
+                              checked={sendToAdmin === true}
+                              onChange={() => setSendToAdmin(true)}
+                            />
+                            Send to my email (admin)
+                          </label>
+                          {userAuhtIsSuperUserOrAdmin &&
+                            sendToAdmin === null && (
+                              <p className="text-red-500 text-sm">
+                                Please select an option
+                              </p>
                             )}
-                          </div>
-                        </ConfirmNotification>
-                      )}
-                    </>
+                        </div>
+                      </ConfirmNotification>
+                    )}
+                  </>
                   {/* )} */}
                 </ContentRow>
                 <Can requiredPermission={38}>
@@ -680,7 +733,7 @@ export function UserDetail() {
                   handleImageUpload={handleImageUpload}
                   localImageUploaded={localImageUploaded}
                   fieldErrors={fieldErrors}
-                  profileUrl={singleUser?.img || ''}
+                  profileUrl={singleUser?.img || ""}
                 />
               </ContentRow>
             </BorderedContent>
@@ -698,15 +751,24 @@ export function UserDetail() {
                         }
                       : () => {}
                   }
-                  onPercentInputsChange={can(40) ? handlePercentInputsChange : () => {}}
-                  onFlatInputsChange={can(40) ? handleFlatInputsChange : () => {}}
+                  onPercentInputsChange={
+                    can(40) ? handlePercentInputsChange : () => {}
+                  }
+                  onFlatInputsChange={
+                    can(40) ? handleFlatInputsChange : () => {}
+                  }
                   onTypeChange={can(40) ? handlePayPlanTypeChange : () => {}}
                   fieldErrors={fieldErrors}
                 />
               </div>
             </Can>
           </div>
-          <ButtonContainer marginTop={3} gap={1} widthFull justify="space-between">
+          <ButtonContainer
+            marginTop={3}
+            gap={1}
+            widthFull
+            justify="space-between"
+          >
             <SystemAccesses />
             <ButtonContainer marginTop={0} gap={1}>
               {buttonData.map((el) => {

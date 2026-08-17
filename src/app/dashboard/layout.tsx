@@ -3,6 +3,7 @@ import { Navbar } from '&/dashboard/Navbar';
 import { auth } from '@/auth';
 import { IdleTimer } from '../ui/auth/idleTimer/IdleTimer';
 import { DesktopOnlyBadge } from '&/dashboard/DesktopOnlyBadge';
+import { DemoNoticeModal } from '&/dashboard/DemoNoticeModal';
 
 export const metadata: Metadata = {
   description: 'Flowsups dashboard page',
@@ -17,6 +18,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
       <Navbar />
       <IdleTimer />
       <DesktopOnlyBadge />
+      <DemoNoticeModal />
       <div className="">{children}</div>
     </main>
   );

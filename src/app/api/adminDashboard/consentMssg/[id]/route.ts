@@ -1,18 +1,10 @@
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 import { NextResponse } from 'next/server';
 import { mockDb } from '@/app/libs/mock-db';
 import { z } from 'zod';
-import twilio from 'twilio';
 import { createEvent } from '@/app/libs/events/events';
 import { dataObject, replaceVariables, sendSms } from '@/app/libs/smsTemplateFunctionsAndTwilioSms';
 import { getCustomerSmsTemplateVariablesValues } from '@/app/libs/data';
 import { checkPermissions } from '@/app/libs/auth-helpers';
-
-const client = twilio(accountSid, authToken);
-
-const url = process.env.TWILIO_WEBSOCKET_URL;
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   const permissionsCheck = await checkPermissions([72, 63]);

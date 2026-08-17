@@ -9,7 +9,13 @@ import { mockDb } from '@/app/libs/mock-db';
 import { parseISO } from 'date-fns';
 import { uploadImageForSms } from '@/app/libs/uploadImages.services';
 
-const client = twilio(accountSid, authToken);
+function getTwilioClient() {
+  if (!accountSid || !authToken) {
+    throw new Error('TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN is not defined');
+  }
+
+  return twilio(accountSid, authToken);
+}
 
 const url = process.env.TWILIO_WEBSOCKET_URL;
 
@@ -167,7 +173,7 @@ export const sendSms = async (
 
     const smsMediaUrl = file ? await uploadImageForSms(senderId, file) : null;
 
-    const res = await client.messages.create({
+    const res = await getTwilioClient().messages.create({
       body: sms,
       from: twilioPhoneNumber,
       to: `+1${to}`,
@@ -247,7 +253,7 @@ export const sendSmsForBulkActions = async ({
   try {
     const statusCallbackUrl = `${url}/smsStatus`;
 
-    const res = await client.messages.create({
+    const res = await getTwilioClient().messages.create({
       body: sms,
       from: twilioPhoneNumber,
       to: `+1${to}`,
@@ -348,7 +354,7 @@ export const sendConsentSms = async ({
 
 YES (Y/SI/S) to confirm and proceed. NO (N) if this wasn't you.`;
 
-    const res = await client.messages.create({
+    const res = await getTwilioClient().messages.create({
       body: sms,
       from: twilioPhoneNumber,
       to: `+1${to}`,

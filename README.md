@@ -21,14 +21,15 @@ This project was designed **only for large screens (≥ 1024px)**. Layouts below
 # install dependencies
 npm install
 
-# run the dev server (with the websocket server for realtime features)
+# run the dev server
 npm run dev
-npm run socket   # in a second terminal
 
 # production build
 npm run build
 npm run start
 ```
+
+> **Note about realtime:** the project contains a WebSocket server (`npm run socket`), but it is **not functional in this demo**. Real-time updates and calls do not work; everything is simulated.
 
 ### Useful scripts
 
@@ -39,7 +40,7 @@ npm run start
 | `npm run start`    | Serve the production build           |
 | `npm run typecheck`| Run TypeScript type checking         |
 | `npm run lint`     | Run ESLint                           |
-| `npm run socket`   | Start the WebSocket server           |
+| `npm run socket`   | Start the WebSocket server (not functional in the demo) |
 
 ## Tech stack
 
@@ -79,4 +80,4 @@ Key areas:
 
 - Authentication is simulated with NextAuth + the mock database; the demo user above has full `Superuser` permissions.
 - Some functions (SMS, calls, emails, printing) use external libraries that may require credentials or network access to work fully.
-- Realtime features (dashboard updates, calls) rely on the WebSocket server started with `npm run socket`.
+- The WebSocket/realtime features (`npm run socket`) are **not functional** in this demo — real-time updates and calls have no real functionality.

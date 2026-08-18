@@ -29,7 +29,7 @@ export default async function Home({ searchParams }: { searchParams: { reason?: 
             src="/flowsups.png"
             alt="Logo of flowsups app"
           />
-          <aside className="w-full max-w-md mx-auto my-8 px-5 py-6 flex flex-col items-center shadow-crmFormShadow rounded-[0.520833vw] lg:w-[32.65625vw] lg:h-[63.981481vh] lg:mt-[12.407407vh] lg:ml-[4.479167vw] lg:mb-[17.5vh] lg:mr-[5.052083vw] lg:pr-[3.441667vw] lg:pl-[4.635417vw] lg:pb-[0.925926vh] lg:pt-[2.332407vh]">
+          <aside className="w-full max-w-md mx-auto my-8 px-5 py-6 flex flex-col items-center shadow-crmFormShadow rounded-[0.520833vw] lg:max-w-none lg:w-[32.65625vw] lg:h-fit lg:my-auto lg:ml-[4.479167vw] lg:mr-[5.052083vw] lg:pr-[3.441667vw] lg:pl-[4.635417vw] lg:pb-[0.925926vh] lg:pt-[2.332407vh]">
             <FormTitle title="Sign in" text="Enter your details to continue" />
             <SignInForm />
           </aside>

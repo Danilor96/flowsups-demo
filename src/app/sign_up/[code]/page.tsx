@@ -42,7 +42,7 @@ export default async function SignUpPage({ params }: { params: { code: string } 
             src="/flowsups.png"
             alt="Logo of flowsups app"
           />
-          <aside className="w-full max-w-md mx-auto my-8 px-5 py-6 flex flex-col items-center shadow-crmFormShadow rounded-[0.520833vw] lg:w-[34.427083vw] lg:h-fit lg:mb-[9.907407vh] lg:mt-[3.333333vh] lg:ml-[4.947917vw] lg:mr-[4.947917vw] lg:pl-[4.895833vw] lg:pt-[2.685185vh] lg:pr-[4.947917vw] lg:pb-[1.203703vh]">
+          <aside className="w-full max-w-md mx-auto my-8 px-5 py-6 flex flex-col items-center shadow-crmFormShadow rounded-[0.520833vw] lg:max-w-none lg:w-[34.427083vw] lg:h-fit lg:mb-[9.907407vh] lg:mt-[3.333333vh] lg:ml-[4.947917vw] lg:mr-[4.947917vw] lg:pl-[4.895833vw] lg:pt-[2.685185vh] lg:pr-[4.947917vw] lg:pb-[1.203703vh]">
             <FormTitle title="Sign up" text="Enter your details to continue" />
             <SignUpForm newUserEmail={newUserEmail} />
             <div className="mt-[4.167593vh] w-[20.625vw] h-[2.685185vh] flex flex-row justify-between items-center mx-auto max-lg:mt-4 max-lg:w-full max-lg:h-auto max-lg:justify-center max-lg:gap-2 max-lg:flex-wrap">

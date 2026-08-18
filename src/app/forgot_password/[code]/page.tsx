@@ -41,7 +41,7 @@ export default async function ForgotPasswordPage({ params }: { params: { code: s
             src="/flowsups.png"
             alt="Logo of flowsups app"
           />
-          <aside className="w-full max-w-md mx-auto my-8 px-5 py-6 flex flex-col items-center shadow-crmFormShadow rounded-[0.520833vw] lg:w-[32.65625vw] lg:h-fit lg:mt-[20.277778vh] lg:mb-[26.111111vh] lg:ml-[4.895833vw] lg:mr-[4.947917vw] lg:pt-[2.314815vh] lg:pl-[4.114583vw] lg:pr-[3.958333vw] lg:pb-[2.685185vh]">
+          <aside className="w-full max-w-md mx-auto my-8 px-5 py-6 flex flex-col items-center shadow-crmFormShadow rounded-[0.520833vw] lg:max-w-none lg:w-[32.65625vw] lg:h-fit lg:mt-[20.277778vh] lg:mb-[26.111111vh] lg:ml-[4.895833vw] lg:mr-[4.947917vw] lg:pt-[2.314815vh] lg:pl-[4.114583vw] lg:pr-[3.958333vw] lg:pb-[2.685185vh]">
             <FormTitle title="Forgot your password" text="Enter a new password" />
             <ChangePassword userEmail={userCode.code_data[0].user.email} />
           </aside>
